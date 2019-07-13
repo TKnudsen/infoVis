@@ -1,0 +1,72 @@
+package com.github.TKnudsen.infoVis.view.panels.distribution1D;
+
+import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+
+import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+
+import de.javagl.selection.LoggingSelectionListener;
+import de.javagl.selection.SelectionModel;
+import de.javagl.selection.SelectionModels;
+
+/**
+ * <p>
+ * InfoVis
+ * </p>
+ * 
+ * <p>
+ * Copyright: (c) 2018-2019 Juergen Bernard,
+ * https://github.com/TKnudsen/InfoVis<br>
+ * </p>
+ * 
+ * <p>
+ * Test for vertical distribution charts.
+ * </p>
+ * 
+ * @author Juergen Bernard
+ * @version 1.02
+ */
+public class Distribution1DVerticalPanelTester {
+	public static void main(String[] args) {
+		JFrame frame = new JFrame();
+		frame.setTitle("Distribution1DVerticalPanel Test Frame");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		// create data
+		List<Double> values = new ArrayList<>();
+		int count = 100;
+
+		for (int i = 0; i < count; i++) {
+			values.add(Math.random() * 2);
+			values.add(0.3 + Math.random() * 0.2);
+			values.add(1.0);
+		}
+
+		Distribution1DVerticalPanel panel = new Distribution1DVerticalPanel(values, -0.5, 3.3);
+
+		SVGFrameTools.dropSVGFrame(panel, "InfoVisDistribution1DVerticalPanel", 800, 400);
+
+		// SELECTION MODEL
+		SelectionModel<Double> selectionModel = SelectionModels.create();
+
+		// SELECTION HANDLER
+		SelectionHandler<Double> selectionHandler = new SelectionHandler<>(selectionModel);
+		selectionHandler.attachTo(panel);
+		selectionHandler.setRectangleSelection(panel);
+
+		panel.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
+
+		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
+	}
+
+}
