@@ -43,7 +43,7 @@ public class DonutChartPanelTester {
 		data.add(2.0);
 		colors.add(new Color(106, 161, 215));
 
-		DonutChartPanel panel = new DonutChartPanel(data, colors);
+		DonutChart panel = new DonutChart(data, colors);
 
 		// SELECTION MODEL
 		SelectionModel<Integer> selectionModel = SelectionModels.create();

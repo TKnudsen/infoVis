@@ -43,7 +43,7 @@ public class PieChartPanelTester {
 		data.add(2.0);
 		colors.add(new Color(106, 161, 215));
 
-		PieChartPanel panel = new PieChartPanel(data, colors);
+		PieChart panel = new PieChart(data, colors);
 
 		// SELECTION MODEL
 		SelectionModel<Integer> selectionModel = SelectionModels.create();

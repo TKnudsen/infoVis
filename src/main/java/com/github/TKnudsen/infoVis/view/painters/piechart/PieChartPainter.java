@@ -74,6 +74,7 @@ public class PieChartPainter extends ChartPainter implements IClickSelection<Int
 		square = new Rectangle2D.Double();
 		arc = new Arc2D.Double();
 		setDrawOutline(true);
+		setBackgroundPaint(null);
 	}
 
 	@Override
