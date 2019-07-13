@@ -26,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * @author Juergen Bernard
  * @version 1.01
  */
-public class PieChartPanel extends InfoVisChartPanel
+public class PieChart extends InfoVisChartPanel
 		implements IClickSelection<Integer>, ISelectionVisualizer<Integer> {
 
 	/**
@@ -36,7 +36,7 @@ public class PieChartPanel extends InfoVisChartPanel
 
 	private final PieChartPainter pieChartPainter;
 
-	public PieChartPanel(List<Double> pieces, List<Color> colors) {
+	public PieChart(List<Double> pieces, List<Color> colors) {
 		pieChartPainter = new PieChartPainter(pieces, colors);
 
 		this.addChartPainter(pieChartPainter);

@@ -26,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * @author Juergen Bernard
  * @version 1.01
  */
-public class DonutChartPanel extends InfoVisChartPanel
+public class DonutChart extends InfoVisChartPanel
 		implements IClickSelection<Integer>, ISelectionVisualizer<Integer> {
 
 	/**
@@ -36,7 +36,7 @@ public class DonutChartPanel extends InfoVisChartPanel
 
 	private final DonutChartPainter donutChartPainter;
 
-	public DonutChartPanel(List<Double> pieces, List<Color> colors) {
+	public DonutChart(List<Double> pieces, List<Color> colors) {
 		donutChartPainter = new DonutChartPainter(pieces, colors);
 
 		this.addChartPainter(donutChartPainter);
