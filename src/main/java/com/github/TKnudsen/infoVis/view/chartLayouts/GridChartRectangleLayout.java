@@ -16,7 +16,7 @@ import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class GridChartRectangleLayout extends ChartRectangleLayout {
 
