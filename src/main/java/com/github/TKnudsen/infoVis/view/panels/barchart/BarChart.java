@@ -33,7 +33,7 @@ import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
  * @author Juergen Bernard
  * @version 2.06
  */
-public class BarChartVerticalPanel extends YAxisNumericalChartPanel<Double>
+public class BarChart extends YAxisNumericalChartPanel<Double>
 		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, IRectangleSelection<Integer> {
 
 	/**
@@ -48,19 +48,19 @@ public class BarChartVerticalPanel extends YAxisNumericalChartPanel<Double>
 	private List<Color> colors;
 	private double maxGlobal = Double.NaN;
 
-	public BarChartVerticalPanel(Double[] data, Color[] colors) {
+	public BarChart(Double[] data, Color[] colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartVerticalPanel(Double[] data, Color[] colors, Double maxGlobal) {
+	public BarChart(Double[] data, Color[] colors, Double maxGlobal) {
 		this(DataConversion.arrayToList(data), DataConversion.arrayToList(colors), maxGlobal);
 	}
 
-	public BarChartVerticalPanel(List<Double> data, List<Color> colors) {
+	public BarChart(List<Double> data, List<Color> colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartVerticalPanel(List<Double> data, List<Color> colors, Double maxGlobal) {
+	public BarChart(List<Double> data, List<Color> colors, Double maxGlobal) {
 		if (data == null)
 			throw new IllegalArgumentException("BarChartVerticalPanel: data was null");
 		else
