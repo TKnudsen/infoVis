@@ -9,6 +9,7 @@ import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
@@ -32,7 +33,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
  */
 public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPositionEncoding {
 
@@ -40,7 +41,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		super(data);
 	}
 
-	public BoxPlotVerticalPainter(List<Double> data) {
+	public BoxPlotVerticalPainter(Collection<Double> data) {
 		super(data);
 	}
 
