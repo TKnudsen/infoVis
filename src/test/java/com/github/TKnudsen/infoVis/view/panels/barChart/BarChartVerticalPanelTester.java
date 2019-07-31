@@ -10,6 +10,7 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
@@ -63,7 +64,8 @@ public class BarChartVerticalPanelTester {
 		points.add(75.0);
 		colors.add(new Color(82, 120, 193));
 
-		BarChart panel = new BarChart(points, colors);
+//		BarChart panel = new BarChart(points, colors);
+		BarChart panel = BarCharts.createBarChart(points, colors);
 
 		// SELECTION MODEL
 		SelectionModel<Integer> selectionModel = SelectionModels.create();

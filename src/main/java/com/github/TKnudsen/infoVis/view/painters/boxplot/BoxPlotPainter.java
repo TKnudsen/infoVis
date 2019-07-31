@@ -7,7 +7,7 @@ import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
@@ -33,7 +33,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
  */
 public abstract class BoxPlotPainter extends ChartPainter implements IRectangleSelection<Double>, ITooltip {
 
@@ -54,6 +54,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	protected Rectangle2D quartilesRectangle;
 
 	protected boolean fill = true;
+	private float fillAlpha = 0.66f;
 
 	private IPositionEncodingFunction positionEncodingFunction;
 	protected boolean externalPositionEncodingFunction = false;
@@ -71,7 +72,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 		initializePositionEncodingFunction();
 	}
 
-	public BoxPlotPainter(List<Double> data) {
+	public BoxPlotPainter(Collection<Double> data) {
 		double[] primitives = DataConversion.toPrimitives(data);
 		Arrays.sort(primitives);
 		this.dataStatistics = new StatisticsSupport(primitives);
@@ -173,7 +174,8 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 
 		if (quartilesRectangle != null) {
 			if (fill) {
-				g2.setColor(ColorTools.setAlpha(getPaint(), (getColor().getAlpha() / 255.0f) * 0.66f));
+				g2.setColor(ColorTools.setAlpha(getPaint(),
+						(float) ((getColor().getAlpha() / 255.0f) * Math.min(1.0, Math.max(0, fillAlpha)))));
 				g2.fill(quartilesRectangle);
 			}
 
@@ -244,5 +246,13 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	public void setPositionEncodingFunction(IPositionEncodingFunction positionEncodingFunction) {
 		this.positionEncodingFunction = positionEncodingFunction;
 		this.externalPositionEncodingFunction = true;
+	}
+
+	public float getFillAlpha() {
+		return fillAlpha;
+	}
+
+	public void setFillAlpha(float fillAlpha) {
+		this.fillAlpha = fillAlpha;
 	}
 }

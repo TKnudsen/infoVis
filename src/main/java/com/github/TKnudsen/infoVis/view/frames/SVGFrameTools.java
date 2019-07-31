@@ -71,4 +71,17 @@ public class SVGFrameTools {
 		return frame;
 	}
 
+	public static void populateSVGFrame(SVGFrame frame, String title, int x, int y) {
+		frame.setTitle(title);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(new GridLayout(0, 1));
+
+		frame.setSize(x, y);
+		frame.setLocation(50, 50);
+		frame.setVisible(true);
+
+		frame.revalidate();
+		frame.repaint();
+	}
+
 }
