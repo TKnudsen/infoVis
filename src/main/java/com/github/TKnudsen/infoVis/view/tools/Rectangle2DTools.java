@@ -26,6 +26,9 @@ public class Rectangle2DTools {
 				|| rectangle.getHeight() < yCount + spacing * (yCount - 1))
 			return null;
 
+		if (Double.isNaN(spacing))
+			spacing = 0;
+
 		Rectangle2D[][] rectangleArray = new Rectangle2D[xCount][yCount];
 
 		double ySpace = rectangle.getHeight() - ((yCount - 1) * spacing);

@@ -27,6 +27,7 @@ public class NimbusUITools {
 	public static final Color baseColor = new Color(0, 0, 0);
 	public static final Color textFieldColor = new Color(30, 30, 30);
 	public static final Color focusColor = new Color(200, 200, 200);
+	public static final Color nimbusBase = new Color(51, 98, 140);
 
 	public static final int STANDARD_BUTTON_SIZE = 32;
 
@@ -45,6 +46,9 @@ public class NimbusUITools {
 
 		// standard background color
 		UIManager.put("control", standardBackgroundColor);
+
+		// used for tool tip background color
+		UIManager.put("info", nimbusBase);
 
 		// slider and button color
 		UIManager.put("nimbusBase", baseColor);
