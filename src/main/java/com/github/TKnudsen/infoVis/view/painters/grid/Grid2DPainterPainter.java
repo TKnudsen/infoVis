@@ -253,18 +253,20 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	protected void recalculateGrid() {
 		grid = null;
 
-		if (rectangle == null && chartRectangle == null)
+		if (rectangle == null || chartRectangle == null)
 			return;
 
 		if (painters == null)
 			return;
 
 		double gridSpacing = this.gridSpacing;
-		if (Double.isNaN(gridSpacing))
+		if (Double.isNaN(gridSpacing) && painters.length > 0 && painters[0].length > 0)
 			gridSpacing = Rectangle2DTools.calculateSpacingValue(chartRectangle.getWidth(), chartRectangle.getHeight(),
 					painters.length, painters[0].length);
 
-		grid = Rectangle2DTools.createRectangleMatrix(chartRectangle, painters.length, painters[0].length, gridSpacing);
+		if (painters.length > 0 && painters[0].length > 0)
+			grid = Rectangle2DTools.createRectangleMatrix(chartRectangle, painters.length, painters[0].length,
+					gridSpacing);
 
 		if (grid != null)
 			for (int i = 0; i < grid.length; i++)
