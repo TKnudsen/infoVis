@@ -155,8 +155,6 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 		// point size
 		double pointSize = this.pointSize;
-		if (Double.isNaN(pointSize))
-			pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
 		for (int i = 0; i < data.size(); i++) {
 			Point2D point = screenPoints.get(i);
@@ -168,9 +166,10 @@ public class ScatterPlotPainter<T> extends ChartPainter
 				colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
 
 			// new concept with the size-encoding
-			double ps = sizeEncodingFunction.apply(data.get(i)).doubleValue();
-			if (!Double.isNaN(ps))
-				pointSize = ps;
+			if (Double.isNaN(pointSize))
+				pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
+			if (Double.isNaN(pointSize))
+				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
 			boolean selected = false;
 			if (selectedFunction != null) {
@@ -179,7 +178,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 					selected = apply.booleanValue();
 			}
 
-			drawIndividualPoint(g2, point, (float) (pointSize * 1.33), colorToPaint, selected);
+			drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
 		}
 
 		g2.setColor(c);
