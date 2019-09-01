@@ -93,7 +93,7 @@ public class BarChartVerticalPanelTester {
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
-		SVGFrameTools.dropSVGFrame(panel, "Boxplots", 800, 400);
+		SVGFrameTools.dropSVGFrame(panel, "BarChartVerticalPanelTester", 800, 400);
 	}
 
 }
