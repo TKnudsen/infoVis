@@ -105,4 +105,12 @@ public class Distribution1DHorizontalPanel extends XAxisNumericalChartPanel<Doub
 		return distribution1DHorizontalPainter.getElementsInRectangle(rectangle);
 	}
 
+	public boolean isHighlightsAtTheUpperBound() {
+		return distribution1DHorizontalPainter.isHighlightsAtTheUpperBound();
+	}
+
+	public void setHighlightsAtTheUpperBound(boolean highlightsAtTheUpperBound) {
+		this.distribution1DHorizontalPainter.setHighlightsAtTheUpperBound(highlightsAtTheUpperBound);
+	}
+
 }
