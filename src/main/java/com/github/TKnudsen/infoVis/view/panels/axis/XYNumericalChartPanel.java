@@ -87,7 +87,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	@Override
 	/**
 	 * uses the rectangle information provided with the layout and assigns it to the
-	 * painters. The inherited variant FIRST assigns axis bounds, then the super.
+	 * painters. The inherited variant FIRST assigns axis bounds, then the super
 	 * stuff. Reason: the position mapping is maintained in the axis painters.
 	 */
 	protected void updatePainterRectangles() {

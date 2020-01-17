@@ -22,24 +22,28 @@ public class SizeEncodingFunction<T> implements ISizeEncodingFunction<T> {
 
 	private final Component component;
 	private final double scale;
+	private final double minSize;
 
 	public SizeEncodingFunction(Component component) {
 		this(component, 1.0);
 	}
 
 	public SizeEncodingFunction(Component component, double scale) {
+		this(component, scale, 3.0);
+	}
+
+	public SizeEncodingFunction(Component component, double scale, double minSize) {
 		this.component = component;
 		this.scale = scale;
+		this.minSize = minSize;
 	}
 
 	@Override
 	public Double apply(T t) {
-		double size = 3;
-
 		if (component != null)
-			size = Math.max(3, Math.min(component.getWidth(), component.getHeight()) * 0.005) * scale;
+			return Math.max(minSize, Math.min(component.getWidth(), component.getHeight()) * 0.005) * scale;
 
-		return size;
+		return minSize;
 	}
 
 }

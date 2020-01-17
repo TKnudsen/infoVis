@@ -48,9 +48,20 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 
 	private List<T> data;
 
-	private final Function<? super T, ? extends Paint> colorMapping;
+	/**
+	 * world coordinates/position/values of the x dimension
+	 */
 	private final Function<? super T, Double> worldPositionMappingX;
+
+	/**
+	 * world coordinates/position/values of the y dimension
+	 */
 	private final Function<? super T, Double> worldPositionMappingY;
+
+	/**
+	 * colors of the objects
+	 */
+	private final Function<? super T, ? extends Paint> colorMapping;
 
 	public ScatterPlot(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {

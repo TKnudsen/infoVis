@@ -201,6 +201,8 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		return sr;
 	}
 
+	public abstract double getAxisAlignmentCoordinate();
+
 	@Override
 	public IPositionEncodingFunction getPositionEncodingFunction() {
 		return this.positionEncodingFunction;
