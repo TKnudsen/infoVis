@@ -21,7 +21,7 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
  */
 public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
 
@@ -76,15 +76,6 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		g2.setColor(color);
 		double x1 = this.rectangle.getMinX();
 		double x2 = this.rectangle.getMaxX();
-		double y1 = 77;
-		double y2 = 199;
-		if (axisLineAlignment.equals(AxisLineAlignment.TOP)) {
-			y1 = this.rectangle.getY();
-			y2 = this.rectangle.getY();
-		} else {
-			y1 = this.rectangle.getMaxY();
-			y2 = this.rectangle.getMaxY();
-		}
 
 		if (drawAxisBetweenAxeMarkersOnly) {
 			if (markerPositionsWithLabels == null || markerPositionsWithLabels.size() == 0)
@@ -94,7 +85,10 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 				x2 = markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey();
 			}
 		}
-		DisplayTools.drawLine(g2, x1, y1, x2, y2);
+
+		double y = getAxisAlignmentCoordinate();
+
+		DisplayTools.drawLine(g2, x1, y, x2, y);
 
 		drawAxisLabelsAndMarkers(g2);
 
@@ -170,10 +164,32 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	public void setAxisLineAlignment(AxisLineAlignment axisLineAlignment) {
-		if (axisLineAlignment.equals(AxisLineAlignment.TOP) || axisLineAlignment.equals(AxisLineAlignment.BOTTOM))
+		if (axisLineAlignment.equals(AxisLineAlignment.TOP) || axisLineAlignment.equals(AxisLineAlignment.BOTTOM)
+				|| axisLineAlignment.equals(AxisLineAlignment.CENTER))
 			super.setAxisLineAlignment(axisLineAlignment);
 		else
 			throw new IllegalArgumentException("YXAxisNumericalPainter: axis alignment must be top or bottom");
+	}
+
+	@Override
+	public double getAxisAlignmentCoordinate() {
+		switch (axisLineAlignment) {
+		case LEFT:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
+		case RIGHT:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
+		case CENTER:
+			return this.rectangle.getCenterY();
+		case TOP:
+			return this.rectangle.getY();
+		case BOTTOM:
+			return this.rectangle.getMaxY();
+		default:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": unknown AxisLineAlignment: " + axisLineAlignment);
+		}
 	}
 
 }

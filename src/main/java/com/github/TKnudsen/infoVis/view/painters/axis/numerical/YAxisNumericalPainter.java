@@ -26,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
  */
 public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
 
@@ -80,23 +80,30 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		// draw Y-Axis
 		g2.setColor(color);
 		g2.setStroke(stroke);
-		if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
-			if (drawAxisBetweenAxeMarkersOnly)
-				DisplayTools.drawLine(g2, (int) this.rectangle.getMinX(), markerPositionsWithLabels.get(0).getKey(),
-						(int) this.rectangle.getMinX(),
-						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
-			else
-				g2.drawLine((int) this.rectangle.getMinX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMinX(),
-						(int) (rectangle.getMaxY()));
-		else {
-			if (drawAxisBetweenAxeMarkersOnly)
-				DisplayTools.drawLine(g2, (int) this.rectangle.getMaxX(), markerPositionsWithLabels.get(0).getKey(),
-						(int) this.rectangle.getMaxX(),
-						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
-			else
-				g2.drawLine((int) this.rectangle.getMaxX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMaxX(),
-						(int) (rectangle.getMaxY()));
-		}
+//		if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
+//			if (drawAxisBetweenAxeMarkersOnly)
+//				DisplayTools.drawLine(g2, (int) this.rectangle.getMinX(), markerPositionsWithLabels.get(0).getKey(),
+//						(int) this.rectangle.getMinX(),
+//						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
+//			else
+//				g2.drawLine((int) this.rectangle.getMinX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMinX(),
+//						(int) (rectangle.getMaxY()));
+//		else {
+//			if (drawAxisBetweenAxeMarkersOnly)
+//				DisplayTools.drawLine(g2, (int) this.rectangle.getMaxX(), markerPositionsWithLabels.get(0).getKey(),
+//						(int) this.rectangle.getMaxX(),
+//						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
+//			else
+//				g2.drawLine((int) this.rectangle.getMaxX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMaxX(),
+//						(int) (rectangle.getMaxY()));
+//		}
+		double x = getAxisAlignmentCoordinate();
+
+		if (drawAxisBetweenAxeMarkersOnly)
+			DisplayTools.drawLine(g2, x, markerPositionsWithLabels.get(0).getKey(), x,
+					markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
+		else
+			DisplayTools.drawLine(g2, x, rectangle.getMinY(), x, rectangle.getMaxY());
 
 		// problem: in some cases long labels intersect the y-axis
 		// define x=Offset
@@ -166,10 +173,32 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	public void setAxisLineAlignment(AxisLineAlignment axisLineAlignment) {
-		if (axisLineAlignment.equals(AxisLineAlignment.LEFT) || axisLineAlignment.equals(AxisLineAlignment.RIGHT))
+		if (axisLineAlignment.equals(AxisLineAlignment.LEFT) || axisLineAlignment.equals(AxisLineAlignment.RIGHT)
+				|| axisLineAlignment.equals(AxisLineAlignment.CENTER))
 			super.setAxisLineAlignment(axisLineAlignment);
 		else
 			throw new IllegalArgumentException("YAxisNumericalPainter: axis alignment must be left or right");
+	}
+
+	@Override
+	public double getAxisAlignmentCoordinate() {
+		switch (axisLineAlignment) {
+		case LEFT:
+			return this.rectangle.getMinX();
+		case RIGHT:
+			return this.rectangle.getMaxX();
+		case CENTER:
+			return this.rectangle.getCenterX();
+		case TOP:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
+		case BOTTOM:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
+		default:
+			throw new IllegalArgumentException(
+					getClass().getSimpleName() + ": unknown AxisLineAlignment: " + axisLineAlignment);
+		}
 	}
 
 }

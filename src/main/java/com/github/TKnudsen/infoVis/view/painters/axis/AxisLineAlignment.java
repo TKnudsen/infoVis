@@ -11,8 +11,8 @@ package com.github.TKnudsen.infoVis.view.painters.axis;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.01
+ * @version 1.02
  */
 public enum AxisLineAlignment {
-	LEFT, RIGHT, TOP, BOTTOM
+	LEFT, RIGHT, TOP, BOTTOM, CENTER
 }

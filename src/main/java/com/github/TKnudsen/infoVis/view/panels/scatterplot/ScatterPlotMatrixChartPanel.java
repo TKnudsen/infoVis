@@ -18,6 +18,7 @@ import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
 
 /**
  * <p>
@@ -37,8 +38,8 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingF
  *          interaction design which is triggered from outside. To do so, create
  *          ScatterPlotMatrix class that accepts <T>
  */
-public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel
-		implements IRectangleSelection<Double[]>, IClickSelection<Double[]>, ISelectionVisualizer<Double[]> {
+public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IRectangleSelection<Double[]>,
+		IClickSelection<Double[]>, ISelectionVisualizer<Double[]>, ISizeEncoding<Double[]> {
 
 	/**
 	 * 
@@ -191,5 +192,22 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel
 			for (int y = 0; y < attributeNames.size(); y++)
 				if (infoVisScatterPlotChartPanels[x][y] != null)
 					infoVisScatterPlotChartPanels[x][y].setSelectedFunction(selectedFunction);
+	}
+
+	@Override
+	public void setSizeEncodingFunction(Function<? super Double[], Double> sizeEncodingFunction) {
+		for (int x = 0; x < attributeNames.size(); x++)
+			for (int y = 0; y < attributeNames.size(); y++)
+				if (infoVisScatterPlotChartPanels[x][y] != null)
+					infoVisScatterPlotChartPanels[x][y].setSizeEncodingFunction(sizeEncodingFunction);
+	}
+
+	public void setDrawAxes(boolean drawAxes) {
+		for (int x = 0; x < attributeNames.size(); x++)
+			for (int y = 0; y < attributeNames.size(); y++)
+				if (infoVisScatterPlotChartPanels[x][y] != null) {
+					infoVisScatterPlotChartPanels[x][y].setDrawXAxis(drawAxes);
+					infoVisScatterPlotChartPanels[x][y].setDrawYAxis(drawAxes);
+				}
 	}
 }
