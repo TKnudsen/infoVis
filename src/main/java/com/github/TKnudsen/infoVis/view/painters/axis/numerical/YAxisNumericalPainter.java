@@ -141,7 +141,8 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 							rectangle.getWidth() - 2 * markerLineWidth, fm.getHeight()));
 				else
 					sp.setRectangle(new Rectangle2D.Double(rectangle.getX() + markerLineWidth,
-							pair.getKey() - fm.getHeight() * 0.5, rectangle.getWidth() - 2 * markerLineWidth,
+							pair.getKey() - fm.getHeight() * 0.5, rectangle.getWidth() - markerLineWidth, // 2 *
+																											// markerLineWidth
 							fm.getHeight()));
 				sp.setBackgroundPaint(null);
 				sp.setHorizontalStringAlignment(HorizontalStringAlignment.CENTER);

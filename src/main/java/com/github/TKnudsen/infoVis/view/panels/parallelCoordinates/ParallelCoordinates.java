@@ -64,6 +64,9 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 
 		this.data = Collections.unmodifiableList(data);
 		this.colorMapping = colorMapping;
+
+		if (worldPositionMappingsY.size() == 0)
+			throw new IllegalArgumentException("ParallelCoordinates: at least one worldPositionMappingsY is needed");
 		this.worldPositionMappingsY = worldPositionMappingsY;
 
 		initializeYAxisPainters();
