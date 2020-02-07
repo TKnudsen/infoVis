@@ -203,6 +203,9 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	public void addChartPainter(ChartPainter chartPainter) {
 		Objects.requireNonNull(chartPainter, "The ChartPainter may not be null");
 
+		// because it is not guaranteed that updateBounds will be triggered implicitly
+		chartPainter.setRectangle(chartRectangleLayout.getChartRectangle());
+
 		this.chartPainters.add(chartPainter);
 	}
 

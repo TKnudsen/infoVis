@@ -33,7 +33,7 @@ import de.javagl.selection.SelectionModels;
  * @author Juergen Bernard
  * @version 1.03
  */
-public class Distribution1DHorizontalHighlightPanelTester2 {
+public class Distribution1DHorizontalHighlightPanelTester {
 	public static void main(String[] args) {
 
 		List<Double> data = new ArrayList<>();
@@ -50,7 +50,7 @@ public class Distribution1DHorizontalHighlightPanelTester2 {
 			colors.add(new Color(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
 		}
 
-		Distribution1DHorizontalPanel panel = new Distribution1DHorizontalPanel(data);
+		Distribution1DHorizontalPanel<Double> panel = Distribution1DHorizontalPanels.createForDoubles(data);
 
 		for (int i = 0; i < samples.size(); i++)
 			panel.addSpecialValue(samples.get(i), new ShapeAttributes(colors.get(i), DisplayTools.standardStroke));
