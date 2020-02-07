@@ -200,4 +200,12 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 		this.scatterPlotPainter.setColorEncodingFunction(colorEncodingFunction);
 	}
 
+	public boolean isAlphaAdjustment() {
+		return scatterPlotPainter.isAlphaAdjustment();
+	}
+
+	public void setAlphaAdjustment(boolean dynamicAlphaAdjustment) {
+		this.scatterPlotPainter.setAlphaAdjustment(dynamicAlphaAdjustment);
+	}
+
 }
