@@ -7,6 +7,7 @@ import java.awt.Stroke;
 import java.awt.geom.Path2D;
 import java.util.Collection;
 import java.util.Map.Entry;
+import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
@@ -21,13 +22,13 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  */
-public class Distribution1DHorizontalHighlightPainter extends Distribution1DHorizontalPainter {
+public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DHorizontalPainter<T> {
 
 	private double relativeHighlightHeight = 0.3;
 	private float highlightLineStroke = 3.0f;
@@ -42,8 +43,15 @@ public class Distribution1DHorizontalHighlightPainter extends Distribution1DHori
 	 */
 	private boolean fillHighlights = true;
 
-	public Distribution1DHorizontalHighlightPainter(Collection<Double> values) {
-		super(values);
+	public Distribution1DHorizontalHighlightPainter(Collection<T> data,
+			Function<? super T, Double> worldToDoubleMapping) {
+		super(data, worldToDoubleMapping);
+	}
+
+	public Distribution1DHorizontalHighlightPainter(Collection<T> data,
+			Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction) {
+		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
 	@Override
@@ -53,15 +61,14 @@ public class Distribution1DHorizontalHighlightPainter extends Distribution1DHori
 		Color color = g2.getColor();
 		Stroke stroke = g2.getStroke();
 
-		for (Entry<Double, ShapeAttributes> entry : specialValues) {
-			Double worldValue = entry.getKey();
+		for (Entry<T, ShapeAttributes> entry : specialValues) {
+			T worldData = entry.getKey();
 
 			Paint paint = getPaint();
 			if (entry.getValue() != null)
 				paint = entry.getValue().getColor();
 
-			drawHighlightTriangle(g2, worldValue, paint);
-//			drawHighlightTriangle(g2, worldValue, ColorTools.setAlpha(paint, alpha));
+			drawHighlightTriangle(g2, worldData, paint);
 		}
 
 		g2.setStroke(stroke);
@@ -78,10 +85,11 @@ public class Distribution1DHorizontalHighlightPainter extends Distribution1DHori
 		return chartRectangle.getMinY() + hReduced;
 	}
 
-	public void drawHighlightTriangle(Graphics2D g2, double worldValue, Paint paint) {
+	public void drawHighlightTriangle(Graphics2D g2, T worldData, Paint paint) {
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 
+		Double worldValue = getWorldToDoubleMapping().apply(worldData);
 		double xCord = getPositionEncodingFunction().apply(worldValue);
 
 		double height = chartRectangle.getHeight() * getRelativeHighlightHeight();

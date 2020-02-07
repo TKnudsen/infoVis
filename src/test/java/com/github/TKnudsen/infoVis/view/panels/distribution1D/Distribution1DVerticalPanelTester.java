@@ -1,5 +1,6 @@
 package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,8 @@ public class Distribution1DVerticalPanelTester {
 			values.add(1.0);
 		}
 
-		Distribution1DVerticalPanel panel = new Distribution1DVerticalPanel(values, -0.5, 3.3);
+		Distribution1DVerticalPanel<Double> panel = Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
+				-0.5, 3.3);
 
 		SVGFrameTools.dropSVGFrame(panel, "InfoVisDistribution1DVerticalPanel", 800, 400);
 

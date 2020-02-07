@@ -50,7 +50,8 @@ public class Distribution1DVerticalHighlightPanelTester {
 			values.add(1.0);
 		}
 
-		Distribution1DVerticalPanel panel = new Distribution1DVerticalPanel(values, -0.5, 3.3);
+		Distribution1DVerticalPanel<Double> panel = Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
+				-0.5, 3.3);
 
 		// special values, such as clusters
 		panel.addSpecialValue(1.1, new ShapeAttributes(Color.MAGENTA, DisplayTools.ultraThickStroke));

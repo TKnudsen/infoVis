@@ -91,6 +91,11 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 				double x = worldPositionMappingX.apply(t);
 				double y = worldPositionMappingY.apply(t);
 
+				if (Double.isNaN(x))
+					throw new IllegalArgumentException("ScatterPlot worldPositionMapping contained NaN for " + t);
+				if (Double.isNaN(y))
+					throw new IllegalArgumentException("ScatterPlot worldPositionMapping contained NaN " + t);
+
 				minX = Math.min(minX, x);
 				maxX = Math.max(maxX, x);
 

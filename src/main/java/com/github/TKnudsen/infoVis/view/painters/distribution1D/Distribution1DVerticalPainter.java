@@ -1,15 +1,14 @@
 package com.github.TKnudsen.infoVis.view.painters.distribution1D;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
-import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
@@ -27,36 +26,34 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.05
+ * @version 2.06
  */
-public class Distribution1DVerticalPainter extends Distribution1DPainter implements IYPositionEncoding {
+public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> implements IYPositionEncoding {
 
-	public Distribution1DVerticalPainter(Collection<Double> values) {
-		super(values);
+	public Distribution1DVerticalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping) {
+		super(data, worldToDoubleMapping);
+	}
+
+	public Distribution1DVerticalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction) {
+		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
 	@Override
-	public void drawValue(Graphics2D g2, double worldValue, Paint color) {
-		IPositionEncodingFunction encodingFunction = getPositionEncodingFunction();
-
-		double size = 0.0;
-		if (g2.getStroke() != null) {
-			Stroke stroke = g2.getStroke();
-			if (stroke instanceof BasicStroke)
-				size = ((BasicStroke) stroke).getLineWidth() * 0.5 - 1;
-		}
-
-		if (!Double.isNaN(worldValue)) {
-			Double screen = encodingFunction.apply(worldValue);
-			g2.setPaint(color);
-			DisplayTools.drawLine(g2, chartRectangle.getMinX() + size, screen, getValueXEndPosition() - size, screen);
-		}
+	public void drawLine(Graphics2D g2, Double positionValue, double capSize) {
+		DisplayTools.drawLine(g2, chartRectangle.getMinX() + capSize, positionValue, getValueXEndPosition() - capSize,
+				positionValue);
 	}
 
+	/**
+	 * needed for the highlight painter
+	 * 
+	 * @return
+	 */
 	protected double getValueXEndPosition() {
 		return chartRectangle.getMaxX();
 	}
@@ -71,17 +68,19 @@ public class Distribution1DVerticalPainter extends Distribution1DPainter impleme
 	}
 
 	@Override
-	public List<Double> getElementsInRectangle(RectangularShape rectangle) {
+	public List<T> getElementsInRectangle(RectangularShape rectangle) {
 		if (rectangle == null)
 			return null;
 
 		Number v1 = getPositionEncodingFunction().inverseMapping(rectangle.getMinY());
 		Number v2 = getPositionEncodingFunction().inverseMapping(rectangle.getMaxY());
 
-		List<Double> elements = new ArrayList<>();
-		for (double d : values)
+		List<T> elements = new ArrayList<>();
+		for (T t : data) {
+			Double d = getWorldToDoubleMapping().apply(t);
 			if (d >= v1.doubleValue() && d <= v2.doubleValue())
-				elements.add(d);
+				elements.add(t);
+		}
 
 		return elements;
 	}
@@ -102,4 +101,5 @@ public class Distribution1DVerticalPainter extends Distribution1DPainter impleme
 	public void setYPositionEncodingFunction(IPositionEncodingFunction yPositionEncodingFunction) {
 		this.setPositionEncodingFunction(yPositionEncodingFunction);
 	}
+
 }

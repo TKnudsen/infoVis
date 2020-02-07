@@ -2,11 +2,9 @@ package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Paint;
 import java.awt.geom.RectangularShape;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DHorizontalHighlightPainter;
@@ -24,38 +22,46 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.04
+ * @version 2.05
  */
-public class Distribution1DHorizontalPanel extends XAxisNumericalChartPanel<Double>
-		implements IColorEncoding<Double>, IRectangleSelection<Double> {
+public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<Double>
+		implements IColorEncoding<T>, IRectangleSelection<T> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -1961946031158322006L;
 
-	private Distribution1DHorizontalHighlightPainter distribution1DHorizontalPainter;
+	private Distribution1DHorizontalHighlightPainter<T> distribution1DHorizontalPainter;
 
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
 
-	public Distribution1DHorizontalPanel(Collection<Double> values) {
-		this(values, Double.NaN, Double.NaN);
+	public Distribution1DHorizontalPanel(List<T> values, Function<? super T, Double> worldToDoubleMapping) {
+		this(values, worldToDoubleMapping, Double.NaN, Double.NaN);
 	}
 
-	public Distribution1DHorizontalPanel(Collection<Double> values, Double minGlobal, Double maxGlobal) {
+	public Distribution1DHorizontalPanel(List<T> data, Function<? super T, Double> worldToDoubleMapping,
+			Double minGlobal, Double maxGlobal) {
+		this(data, worldToDoubleMapping, null, minGlobal, maxGlobal);
+	}
+
+	public Distribution1DHorizontalPanel(List<T> data, Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction, Double minGlobal, Double maxGlobal) {
 		this.minGlobal = minGlobal;
 		this.maxGlobal = maxGlobal;
 
-		initializeData(values);
+		initializeData(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
-	protected void initializeData(Collection<Double> values) {
-		if (values == null)
+	protected void initializeData(List<T> data, Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction) {
+
+		if (data == null)
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
 				throw new IllegalArgumentException("InfoVisBoxPlotVerticalPanel: no valid input given");
 
@@ -63,17 +69,20 @@ public class Distribution1DHorizontalPanel extends XAxisNumericalChartPanel<Doub
 		if (!Double.isNaN(minGlobal))
 			min = minGlobal;
 		else
-			min = MathFunctions.getMin(values);
+			for (T t : data)
+				min = Math.min(min, worldToDoubleMapping.apply(t));
 
 		double max = Double.NEGATIVE_INFINITY;
 		if (!Double.isNaN(maxGlobal))
 			max = maxGlobal;
 		else
-			max = MathFunctions.getMax(values);
+			for (T t : data)
+				max = Math.max(max, worldToDoubleMapping.apply(t));
 
 		initializeXAxisPainter(min, max);
 
-		this.distribution1DHorizontalPainter = new Distribution1DHorizontalHighlightPainter(values);
+		this.distribution1DHorizontalPainter = new Distribution1DHorizontalHighlightPainter<T>(data,
+				worldToDoubleMapping, colorEncodingFunction);
 
 		this.addChartPainter(distribution1DHorizontalPainter, true);
 	}
@@ -87,21 +96,21 @@ public class Distribution1DHorizontalPanel extends XAxisNumericalChartPanel<Doub
 		distribution1DHorizontalPainter.clearSpecialValues();
 	}
 
-	public void addSpecialValue(Double worldValue, ShapeAttributes shapeAttributes) {
+	public void addSpecialValue(T worldValue, ShapeAttributes shapeAttributes) {
 		distribution1DHorizontalPainter.addSpecialValue(worldValue, shapeAttributes);
 	}
 
-	public Function<? super Double, ? extends Paint> getColorEncodingFunction() {
+	public Function<? super T, ? extends Paint> getColorEncodingFunction() {
 		return distribution1DHorizontalPainter.getColorEncodingFunction();
 	}
 
 	@Override
-	public void setColorEncodingFunction(Function<? super Double, ? extends Paint> colorEncodingFunction) {
+	public void setColorEncodingFunction(Function<? super T, ? extends Paint> colorEncodingFunction) {
 		this.distribution1DHorizontalPainter.setColorEncodingFunction(colorEncodingFunction);
 	}
 
 	@Override
-	public List<Double> getElementsInRectangle(RectangularShape rectangle) {
+	public List<T> getElementsInRectangle(RectangularShape rectangle) {
 		return distribution1DHorizontalPainter.getElementsInRectangle(rectangle);
 	}
 
@@ -111,6 +120,10 @@ public class Distribution1DHorizontalPanel extends XAxisNumericalChartPanel<Doub
 
 	public void setHighlightsAtTheUpperBound(boolean highlightsAtTheUpperBound) {
 		this.distribution1DHorizontalPainter.setHighlightsAtTheUpperBound(highlightsAtTheUpperBound);
+	}
+
+	public void setDynamicAlpha(boolean dynamicAlpha) {
+		this.distribution1DHorizontalPainter.setDynamicAlpha(dynamicAlpha);
 	}
 
 }

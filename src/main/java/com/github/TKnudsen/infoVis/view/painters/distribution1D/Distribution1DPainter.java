@@ -1,18 +1,20 @@
 package com.github.TKnudsen.infoVis.view.painters.distribution1D;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.data.entry.EntryWithComparableKey;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
@@ -40,30 +42,58 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * @author Juergen Bernard
  * @version 2.06
  */
-public abstract class Distribution1DPainter extends ChartPainter
-		implements IColorEncoding<Double>, IRectangleSelection<Double>, ITooltip {
+public abstract class Distribution1DPainter<T> extends ChartPainter
+		implements IColorEncoding<T>, IRectangleSelection<T>, ITooltip {
 
-	protected Collection<Double> values;
+	protected Collection<T> data;
 
-	protected List<Entry<Double, ShapeAttributes>> specialValues = new ArrayList<>();
+	protected List<Entry<T, ShapeAttributes>> specialValues = new ArrayList<>();
 
 	private boolean dynamicAlpha = true;
 	protected float alpha = 1.0f;
 	private boolean toolTipping = true;
 
+	/**
+	 * world coordinates/position/values of the x dimension
+	 */
+	private final Function<? super T, Double> worldToDoubleMapping;
 	private IPositionEncodingFunction positionEncodingFunction;
+
 	protected boolean externalPositionEncodingFunction = false;
 
-	private Function<? super Double, ? extends Paint> colorEncodingFunction;
+	private Function<? super T, ? extends Paint> colorEncodingFunction;
 
-	public Distribution1DPainter(Collection<Double> values) {
+	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction) {
+		this(values, worldToDoubleMapping);
+
+		if (colorEncodingFunction != null)
+			this.colorEncodingFunction = colorEncodingFunction;
+	}
+
+	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		if (values != null)
-			this.values = Collections.unmodifiableCollection(values);
+			this.data = Collections.unmodifiableCollection(values);
 		else
-			this.values = new ArrayList<>();
+			this.data = new ArrayList<>();
 
-		StatisticsSupport statistics = new StatisticsSupport(values);
-		positionEncodingFunction = new PositionEncodingFunction(statistics.getMin(), statistics.getMax(), 0.0, 1.0);
+		this.worldToDoubleMapping = worldToDoubleMapping;
+
+		initializePositionEncodingFunction();
+
+		this.colorEncodingFunction = new ConstantColorEncodingFunction<>(Color.BLACK);
+	}
+
+	protected final void initializePositionEncodingFunction() {
+		List<Double> xValues = new ArrayList<>();
+
+		for (T t : data)
+			xValues.add(getWorldToDoubleMapping().apply(t).doubleValue());
+
+		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
+
+		this.setPositionEncodingFunction(
+				new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d, 1d));
 	}
 
 	@Override
@@ -74,7 +104,7 @@ public abstract class Distribution1DPainter extends ChartPainter
 		if (dynamicAlpha)
 			if (chartRectangle != null)
 				alpha = (float) Math.min(1.0f,
-						Math.max(0.01f, chartRectangle.getWidth() / values.size() / stroke.getLineWidth() * 0.5f));
+						Math.max(0.01f, chartRectangle.getWidth() / data.size() / stroke.getLineWidth() * 0.5f));
 
 		if (!externalPositionEncodingFunction)
 			updatePositionEncoding(rectangle);
@@ -89,19 +119,16 @@ public abstract class Distribution1DPainter extends ChartPainter
 
 		g2.setStroke(stroke);
 
-		if (colorEncodingFunction == null)
-			this.colorEncodingFunction = new ConstantColorEncodingFunction<>(Color.BLACK);
-
-		for (Double v : values)
-			drawValue(g2, v, ColorTools.setAlpha(colorEncodingFunction.apply(v), alpha));
+		for (T t : data)
+			drawValue(g2, t);
 
 		// draw special values
-		for (Entry<Double, ShapeAttributes> entry : specialValues) {
-			Double worldValue = entry.getKey();
+		for (Entry<T, ShapeAttributes> entry : specialValues) {
+			T worldValue = entry.getKey();
 			ShapeAttributes shapeAttributes = entry.getValue();
 			if (shapeAttributes != null) {
 				g2.setStroke(shapeAttributes.getStroke());
-				drawValue(g2, worldValue, ColorTools.setAlpha(shapeAttributes.getColor(), alpha));
+				drawValue(g2, worldValue);
 			}
 		}
 
@@ -109,7 +136,33 @@ public abstract class Distribution1DPainter extends ChartPainter
 		g2.setColor(c);
 	}
 
-	public abstract void drawValue(Graphics2D g2, double worldValue, Paint color);
+	public final void drawValue(Graphics2D g2, T worldData) {
+		Color c = g2.getColor();
+
+		double worldX = getWorldToDoubleMapping().apply(worldData).doubleValue();
+
+		double size = 0.0;
+		if (g2.getStroke() != null) {
+			Stroke stroke = g2.getStroke();
+			if (stroke instanceof BasicStroke)
+				size = ((BasicStroke) stroke).getLineWidth() * 0.5 - 1;
+		}
+
+		if (!Double.isNaN(worldX)) {
+			double screen = getPositionEncodingFunction().apply(worldX);
+
+			Paint colorToPaint = getColorEncodingFunction().apply(worldData);
+			if (colorToPaint == null)
+				colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
+			g2.setPaint(colorToPaint);
+
+			drawLine(g2, screen, size);
+		}
+
+		g2.setColor(c);
+	}
+
+	public abstract void drawLine(Graphics2D g2, Double positionValue, double capSize);
 
 	public boolean isDynamicAlpha() {
 		return dynamicAlpha;
@@ -137,20 +190,22 @@ public abstract class Distribution1DPainter extends ChartPainter
 		this.toolTipping = toolTipping;
 	}
 
-	public void addSpecialValue(Double worldValue, ShapeAttributes shapeAttributes) {
-		this.specialValues.add(new EntryWithComparableKey<Double, ShapeAttributes>(worldValue, shapeAttributes));
+	public void addSpecialValue(T worldValue, ShapeAttributes shapeAttributes) {
+		this.specialValues.add(new AbstractMap.SimpleEntry<T, ShapeAttributes>(worldValue, shapeAttributes));
 	}
 
 	public void clearSpecialValues() {
 		this.specialValues.clear();
 	}
 
-	public Function<? super Double, ? extends Paint> getColorEncodingFunction() {
+	public Function<? super T, ? extends Paint> getColorEncodingFunction() {
 		return colorEncodingFunction;
 	}
 
 	@Override
-	public void setColorEncodingFunction(Function<? super Double, ? extends Paint> colorEncodingFunction) {
+	public void setColorEncodingFunction(Function<? super T, ? extends Paint> colorEncodingFunction) {
+		Objects.requireNonNull(colorEncodingFunction);
+
 		this.colorEncodingFunction = colorEncodingFunction;
 	}
 
@@ -161,6 +216,10 @@ public abstract class Distribution1DPainter extends ChartPainter
 	public void setPositionEncodingFunction(IPositionEncodingFunction positionEncodingFunction) {
 		this.positionEncodingFunction = positionEncodingFunction;
 		this.externalPositionEncodingFunction = true;
+	}
+
+	public Function<? super T, Double> getWorldToDoubleMapping() {
+		return worldToDoubleMapping;
 	}
 
 }
