@@ -89,7 +89,9 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	private final Function<? super T, Double> worldPositionMappingY;
 
 	private Function<? super T, Double> sizeEncodingFunction = new ConstantSizeEncodingFunction<>(3);
+
 	private Function<? super T, Boolean> selectedFunction;
+	private boolean drawSelectedLast = true;
 
 	private Function<? super T, String> toolTipMapping;
 
@@ -142,7 +144,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		}
 
 		if (overplottingMitigation)
-			alpha = Math.max(0.05f, Math.min(1.0f, 1.0f / (screenPoints.size() / 3000.0f)));
+			alpha = Math.max(0.05f, Math.min(1.0f, (screenPoints.size() / 5000.0f)));
 	}
 
 	@Override
@@ -157,6 +159,16 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		double pointSize = this.pointSize;
 
 		for (int i = 0; i < data.size(); i++) {
+			boolean selected = false;
+			if (selectedFunction != null) {
+				Boolean apply = selectedFunction.apply(data.get(i));
+				if (apply != null)
+					selected = apply.booleanValue();
+			}
+
+			if (drawSelectedLast && selected)
+				continue;
+
 			Point2D point = screenPoints.get(i);
 			if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
 				continue;
@@ -171,15 +183,37 @@ public class ScatterPlotPainter<T> extends ChartPainter
 			if (Double.isNaN(pointSize))
 				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
-			boolean selected = false;
-			if (selectedFunction != null) {
-				Boolean apply = selectedFunction.apply(data.get(i));
-				if (apply != null)
-					selected = apply.booleanValue();
-			}
-
 			drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
 		}
+
+		if (drawSelectedLast) // second loop
+			for (int i = 0; i < data.size(); i++) {
+				boolean selected = false;
+				if (selectedFunction != null) {
+					Boolean apply = selectedFunction.apply(data.get(i));
+					if (apply != null)
+						selected = apply.booleanValue();
+				}
+
+				if (!selected)
+					continue;
+
+				Point2D point = screenPoints.get(i);
+				if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
+					continue;
+
+				Paint colorToPaint = colorMapping.apply(data.get(i));
+				if (colorToPaint == null)
+					colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
+
+				// new concept with the size-encoding
+				if (Double.isNaN(pointSize))
+					pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
+				if (Double.isNaN(pointSize))
+					pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+
+				drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
+			}
 
 		g2.setColor(c);
 	}
@@ -294,12 +328,32 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		return stringPainter;
 	}
 
+	public boolean isAlphaAdjustment() {
+		return overplottingMitigation;
+	}
+
+	public void setAlphaAdjustment(boolean dynamicAlphaAdjustment) {
+		this.overplottingMitigation = dynamicAlphaAdjustment;
+
+		refreshDataPoints();
+	}
+
+	/**
+	 * @deprecated renamed. use isAlphaAdjustment instead
+	 * @return
+	 */
 	public boolean isDynamicAlphaAdjustment() {
 		return overplottingMitigation;
 	}
 
+	/**
+	 * @deprecated renamed. use setAlphaAdjustment instead
+	 * @param dynamicAlphaAdjustment
+	 */
 	public void setDynamicAlphaAdjustment(boolean dynamicAlphaAdjustment) {
 		this.overplottingMitigation = dynamicAlphaAdjustment;
+
+		refreshDataPoints();
 	}
 
 	public double getPointSize() {
@@ -413,6 +467,14 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	public void setToolTipMapping(Function<? super T, String> toolTipMapping) {
 		this.toolTipMapping = toolTipMapping;
+	}
+
+	public boolean isDrawSelectedLast() {
+		return drawSelectedLast;
+	}
+
+	public void setDrawSelectedLast(boolean drawSelectedLast) {
+		this.drawSelectedLast = drawSelectedLast;
 	}
 
 }
