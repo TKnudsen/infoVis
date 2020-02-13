@@ -208,4 +208,12 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 		this.scatterPlotPainter.setAlphaAdjustment(dynamicAlphaAdjustment);
 	}
 
+	public Paint getSelectionPaint() {
+		return this.scatterPlotPainter.getSelectionPaint();
+	}
+
+	public void setSelectionPaint(Paint selectionPaint) {
+		this.scatterPlotPainter.setSelectionPaint(selectionPaint);
+	}
+
 }

@@ -92,6 +92,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	private Function<? super T, Boolean> selectedFunction;
 	private boolean drawSelectedLast = true;
+	private Paint selectionPaint = Color.BLACK;
 
 	private Function<? super T, String> toolTipMapping;
 
@@ -222,7 +223,8 @@ public class ScatterPlotPainter<T> extends ChartPainter
 			boolean selected) {
 
 		if (selected) {
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.66, Color.BLACK, true);
+			double pointSizeBig = Math.max(pointSize * 2.0, pointSize + 1);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSizeBig, selectionPaint, true);
 			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
 		} else
 			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
@@ -475,6 +477,14 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	public void setDrawSelectedLast(boolean drawSelectedLast) {
 		this.drawSelectedLast = drawSelectedLast;
+	}
+
+	public Paint getSelectionPaint() {
+		return selectionPaint;
+	}
+
+	public void setSelectionPaint(Paint selectionPaint) {
+		this.selectionPaint = selectionPaint;
 	}
 
 }

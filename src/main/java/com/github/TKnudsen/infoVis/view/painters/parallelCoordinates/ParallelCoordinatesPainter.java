@@ -90,6 +90,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 	private Function<? super T, Double> sizeEncodingFunction = new ConstantSizeEncodingFunction<>(3);
 	private Function<? super T, Boolean> selectedFunction;
+	private Paint selectionPaint = Color.BLACK;
 
 	public ParallelCoordinatesPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			List<Function<? super T, Double>> worldPositionMappingsY) {
@@ -222,13 +223,13 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 				if (lastPoint != null) {
 					DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
 							new BasicStroke((float) (pointSize + 2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
-							Color.BLACK);
+							selectionPaint);
 					DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
 							new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 				}
 
 				// point
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.66, Color.BLACK, true);
+				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.66, selectionPaint, true);
 				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
 			} else {
 				// line
@@ -468,6 +469,14 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	public void setYPositionEncodingFunctions(List<IPositionEncodingFunction> yPositionEncodingFunctions) {
 		this.yPositionEncodingFunctions = yPositionEncodingFunctions;
 		this.externalYPositionEncodingFunctions = true;
+	}
+
+	public Paint getSelectionPaint() {
+		return selectionPaint;
+	}
+
+	public void setSelectionPaint(Paint selectionPaint) {
+		this.selectionPaint = selectionPaint;
 	}
 
 }

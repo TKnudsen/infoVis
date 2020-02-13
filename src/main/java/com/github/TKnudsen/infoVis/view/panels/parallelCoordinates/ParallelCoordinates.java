@@ -174,4 +174,12 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		this.parallelCoordinatesPainter.setColorEncodingFunction(colorEncodingFunction);
 	}
 
+	public Paint getSelectionPaint() {
+		return this.parallelCoordinatesPainter.getSelectionPaint();
+	}
+
+	public void setSelectionPaint(Paint selectionPaint) {
+		this.parallelCoordinatesPainter.setSelectionPaint(selectionPaint);
+	}
+
 }
