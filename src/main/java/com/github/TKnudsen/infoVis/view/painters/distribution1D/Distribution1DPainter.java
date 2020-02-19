@@ -145,7 +145,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		if (g2.getStroke() != null) {
 			Stroke stroke = g2.getStroke();
 			if (stroke instanceof BasicStroke)
-				size = ((BasicStroke) stroke).getLineWidth() * 0.5 - 1;
+				size = Math.max(1.0, ((BasicStroke) stroke).getLineWidth() * 0.5 - 1);
 		}
 
 		if (!Double.isNaN(worldX)) {
