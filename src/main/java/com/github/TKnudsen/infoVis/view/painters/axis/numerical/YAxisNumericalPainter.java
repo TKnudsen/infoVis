@@ -80,23 +80,6 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		// draw Y-Axis
 		g2.setColor(color);
 		g2.setStroke(stroke);
-//		if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
-//			if (drawAxisBetweenAxeMarkersOnly)
-//				DisplayTools.drawLine(g2, (int) this.rectangle.getMinX(), markerPositionsWithLabels.get(0).getKey(),
-//						(int) this.rectangle.getMinX(),
-//						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
-//			else
-//				g2.drawLine((int) this.rectangle.getMinX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMinX(),
-//						(int) (rectangle.getMaxY()));
-//		else {
-//			if (drawAxisBetweenAxeMarkersOnly)
-//				DisplayTools.drawLine(g2, (int) this.rectangle.getMaxX(), markerPositionsWithLabels.get(0).getKey(),
-//						(int) this.rectangle.getMaxX(),
-//						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
-//			else
-//				g2.drawLine((int) this.rectangle.getMaxX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMaxX(),
-//						(int) (rectangle.getMaxY()));
-//		}
 		double x = getAxisAlignmentCoordinate();
 
 		if (drawAxisBetweenAxeMarkersOnly)
@@ -105,16 +88,20 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		else
 			DisplayTools.drawLine(g2, x, rectangle.getMinY(), x, rectangle.getMaxY());
 
-		// problem: in some cases long labels intersect the y-axis
-		// define x=Offset
-		double xOffset = 0;
 		double maxStringWidth = 0;
 		for (Entry<Double, String> pair : markerPositionsWithLabels)
 			maxStringWidth = Math.max(maxStringWidth, fm.stringWidth(pair.getValue()));
-		if (axisLineAlignment.equals(AxisLineAlignment.RIGHT))
-			xOffset = 3;
-		else
-			xOffset = Math.max(3, rectangle.getWidth() - maxStringWidth - 3);
+
+		double xAxisOffset = getAxisAlignmentCoordinate();
+		double xAxisTickOffset = 0;
+		if (axisLineAlignment.equals(AxisLineAlignment.LEFT)) {
+			xAxisTickOffset = xAxisOffset;
+		} else if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
+			xAxisTickOffset = xAxisOffset - 0.5 * markerLineWidth;
+		} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT)) {
+			xAxisTickOffset = xAxisOffset - markerLineWidth;
+		} else
+			xAxisTickOffset = 0;
 
 		// draw markers
 		for (Entry<Double, String> pair : markerPositionsWithLabels) {
@@ -122,30 +109,33 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			// invert points for the y-axis
 			double yValue = pair.getKey();
 
-			double artificialYOffset = 0;
-			if (yValue < rectangle.getMinY() - 15)
-				artificialYOffset = getMarkerDistanceInPixels() * 0.28;
-
-			g2.setColor(color);
-			if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
-				g2.drawLine((int) (rectangle.getMinX() + markerLineWidth), (int) (yValue + 0.0),
-						(int) rectangle.getMinX(), (int) (yValue + 0.0));
-			else
-				g2.drawLine((int) (rectangle.getMaxX() - markerLineWidth), (int) (yValue + 0.0),
-						(int) rectangle.getMaxX(), (int) (yValue + 0.0));
+			// draw ticks
+			g2.drawLine((int) (xAxisTickOffset), (int) (yValue), (int) (xAxisTickOffset + markerLineWidth),
+					(int) (yValue));
 
 			if (drawLabels) {
+				double x0 = rectangle.getX() + markerLineWidth + 2;
+				double y0 = (pair.equals(markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1)))
+						? pair.getKey() - 3
+						: pair.getKey() - fm.getHeight() * 0.55;
+				double w = rectangle.getWidth() - markerLineWidth;
+				double h = fm.getHeight();
+				if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
+					x0 = rectangle.getX();
+					w = rectangle.getWidth() * 0.5 - 2;
+				} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT))
+					x0 -= 2;
+
 				StringPainter sp = new StringPainter(pair.getValue());
-				if (pair.equals(markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1)))
-					sp.setRectangle(new Rectangle2D.Double(rectangle.getX() + markerLineWidth, pair.getKey(),
-							rectangle.getWidth() - 2 * markerLineWidth, fm.getHeight()));
-				else
-					sp.setRectangle(new Rectangle2D.Double(rectangle.getX() + markerLineWidth,
-							pair.getKey() - fm.getHeight() * 0.5, rectangle.getWidth() - markerLineWidth, // 2 *
-																											// markerLineWidth
-							fm.getHeight()));
+				sp.setRectangle(new Rectangle2D.Double(x0, y0, w, h));
+
 				sp.setBackgroundPaint(null);
-				sp.setHorizontalStringAlignment(HorizontalStringAlignment.CENTER);
+				if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
+					sp.setHorizontalStringAlignment(HorizontalStringAlignment.LEFT);
+				else if (axisLineAlignment.equals(AxisLineAlignment.CENTER))
+					sp.setHorizontalStringAlignment(HorizontalStringAlignment.RIGHT);
+				else
+					sp.setHorizontalStringAlignment(HorizontalStringAlignment.RIGHT);
 				sp.setVerticalStringAlignment(VerticalStringAlignment.CENTER);
 				sp.setFont(font);
 				sp.setFontColor(fontColor);

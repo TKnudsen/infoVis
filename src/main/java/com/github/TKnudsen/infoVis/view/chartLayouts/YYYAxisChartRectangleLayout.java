@@ -34,6 +34,7 @@ public class YYYAxisChartRectangleLayout extends ChartRectangleLayout {
 	private FixedPositionEncodingFunction axesPositionEncodingFunction;
 
 	private int spacingBetweenAxes = 0;
+	private Double relativeSpaceBetweenAxes = null;
 
 	public YYYAxisChartRectangleLayout() {
 		this(0);
@@ -81,6 +82,10 @@ public class YYYAxisChartRectangleLayout extends ChartRectangleLayout {
 
 		if (axisSizeCharacteristics.size() == 0)
 			return;
+
+		int spacingBetweenAxes = this.spacingBetweenAxes;
+		if (relativeSpaceBetweenAxes != null && !Double.isNaN(relativeSpaceBetweenAxes))
+			spacingBetweenAxes = (int) (rectangle.getWidth() * relativeSpaceBetweenAxes);
 
 		Rectangle2D[][] createRectangleMatrix = Rectangle2DTools.createRectangleMatrix(chartRectangle,
 				axisSizeCharacteristics.size(), 1, spacingBetweenAxes);
@@ -172,6 +177,14 @@ public class YYYAxisChartRectangleLayout extends ChartRectangleLayout {
 			refreshAxesPositionEncodingFunction();
 
 		return axesPositionEncodingFunction;
+	}
+
+	public Double getRelativeSpaceBetweenAxes() {
+		return relativeSpaceBetweenAxes;
+	}
+
+	public void setRelativeSpaceBetweenAxes(Double relativeSpaceBetweenAxes) {
+		this.relativeSpaceBetweenAxes = relativeSpaceBetweenAxes;
 	}
 
 }

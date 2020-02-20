@@ -114,12 +114,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 		Rectangle2D rect = ComponentTools.getCompontentDrawableRectangle(this);
 
-		// // background
-		// if (rect != null) {
-		// g2.setColor(backgroundColor);
-		// g2.fill(rect);
-		// }
-
 		drawChart(g2);
 
 		if (rect != null && outlineColor != null) {

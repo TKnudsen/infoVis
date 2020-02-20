@@ -107,13 +107,13 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	private void initializePositionEncodingFunctions() {
 		this.yPositionEncodingFunctions = new ArrayList<>();
 
-		List<Double> xValues = new ArrayList<>();
+//		List<Double> xValues = new ArrayList<>();
 		for (int i = 0; i < worldPositionMappingsY.size(); i++) {
 			Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(i);
 
 			List<Double> yValues = new ArrayList<>();
 			for (T t : data) {
-				xValues.add((double) i);
+//				xValues.add((double) i);
 				yValues.add(worldPositionMappingY.apply(t).doubleValue());
 			}
 
@@ -123,10 +123,9 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 					.add(new PositionEncodingFunction(yStatistics.getMin(), yStatistics.getMax(), 0d, 1d, true));
 		}
 
-		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
+//		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
 
-		this.xPositionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d,
-				1d);
+		this.xPositionEncodingFunction = new PositionEncodingFunction(0, worldPositionMappingsY.size() - 1, 0d, 1d);
 	}
 
 	protected void refreshDataPoints() {
@@ -142,16 +141,16 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 			Point2D[] points = new Point2D[worldPositionMappingsY.size()];
 
-			for (int y = 0; y < worldPositionMappingsY.size(); y++) {
-				Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(y);
+			for (int x = 0; x < worldPositionMappingsY.size(); x++) {
+				Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(x);
 
-				double worldX = y;
+				double worldX = x;
 				double worldY = worldPositionMappingY.apply(t).doubleValue();
 				double xP = xPositionEncodingFunction.apply(worldX);
-				double yP = yPositionEncodingFunctions.get(y).apply(worldY);
+				double yP = yPositionEncodingFunctions.get(x).apply(worldY);
 
 				Point2D point = new Point2D.Double(xP, yP);
-				points[y] = point;
+				points[x] = point;
 			}
 
 			screenPoints.add(points);
