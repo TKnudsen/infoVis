@@ -104,6 +104,8 @@ public class BoxPlotVerticalMultiplesChartPanel extends YAxisNumericalChartPanel
 
 			BoxPlotVerticalPainter painter = new BoxPlotVerticalPainter(dataStatistics);
 			painter.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
+			painter.setBackgroundPaint(null);
+			painter.setPaint(colors.get(i));
 
 			painters[i][0] = painter;
 		}
