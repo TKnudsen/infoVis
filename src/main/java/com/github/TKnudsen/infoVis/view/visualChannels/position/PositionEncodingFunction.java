@@ -115,6 +115,8 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 					"PositionEncodingFunction: inverse logarithmic scaling function is incorrect. I assume that the special treatment of values <1 causes this problem.");
 			scale = MathFunctions.logarithmicScale(minPixel, maxPixel, visual, false);
 		}
+		if (flipAxisValues)
+			scale = 1.0 - scale;
 		return minValue.doubleValue() + (maxValue.doubleValue() - minValue.doubleValue()) * scale;
 	}
 
