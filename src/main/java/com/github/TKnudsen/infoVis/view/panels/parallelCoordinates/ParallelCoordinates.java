@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.chartLayouts.YYYAxisChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -69,6 +70,10 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 			throw new IllegalArgumentException("ParallelCoordinates: at least one worldPositionMappingsY is needed");
 		this.worldPositionMappingsY = worldPositionMappingsY;
 
+		// add spacing to chartlayout to acchieve a better chart alignment
+		YYYAxisChartRectangleLayout layout = (YYYAxisChartRectangleLayout) getChartRectangleLayout();
+		layout.setRelativeSpaceBetweenAxes(relativeSpacing(this.worldPositionMappingsY.size()));
+
 		initializeYAxisPainters();
 
 		initializePainter();
@@ -76,6 +81,10 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		addChartPainter(parallelCoordinatesPainter, true);
 
 		setBackgroundColor(null);
+	}
+
+	private static double relativeSpacing(int yAxes) {
+		return Math.min(0.4, Math.max(0, -0.0375 * yAxes + 0.375));
 	}
 
 	@Override
