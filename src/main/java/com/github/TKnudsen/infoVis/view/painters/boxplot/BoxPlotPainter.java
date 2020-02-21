@@ -44,11 +44,11 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	private boolean drawOutliers = true;
 
 	// little helpers
-	protected double lowerQuartile;
-	protected double upperQuartile;
-	protected double med;
-	protected double lowerWhisker;
-	protected double upperWhisker;
+	protected double lowerQuartileScreen;
+	protected double upperQuartileScreen;
+	protected double medScreen;
+	protected double lowerWhiskerScreen;
+	protected double upperWhiskerScreen;
 	protected double[] outlierScreenCoordinates;
 
 	protected Rectangle2D quartilesRectangle;
@@ -131,11 +131,11 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 		if (chartRectangle == null)
 			return;
 
-		med = positionEncodingFunction.apply(dataStatistics.getMedian());
-		lowerQuartile = positionEncodingFunction.apply(dataStatistics.getPercentile(25));
-		upperQuartile = positionEncodingFunction.apply(dataStatistics.getPercentile(75));
-		lowerWhisker = positionEncodingFunction.apply(dataStatistics.getPercentile(outlierPercentile));
-		upperWhisker = positionEncodingFunction.apply(dataStatistics.getPercentile(100 - outlierPercentile));
+		medScreen = positionEncodingFunction.apply(dataStatistics.getMedian());
+		lowerQuartileScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(25));
+		upperQuartileScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(75));
+		lowerWhiskerScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(outlierPercentile));
+		upperWhiskerScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(100 - outlierPercentile));
 
 		if (isDrawOutliers()) {
 			if (outlierValues == null)
@@ -188,11 +188,11 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	}
 
 	private void drawLowerWhisker(Graphics2D g2) {
-		drawLevel(g2, lowerWhisker, getPaint());
+		drawLevel(g2, lowerWhiskerScreen, getPaint());
 	}
 
 	private void drawUpperWhisker(Graphics2D g2) {
-		drawLevel(g2, upperWhisker, getPaint());
+		drawLevel(g2, upperWhiskerScreen, getPaint());
 	}
 
 	protected abstract void drawDashedConnectors(Graphics2D g2);

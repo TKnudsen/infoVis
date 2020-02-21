@@ -95,7 +95,14 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	}
 
 	public void addChartPainter(ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
-		addChartPainter(chartPainter);
+		addChartPainter(getChartPainters().size(), chartPainter, registerXAsis, registerYAsis);
+	}
+
+	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
+		super.addChartPainter(index, chartPainter);
+
+		System.err.println(
+				"XCatYNumericalChartPanel.addChartPainter: warning - registering xAxis (categorical) not supported yet - categorical position encoding needed first");
 
 		if (chartPainter != null) {
 			if (registerYAsis) {

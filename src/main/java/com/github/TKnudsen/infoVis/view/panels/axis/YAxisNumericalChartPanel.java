@@ -87,7 +87,11 @@ public abstract class YAxisNumericalChartPanel<Y extends Number> extends InfoVis
 	}
 
 	public void addChartPainter(ChartPainter chartPainter, boolean registerYAsis) {
-		addChartPainter(chartPainter);
+		addChartPainter(getChartPainters().size(), chartPainter, registerYAsis);
+	}
+
+	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerYAsis) {
+		super.addChartPainter(index, chartPainter);
 
 		if (registerYAsis) {
 			if (chartPainter instanceof IYPositionEncoding)

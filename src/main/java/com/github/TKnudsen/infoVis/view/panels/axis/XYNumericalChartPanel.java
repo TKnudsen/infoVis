@@ -100,7 +100,11 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	}
 
 	public void addChartPainter(ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
-		super.addChartPainter(chartPainter);
+		addChartPainter(getChartPainters().size(), chartPainter, registerXAsis, registerYAsis);
+	}
+
+	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
+		super.addChartPainter(index, chartPainter);
 
 		if (registerXAsis) {
 			if (chartPainter instanceof IXPositionEncoding)

@@ -68,7 +68,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 			g2.setStroke(new BasicStroke(stokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 		}
 
-		drawLevel(g2, med, getPaint());
+		drawLevel(g2, medScreen, getPaint());
 
 		g2.setStroke(s);
 	}
@@ -81,9 +81,9 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 		g2.setStroke(dashedstroke);
 
 		if (chartRectangle != null) {
-			DisplayTools.drawLine(g2, lowerWhisker, chartRectangle.getCenterY(), lowerQuartile,
+			DisplayTools.drawLine(g2, lowerWhiskerScreen, chartRectangle.getCenterY(), lowerQuartileScreen,
 					chartRectangle.getCenterY());
-			DisplayTools.drawLine(g2, upperQuartile, chartRectangle.getCenterY(), upperWhisker,
+			DisplayTools.drawLine(g2, upperQuartileScreen, chartRectangle.getCenterY(), upperWhiskerScreen,
 					chartRectangle.getCenterY());
 		}
 
@@ -130,8 +130,8 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 			return;
 
 		// this is different to the vertical painter
-		quartilesRectangle = new Rectangle2D.Double(Math.min(upperQuartile, lowerQuartile), chartRectangle.getMinY(),
-				Math.abs(upperQuartile - lowerQuartile), chartRectangle.getHeight());
+		quartilesRectangle = new Rectangle2D.Double(Math.min(upperQuartileScreen, lowerQuartileScreen), chartRectangle.getMinY(),
+				Math.abs(upperQuartileScreen - lowerQuartileScreen), chartRectangle.getHeight());
 	}
 
 	@Override
