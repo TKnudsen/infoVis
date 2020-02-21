@@ -72,13 +72,17 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 		if (rectangle == null)
 			return null;
 
-		Number v1 = getPositionEncodingFunction().inverseMapping(rectangle.getMinY());
-		Number v2 = getPositionEncodingFunction().inverseMapping(rectangle.getMaxY());
+		// y axis is inverted. switching min and max
+		Number worldMax = getPositionEncodingFunction().inverseMapping(rectangle.getMinY());
+		Number worldMin = getPositionEncodingFunction().inverseMapping(rectangle.getMaxY());
 
 		List<T> elements = new ArrayList<>();
 		for (T t : data) {
-			Double d = getWorldToDoubleMapping().apply(t);
-			if (d >= v1.doubleValue() && d <= v2.doubleValue())
+			double world = getWorldToDoubleMapping().apply(t);
+
+			System.out.println(world);
+
+			if (world >= worldMin.doubleValue() && world <= worldMax.doubleValue())
 				elements.add(t);
 		}
 
