@@ -195,12 +195,28 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	}
 
 	public void addChartPainter(ChartPainter chartPainter) {
+		addChartPainter(getChartPainters().size(), chartPainter);
+	}
+
+	/**
+	 * Inserts the specified ChartPainter at the specified position in this list
+	 * (optional operation). Shifts the element currently at that position (if any)
+	 * and any subsequent elements to the right (adds one to their indices).
+	 * 
+	 * Helps to manage layers of Chartpainters.
+	 * 
+	 * Works like the add (int , E) method of the List interface.
+	 * 
+	 * @param index
+	 * @param chartPainter
+	 */
+	public void addChartPainter(int index, ChartPainter chartPainter) {
 		Objects.requireNonNull(chartPainter, "The ChartPainter may not be null");
 
 		// because it is not guaranteed that updateBounds will be triggered implicitly
 		chartPainter.setRectangle(chartRectangleLayout.getChartRectangle());
 
-		this.chartPainters.add(chartPainter);
+		this.chartPainters.add(index, chartPainter);
 	}
 
 	public void removeChartPainters() {

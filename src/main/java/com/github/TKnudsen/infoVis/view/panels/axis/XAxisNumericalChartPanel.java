@@ -87,7 +87,11 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 	}
 
 	public void addChartPainter(ChartPainter chartPainter, boolean registerXAsis) {
-		addChartPainter(chartPainter);
+		addChartPainter(getChartPainters().size(), chartPainter, registerXAsis);
+	}
+
+	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerXAsis) {
+		super.addChartPainter(index, chartPainter);
 
 		if (registerXAsis) {
 			if (chartPainter instanceof IXPositionEncoding)

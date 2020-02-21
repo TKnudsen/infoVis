@@ -68,7 +68,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 			g2.setStroke(new BasicStroke(stokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 		}
 
-		drawLevel(g2, med, getPaint());
+		drawLevel(g2, medScreen, getPaint());
 
 		g2.setStroke(s);
 	}
@@ -83,10 +83,10 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		Stroke s = g2.getStroke();
 		g2.setStroke(dashedstroke);
 
-		DisplayTools.drawLine(g2, chartRectangle.getCenterX(), lowerWhisker, chartRectangle.getCenterX(),
-				lowerQuartile);
-		DisplayTools.drawLine(g2, chartRectangle.getCenterX(), upperQuartile, chartRectangle.getCenterX(),
-				upperWhisker);
+		DisplayTools.drawLine(g2, chartRectangle.getCenterX(), lowerWhiskerScreen, chartRectangle.getCenterX(),
+				lowerQuartileScreen);
+		DisplayTools.drawLine(g2, chartRectangle.getCenterX(), upperQuartileScreen, chartRectangle.getCenterX(),
+				upperWhiskerScreen);
 
 		g2.setStroke(s);
 		g2.setColor(c);
@@ -129,8 +129,8 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		if (chartRectangle == null)
 			return;
 
-		quartilesRectangle = new Rectangle2D.Double(chartRectangle.getMinX(), Math.min(upperQuartile, lowerQuartile),
-				chartRectangle.getWidth(), Math.abs(upperQuartile - lowerQuartile));
+		quartilesRectangle = new Rectangle2D.Double(chartRectangle.getMinX(), Math.min(upperQuartileScreen, lowerQuartileScreen),
+				chartRectangle.getWidth(), Math.abs(upperQuartileScreen - lowerQuartileScreen));
 	}
 
 	@Override

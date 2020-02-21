@@ -96,7 +96,11 @@ public abstract class YYYNumericalChartPanel<Y extends Number> extends InfoVisCh
 	}
 
 	public void addChartPainter(ChartPainter chartPainter, boolean registerAxesPositionEncoding) {
-		super.addChartPainter(chartPainter);
+		addChartPainter(getChartPainters().size(), chartPainter, registerAxesPositionEncoding);
+	}
+
+	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerAxesPositionEncoding) {
+		super.addChartPainter(index, chartPainter);
 
 		if (registerAxesPositionEncoding) {
 			if (chartPainter instanceof IXPositionEncoding)
