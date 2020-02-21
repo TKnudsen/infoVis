@@ -80,8 +80,6 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 		for (T t : data) {
 			double world = getWorldToDoubleMapping().apply(t);
 
-			System.out.println(world);
-
 			if (world >= worldMin.doubleValue() && world <= worldMax.doubleValue())
 				elements.add(t);
 		}
