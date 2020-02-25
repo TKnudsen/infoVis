@@ -231,6 +231,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 		return flipAxisValues;
 	}
 
+	@Override
 	public void setFlipAxisValues(boolean flipAxisValues) {
 		this.flipAxisValues = flipAxisValues;
 	}
