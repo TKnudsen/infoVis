@@ -52,7 +52,7 @@ public class Distribution1DHorizontalPanelTester {
 		Distribution1DHorizontalPanel<Double> panel = Distribution1DHorizontalPanels.createForDoubles(values,
 				Color.BLACK,
 				-0.5, 3.3);
-
+		
 		// special values, such as clusters
 		// color is masked by the new colorMappingFunction.
 		panel.addSpecialValue(0.33, new ShapeAttributes(Color.GREEN, DisplayTools.thickDashedStroke));
