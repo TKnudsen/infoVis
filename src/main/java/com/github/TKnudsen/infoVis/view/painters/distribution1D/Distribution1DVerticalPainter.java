@@ -72,9 +72,15 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 		if (rectangle == null)
 			return null;
 
-		// y axis is inverted. switching min and max
-		Number worldMax = getPositionEncodingFunction().inverseMapping(rectangle.getMinY());
-		Number worldMin = getPositionEncodingFunction().inverseMapping(rectangle.getMaxY());
+		Number worldMin = getPositionEncodingFunction().inverseMapping(rectangle.getMinY());
+		Number worldMax = getPositionEncodingFunction().inverseMapping(rectangle.getMaxY());
+
+		// y axis is inverted? switch min and max
+		if (getPositionEncodingFunction().isFlipAxisValues()) {
+			Number n = worldMax;
+			worldMax = worldMin;
+			worldMin = n;
+		}
 
 		List<T> elements = new ArrayList<>();
 		for (T t : data) {
