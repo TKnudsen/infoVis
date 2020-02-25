@@ -140,7 +140,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 					"PositionEncodingFunction: inverse logarithmic scaling function is incorrect. I assume that the special treatment of values <1 causes this problem.");
 			scale = MathFunctions.logarithmicScale(minPixel, maxPixel, visual, false);
 		}
-		
+
 		if (flipAxisValues)
 			scale = 1.0 - scale;
 		return minValue.doubleValue() + (maxValue.doubleValue() - minValue.doubleValue()) * scale;
@@ -227,6 +227,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 		this.maxPixel = maxPixel;
 	}
 
+	@Override
 	public boolean isFlipAxisValues() {
 		return flipAxisValues;
 	}

@@ -201,6 +201,7 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 		this.maxPixel = maxPixel;
 	}
 
+	@Override
 	public boolean isFlipAxisValues() {
 		return flipAxisValues;
 	}

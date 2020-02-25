@@ -92,6 +92,8 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 */
 	public void setLogarithmicScale(boolean logarithmicScale);
 
+	public boolean isFlipAxisValues();
+
 	/**
 	 * allows flipping the axis in the visual space
 	 * 
