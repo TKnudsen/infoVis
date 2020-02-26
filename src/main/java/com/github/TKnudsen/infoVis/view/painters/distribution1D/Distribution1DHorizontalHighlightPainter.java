@@ -34,6 +34,11 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 	private float highlightLineStroke = 3.0f;
 
 	/**
+	 * length of triangle can also be set externally
+	 */
+	private double sizeOfTriangle = Double.NaN;
+
+	/**
 	 * forgot what this was good for
 	 */
 	private boolean highlightsAtTheUpperBound = true;
@@ -92,7 +97,8 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 		Double worldValue = getWorldToDoubleMapping().apply(worldData);
 		double xCord = getPositionEncodingFunction().apply(worldValue);
 
-		double height = chartRectangle.getHeight() * getRelativeHighlightHeight();
+		double height = (Double.isNaN(sizeOfTriangle)) ? chartRectangle.getHeight() * getRelativeHighlightHeight()
+				: sizeOfTriangle;
 
 		Path2D path = new Path2D.Double();
 
@@ -150,6 +156,13 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 
 	public void setFillHighlights(boolean fillHighlights) {
 		this.fillHighlights = fillHighlights;
+	}
+
+	public void setSizeOfTriangle(double sizeOfTriangle) {
+		if (sizeOfTriangle < 0)
+			System.err.println(getClass().getSimpleName() + "setSizeOfTriangle: size was negative (" + sizeOfTriangle
+					+ ") set to 0");
+		this.sizeOfTriangle = Math.max(0, sizeOfTriangle);
 	}
 
 }
