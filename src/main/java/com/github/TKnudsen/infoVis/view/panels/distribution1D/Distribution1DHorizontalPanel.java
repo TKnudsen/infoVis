@@ -126,4 +126,12 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 		this.distribution1DHorizontalPainter.setDynamicAlpha(dynamicAlpha);
 	}
 
+	public float getAlpha() {
+		return distribution1DHorizontalPainter.getAlpha();
+	}
+
+	public void setAlpha(float alpha) {
+		this.distribution1DHorizontalPainter.setAlpha(alpha);
+	}
+
 }

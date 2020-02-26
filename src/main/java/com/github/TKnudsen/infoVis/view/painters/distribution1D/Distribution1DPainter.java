@@ -51,6 +51,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	private boolean dynamicAlpha = true;
 	protected float alpha = 1.0f;
+	protected float externalAlpha = Float.NaN;
 	private boolean toolTipping = true;
 
 	/**
@@ -119,8 +120,11 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 		g2.setStroke(stroke);
 
-		for (T t : data)
-			drawValue(g2, t);
+		for (T t : data) {
+			Paint color = getColorEncodingFunction().apply(t);
+			color = ColorTools.setAlpha(color, alpha);
+			drawValue(g2, t, color);
+		}
 
 		// draw special values
 		for (Entry<T, ShapeAttributes> entry : specialValues) {
@@ -128,7 +132,10 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 			ShapeAttributes shapeAttributes = entry.getValue();
 			if (shapeAttributes != null) {
 				g2.setStroke(shapeAttributes.getStroke());
-				drawValue(g2, worldValue);
+				// Paint color = shapeAttributes.getColor(); //does this really look better?
+				Paint color = getColorEncodingFunction().apply(worldValue);
+				color = ColorTools.setAlpha(color, alpha);
+				drawValue(g2, worldValue, color);
 			}
 		}
 
@@ -136,7 +143,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		g2.setColor(c);
 	}
 
-	public final void drawValue(Graphics2D g2, T worldData) {
+	public final void drawValue(Graphics2D g2, T worldData, Paint paint) {
 		Color c = g2.getColor();
 
 		double worldX = getWorldToDoubleMapping().apply(worldData).doubleValue();
@@ -151,10 +158,9 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		if (!Double.isNaN(worldX)) {
 			double screen = getPositionEncodingFunction().apply(worldX);
 
-			Paint colorToPaint = getColorEncodingFunction().apply(worldData);
-			if (colorToPaint == null)
-				colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
-			g2.setPaint(colorToPaint);
+			if (paint == null)
+				paint = ColorTools.setAlpha(getPaint(), alpha);
+			g2.setPaint(paint);
 
 			drawLine(g2, screen, size);
 		}
@@ -178,6 +184,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
+		this.dynamicAlpha = false;
 	}
 
 	@Override

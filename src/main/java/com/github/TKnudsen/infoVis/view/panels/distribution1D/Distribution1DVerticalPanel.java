@@ -114,4 +114,16 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	public List<T> getElementsInRectangle(RectangularShape rectangle) {
 		return distribution1DVerticalPainter.getElementsInRectangle(rectangle);
 	}
+
+	public float getAlpha() {
+		return distribution1DVerticalPainter.getAlpha();
+	}
+
+	public void setAlpha(float alpha) {
+		this.distribution1DVerticalPainter.setAlpha(alpha);
+	}
+
+	public void setTriangleSize(double triangleSize) {
+		this.distribution1DVerticalPainter.setTriangleSize(triangleSize);
+	}
 }
