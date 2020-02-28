@@ -15,6 +15,7 @@ import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainters;
 import com.github.TKnudsen.infoVis.view.painters.parallelCoordinates.ParallelCoordinatesPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.YYYNumericalChartPanel;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
@@ -92,26 +93,9 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		List<YAxisNumericalPainter<Double>> yAxisPainters = new ArrayList<>();
 
 		for (int i = 0; i < worldPositionMappingsY.size(); i++) {
-			Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(i);
-
-			double minY = Double.POSITIVE_INFINITY;
-			double maxY = Double.NEGATIVE_INFINITY;
-
-			if (data != null) {
-				for (T t : data) {
-
-					// double x = worldPositionMappingX.apply(t);
-					double y = worldPositionMappingY.apply(t);
-
-					minY = Math.min(minY, y);
-					maxY = Math.max(maxY, y);
-				}
-			}
-
-			YAxisNumericalPainter<Double> yAxisNumericalPainter = new YAxisNumericalPainter<Double>(minY, maxY);
-			yAxisNumericalPainter.setPhysicalUnit(worldPositionMappingY.toString());
-			yAxisNumericalPainter.setDrawPhysicalUnit(isDrawAxesNames());
-			yAxisPainters.add(yAxisNumericalPainter);
+			YAxisNumericalPainter<Double> yAxis = YAxisNumericalPainters.create(data, worldPositionMappingsY.get(i));
+			yAxis.setDrawPhysicalUnit(isDrawAxesNames());
+			yAxisPainters.add(yAxis);
 		}
 
 		setyAxisPainters(yAxisPainters);
