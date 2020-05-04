@@ -2,6 +2,18 @@ package com.github.TKnudsen.infoVis.view.painters.axis.numerical;
 
 import java.util.function.Function;
 
+/**
+ * <p>
+ * InfoVis
+ * </p>
+ * 
+ * <p>
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * </p>
+ * 
+ * @author Juergen Bernard
+ * @version 1.01
+ */
 public class YAxisNumericalPainters {
 
 	public static <T> YAxisNumericalPainter<Double> create(Iterable<T> data,
@@ -16,11 +28,11 @@ public class YAxisNumericalPainters {
 				double y = worldPositionMappingY.apply(t);
 
 				if (Double.isNaN(y))
-					throw new IllegalArgumentException(
-							"YAxisNumericalPainters.create: world position mapping was NaN for" + t);
-
-				minY = Math.min(minY, y);
-				maxY = Math.max(maxY, y);
+					System.err.println("YAxisNumericalPainters.create: world position mapping was NaN for" + t);
+				else {
+					minY = Math.min(minY, y);
+					maxY = Math.max(maxY, y);
+				}
 			}
 		}
 

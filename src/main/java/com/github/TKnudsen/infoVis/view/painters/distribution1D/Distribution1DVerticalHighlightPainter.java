@@ -26,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.05
+ * @version 2.06
  */
 public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVerticalPainter<T> {
 
@@ -36,7 +36,7 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 	/**
 	 * length of triangle can also be set externally
 	 */
-	private double sizeOfTriangle = Double.NaN;
+	private double sizeOfTriangle = 7.0f;
 
 	/**
 	 * forgot what this was good for

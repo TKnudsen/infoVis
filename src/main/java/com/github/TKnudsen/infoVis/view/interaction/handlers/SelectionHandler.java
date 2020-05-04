@@ -79,7 +79,7 @@ public class SelectionHandler<T> extends InteractionHandler {
 				if (acceptMouseButton(e)) {
 					Rectangle2D selectionRectangle = getSelectionRectangle();
 					if (selectionRectangle != null) {
-						handleRectangleSelection(selectionRectangle, e.isControlDown());
+						handleRectangleSelection(selectionRectangle, e.isControlDown(), e.isShiftDown());
 					}
 
 					pointSelectionStart = null;
@@ -99,7 +99,7 @@ public class SelectionHandler<T> extends InteractionHandler {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (acceptMouseButton(e)) {
-					handleClickSelection(e.getPoint(), e.isControlDown());
+					handleClickSelection(e.getPoint(), e.isControlDown(), e.isShiftDown());
 					component.repaint();
 				}
 			}
@@ -154,33 +154,43 @@ public class SelectionHandler<T> extends InteractionHandler {
 		return new Rectangle2D.Double(minX, minY, width, height);
 	}
 
-	private void handleClickSelection(Point p, boolean ctrlDown) {
+	private void handleClickSelection(Point p, boolean ctrlDown, boolean shiftDown) {
 		if (clickSelection != null) {
-			updateClickSelection(clickSelection, p, ctrlDown);
+			updateClickSelection(clickSelection, p, ctrlDown, shiftDown);
 		}
 	}
 
-	private void updateClickSelection(IClickSelection<T> clickSelection, Point p, boolean ctrlDown) {
+	private void updateClickSelection(IClickSelection<T> clickSelection, Point p, boolean ctrlDown, boolean shiftDown) {
 		List<T> elements = clickSelection.getElementsAtPoint(p);
-		if (ctrlDown) {
+		if (ctrlDown && !shiftDown) {
 			selectionModel.addToSelection(elements);
+		} else if (!ctrlDown && shiftDown) {
+			selectionModel.removeFromSelection(elements);
+		} else if (ctrlDown && shiftDown) {
+			System.err.println(
+					getClass().getSimpleName() + ": ignoring selection even because SHIFT and STRG have been pressed.");
 		} else {
 			selectionModel.setSelection(elements);
 		}
 	}
 
-	private void handleRectangleSelection(Rectangle2D rectangle, boolean ctrlDown) {
+	private void handleRectangleSelection(Rectangle2D rectangle, boolean ctrlDown, boolean shiftDown) {
 		if (rectangleSelection != null) {
-			updateRectangleSelection(rectangleSelection, rectangle, ctrlDown);
+			updateRectangleSelection(rectangleSelection, rectangle, ctrlDown, shiftDown);
 		}
 	}
 
 	private void updateRectangleSelection(IRectangleSelection<T> rectangleSelection, Rectangle2D rectangle,
-			boolean ctrlDown) {
+			boolean ctrlDown, boolean shiftDown) {
 
 		List<T> elements = rectangleSelection.getElementsInRectangle(rectangle);
-		if (ctrlDown) {
+		if (ctrlDown && !shiftDown) {
 			selectionModel.addToSelection(elements);
+		} else if (!ctrlDown && shiftDown) {
+			selectionModel.removeFromSelection(elements);
+		} else if (ctrlDown && shiftDown) {
+			System.err.println(
+					getClass().getSimpleName() + ": ignoring selection even because SHIFT and STRG have been pressed.");
 		} else {
 			selectionModel.setSelection(elements);
 		}

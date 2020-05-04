@@ -140,6 +140,12 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 						"XYAxisNumericalPainter: set of axis painter implicitly switched between log and linear scale(!)");
 
 		this.yAxisPainter = yAxisPainter;
+		
+		for (ChartPainter chartPainter : getChartPainters())
+			if (chartPainter instanceof IYPositionEncoding)
+				((IYPositionEncoding) chartPainter)
+						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
+
 
 		setBackgroundColor(getBackgroundColor());
 

@@ -144,7 +144,8 @@ public class DisplayTools {
 		Paint c = g2.getPaint();
 		g2.setPaint(paint);
 
-		g2.draw(rect);
+		if (rect != null)
+			g2.draw(rect);
 
 		g2.setPaint(c);
 	}

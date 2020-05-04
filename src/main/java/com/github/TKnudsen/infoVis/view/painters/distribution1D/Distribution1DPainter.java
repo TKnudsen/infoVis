@@ -20,6 +20,7 @@ import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
+import com.github.TKnudsen.infoVis.view.tools.DoubleMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
@@ -59,7 +60,6 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	 */
 	private final Function<? super T, Double> worldToDoubleMapping;
 	private IPositionEncodingFunction positionEncodingFunction;
-
 	protected boolean externalPositionEncodingFunction = false;
 
 	private Function<? super T, ? extends Paint> colorEncodingFunction;
@@ -74,9 +74,12 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		if (values != null)
-			this.data = Collections.unmodifiableCollection(values);
+			this.data = Collections
+					.unmodifiableCollection(DoubleMappingTools.sanityCheckFilter(values, worldToDoubleMapping, true));
 		else
 			this.data = new ArrayList<>();
+		if (data.isEmpty())
+			throw new IllegalArgumentException(getClass().getSimpleName() + ": data must not be empty.");
 
 		this.worldToDoubleMapping = worldToDoubleMapping;
 
@@ -132,9 +135,9 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 			ShapeAttributes shapeAttributes = entry.getValue();
 			if (shapeAttributes != null) {
 				g2.setStroke(shapeAttributes.getStroke());
-				// Paint color = shapeAttributes.getColor(); //does this really look better?
-				Paint color = getColorEncodingFunction().apply(worldValue);
-				color = ColorTools.setAlpha(color, alpha);
+				Paint color = (shapeAttributes.getColor() != null) ? shapeAttributes.getColor()
+						: getColorEncodingFunction().apply(worldValue);
+				// color = ColorTools.setAlpha(color, alpha);//no dynamic alpha here
 				drawValue(g2, worldValue, color);
 			}
 		}

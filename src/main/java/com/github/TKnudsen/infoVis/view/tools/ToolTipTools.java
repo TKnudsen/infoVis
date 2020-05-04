@@ -51,16 +51,16 @@ public class ToolTipTools {
 	 * @param chartRectangle
 	 * @return
 	 */
-	public static ChartPainter getTooltipForPositionMapping1D(Point p, Double yOrYPointComponent, Number inverseMapping,
+	public static ChartPainter getTooltipForPositionMapping1D(Point p, Double screenValue, Number inverseMapping,
 			Rectangle2D chartRectangle) {
 		if (chartRectangle == null)
 			return null;
 
-		if (Double.isNaN(yOrYPointComponent))
+		if (Double.isNaN(screenValue))
 			return null;
 
 		StringPainter stringPainter = new StringPainter("V: " + MathFunctions.round(inverseMapping.doubleValue(), 2)
-				+ ", Pix: " + MathFunctions.round(yOrYPointComponent, 2));
+				+ ", Pix: " + MathFunctions.round(screenValue, 2));
 
 		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 140, 32);
 		stringPainter.setRectangle(rect);

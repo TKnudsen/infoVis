@@ -18,6 +18,7 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncoder;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>
@@ -38,7 +39,6 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	private T minValue;
 	private T maxValue;
 
-	protected boolean logarithmicScale = false;
 	protected int markerDistanceInPixels = 45;
 	protected double markerLineWidth = 3.0;
 	protected boolean pruneMinValue = true;
@@ -47,9 +47,9 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 	protected boolean drawLabels = true;
 
-	private boolean flipAxisValues = false;
-
 	protected final PositionEncodingFunction positionEncodingFunction;
+	// listening to the positionEncodingFunction
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = () -> markerPositionsWithLabels = null;
 
 	private int tickCount = -1;
 
@@ -75,9 +75,8 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		this.minValue = start;
 		this.maxValue = end;
 
-		this.flipAxisValues = flipAxisValues;
-
 		positionEncodingFunction = new PositionEncodingFunction(this.minValue, this.maxValue, 0.0, 0.0, flipAxisValues);
+		positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
 	@Override
@@ -133,7 +132,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		// double markerCount = Math.max(2, Math.abs(width) / (double)
 		// markerDistanceInPixels);
 
-		if (!logarithmicScale) {
+		if (!isLogarithmicScale()) {
 			double valueInterval = AxisCartTools.suggestMeaningfulValueIntervalLinear(interval / markerCount);
 			double startValue = minValue.doubleValue();
 
@@ -276,12 +275,10 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	}
 
 	public boolean isLogarithmicScale() {
-		return logarithmicScale;
+		return positionEncodingFunction.isLogarithmicScale();
 	}
 
 	public void setLogarithmicScale(boolean logarithmicScale) {
-		this.logarithmicScale = logarithmicScale;
-
 		this.positionEncodingFunction.setLogarithmicScale(logarithmicScale);
 	}
 
@@ -310,12 +307,10 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	}
 
 	public boolean isFlipAxisValues() {
-		return flipAxisValues;
+		return positionEncodingFunction.isFlipAxisValues();
 	}
 
 	public void setFlipAxisValues(boolean flipAxisValues) {
-		this.flipAxisValues = flipAxisValues;
-
 		positionEncodingFunction.setFlipAxisValues(flipAxisValues);
 	}
 

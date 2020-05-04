@@ -17,11 +17,11 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.02
+ * @version 2.03
  */
 public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
 
@@ -73,7 +73,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			return;
 
 		// draw X-Axis
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 		double x1 = this.rectangle.getMinX();
 		double x2 = this.rectangle.getMaxX();
 
@@ -92,7 +92,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 		drawAxisLabelsAndMarkers(g2);
 
-		if (drawOutline)
+		if (isDrawOutline())
 			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
 
 		g2.setFont(f);
@@ -124,7 +124,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			if (pair.getKey() > rectangle.getMaxX() - 15)
 				artificialXOffset = -getMarkerDistanceInPixels() * 0.28;
 
-			g2.setColor(color);
+			g2.setPaint(getPaint());
 			if (axisLineAlignment.equals(AxisLineAlignment.TOP))
 				DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMinY() + markerLineWidth, pair.getKey(),
 						rectangle.getMinY());

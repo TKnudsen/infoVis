@@ -33,6 +33,7 @@ import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
@@ -81,6 +82,9 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	protected boolean externalXPositionEncodingFunction = false;
 	protected boolean externalYPositionEncodingFunction = false;
 
+	// listening to yPositionEncodingFunctions
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::refreshDataPoints;
+
 	// color coding of data
 	private Function<? super T, ? extends Paint> colorMapping;
 
@@ -95,6 +99,8 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	private Paint selectionPaint = Color.BLACK;
 
 	private Function<? super T, String> toolTipMapping;
+
+	private boolean refreshingDataPoints;
 
 	public ScatterPlotPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {
@@ -122,11 +128,15 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 		this.xPositionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d,
 				1d);
+		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.yPositionEncodingFunction = new PositionEncodingFunction(yStatistics.getMin(), yStatistics.getMax(), 0d,
 				1d, true);
+		this.yPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
 	protected void refreshDataPoints() {
+		refreshingDataPoints = true;
 		screenPoints.clear();
 
 		if (data == null || chartRectangle == null)
@@ -146,6 +156,8 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 		if (overplottingMitigation)
 			alpha = Math.max(0.05f, Math.min(1.0f, (screenPoints.size() / 5000.0f)));
+
+		refreshingDataPoints = false;
 	}
 
 	@Override
@@ -170,7 +182,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 			if (drawSelectedLast && selected)
 				continue;
 
-			Point2D point = screenPoints.get(i);
+			Point2D point = getScreenPoint(i);
 			if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
 				continue;
 
@@ -199,7 +211,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 				if (!selected)
 					continue;
 
-				Point2D point = screenPoints.get(i);
+				Point2D point = getScreenPoint(i);
 				if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
 					continue;
 
@@ -219,15 +231,39 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		g2.setColor(c);
 	}
 
+	/**
+	 * Creating screenPoints may take some time. In the past some exceptions have
+	 * been thrown due to accessing the unfinished list of screenpoints. This method
+	 * provides an access method that is more safe.
+	 * 
+	 * @param i index, according to data
+	 * @return
+	 */
+	private Point2D getScreenPoint(int i) {
+		while (refreshingDataPoints) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			return screenPoints.get(i);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	protected void drawIndividualPoint(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint,
 			boolean selected) {
 
+		float size = pointSize * 1.33f;
 		if (selected) {
-			double pointSizeBig = Math.max(pointSize * 2.0, pointSize + 1);
+			double pointSizeBig = Math.max(pointSize * 1.66f, pointSize + 2);
 			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSizeBig, selectionPaint, true);
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
 		} else
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
 	}
 
 	public static double calculatePointSize(double viewWidth, double viewHeight) {
@@ -453,13 +489,21 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	@Override
 	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
+		this.xPositionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.xPositionEncodingFunction = xPositionEncodingFunction;
+		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalXPositionEncodingFunction = true;
 	}
 
 	@Override
 	public void setYPositionEncodingFunction(IPositionEncodingFunction yPositionEncodingFunction) {
+		this.yPositionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.yPositionEncodingFunction = yPositionEncodingFunction;
+		this.yPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalYPositionEncodingFunction = true;
 	}
 

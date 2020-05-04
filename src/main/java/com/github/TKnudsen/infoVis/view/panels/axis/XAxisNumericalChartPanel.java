@@ -116,6 +116,11 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 						"InfoVisXAxisNumericalChartPanel: setting axis painter implicitly switched between log and linear scale(!)");
 
 		this.xAxisPainter = yAxisPainter;
+		
+		for (ChartPainter chartPainter : getChartPainters())
+			if (chartPainter instanceof IXPositionEncoding)
+				((IXPositionEncoding) chartPainter)
+						.setXPositionEncodingFunction(xAxisPainter.getPositionEncodingFunction());
 
 		setBackgroundColor(getBackgroundColor());
 

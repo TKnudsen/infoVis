@@ -40,7 +40,6 @@ public class DynamicQueryValueRangeTest {
 		contentPane.add(panel, BorderLayout.CENTER);
 
 		SVGFrameTools.dropSVGFrame(contentPane, "Slider Test", 800, 400);
-
 	}
 
 }
