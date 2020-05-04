@@ -26,6 +26,8 @@ public class BipolarScorePainter extends ChartPainter {
 
 	private NormalizationFunction normalization;
 
+	private boolean horizontalOrientation = true;
+
 	public BipolarScorePainter(double score, double minValue, double maxValue) {
 		this(score, minValue, 0.0, maxValue);
 	}
@@ -55,18 +57,35 @@ public class BipolarScorePainter extends ChartPainter {
 		if (rectangle == null)
 			return;
 
+		double relativeViewPosition = normalization.apply(score).doubleValue();
+
 		double x;
 		double y = rectangle.getMinY();
 		double w;
 		double h = rectangle.getHeight();
 
-		double relativeViewPosition = normalization.apply(score).doubleValue();
-		if (score < neutralValue) {
-			x = rectangle.getMinX() + relativeViewPosition * rectangle.getWidth() * 0.5;
-			w = (1 - relativeViewPosition) * rectangle.getWidth() * 0.5;
+		if (horizontalOrientation) {
+			y = rectangle.getMinY();
+			h = rectangle.getHeight();
+
+			if (score < neutralValue) {
+				x = rectangle.getMinX() + relativeViewPosition * rectangle.getWidth() * 0.5;
+				w = (1 - relativeViewPosition) * rectangle.getWidth() * 0.5;
+			} else {
+				x = rectangle.getCenterX();
+				w = relativeViewPosition * rectangle.getWidth() * 0.5;
+			}
 		} else {
-			x = rectangle.getCenterX();// + relativeViewPosition * relativeViewPosition * rectangle.getWidth() * 0.5;
-			w = relativeViewPosition * rectangle.getWidth() * 0.5;
+			x = rectangle.getMinX();
+			w = rectangle.getWidth();
+
+			if (score < neutralValue) {
+				y = rectangle.getCenterY();
+				h = (1-relativeViewPosition) * rectangle.getHeight() * 0.5;
+			} else {
+				y = rectangle.getCenterY() - relativeViewPosition * rectangle.getHeight() * 0.5;
+				h = relativeViewPosition * rectangle.getHeight() * 0.5;
+			}
 		}
 
 		this.chartRectangle = new Rectangle2D.Double(x, y, w, h);
@@ -86,8 +105,12 @@ public class BipolarScorePainter extends ChartPainter {
 		g2.fill(chartRectangle);
 
 		// draw neutral mark
-		DisplayTools.drawLine(g2, rectangle.getCenterX(), rectangle.getMinY(), rectangle.getCenterX(),
-				rectangle.getMaxY(), DisplayTools.standardDashedStroke, neutralMarkColor);
+		if (horizontalOrientation)
+			DisplayTools.drawLine(g2, rectangle.getCenterX(), rectangle.getMinY(), rectangle.getCenterX(),
+					rectangle.getMaxY(), DisplayTools.standardDashedStroke, neutralMarkColor);
+		else
+			DisplayTools.drawLine(g2, rectangle.getMinX(), rectangle.getCenterY(), rectangle.getMaxX(),
+					rectangle.getCenterY(), DisplayTools.standardDashedStroke, neutralMarkColor);
 
 		g2.setColor(c);
 	}
@@ -122,5 +145,13 @@ public class BipolarScorePainter extends ChartPainter {
 
 	public void setNeutralMarkColor(Color neutralMarkColor) {
 		this.neutralMarkColor = neutralMarkColor;
+	}
+
+	public boolean isHorizontalOrientation() {
+		return horizontalOrientation;
+	}
+
+	public void setHorizontalOrientation(boolean horizontalOrientation) {
+		this.horizontalOrientation = horizontalOrientation;
 	}
 }

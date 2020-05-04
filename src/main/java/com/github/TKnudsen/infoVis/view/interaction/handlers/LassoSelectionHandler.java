@@ -79,7 +79,7 @@ public class LassoSelectionHandler<T> extends InteractionHandler {
 				if (acceptMouseButton(e)) {
 					polyLine.closePath();
 
-					handleLassoSelection(polyLine, e.isControlDown());
+					handleLassoSelection(polyLine, e.isControlDown(), e.isShiftDown());
 
 					polyLine = null;
 
@@ -145,17 +145,29 @@ public class LassoSelectionHandler<T> extends InteractionHandler {
 		return new Rectangle2D.Double(minX, minY, width, height);
 	}
 
-	private void handleLassoSelection(GeneralPath lassoShape, boolean ctrlDown) {
+	private void handleLassoSelection(GeneralPath lassoShape, boolean ctrlDown, boolean shiftDown) {
 		if (lassoShape != null) {
-			updateLassoSelection(shapeSelection, lassoShape, ctrlDown);
+			updateLassoSelection(shapeSelection, lassoShape, ctrlDown, shiftDown);
 		}
 	}
 
-	private void updateLassoSelection(IShapeSelection<T> shapeSelection, Shape shape, boolean ctrlDown) {
+	private void updateLassoSelection(IShapeSelection<T> shapeSelection, Shape shape, boolean ctrlDown,
+			boolean shiftDown) {
 		List<T> elements = shapeSelection.getElementsInShape(shape);
 
 		if (ctrlDown) {
 			selectionModel.addToSelection(elements);
+		} else {
+			selectionModel.setSelection(elements);
+		}
+
+		if (ctrlDown && !shiftDown) {
+			selectionModel.addToSelection(elements);
+		} else if (!ctrlDown && shiftDown) {
+			selectionModel.removeFromSelection(elements);
+		} else if (ctrlDown && shiftDown) {
+			System.err.println(
+					getClass().getSimpleName() + ": ignoring selection even because SHIFT and STRG have been pressed.");
 		} else {
 			selectionModel.setSelection(elements);
 		}

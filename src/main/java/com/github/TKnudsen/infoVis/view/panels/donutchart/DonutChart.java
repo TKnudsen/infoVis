@@ -1,12 +1,14 @@
 package com.github.TKnudsen.infoVis.view.panels.donutchart;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Point;
 import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
+import com.github.TKnudsen.infoVis.view.interaction.IToolTipPaintable;
 import com.github.TKnudsen.infoVis.view.painters.donutchart.DonutChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
@@ -27,7 +29,7 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * @version 1.01
  */
 public class DonutChart extends InfoVisChartPanel
-		implements IClickSelection<Integer>, ISelectionVisualizer<Integer> {
+		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, IToolTipPaintable {
 
 	/**
 	 * 
@@ -58,6 +60,14 @@ public class DonutChart extends InfoVisChartPanel
 
 	public void setDonutRadiusRelative(double donutRadiusRelative) {
 		this.donutChartPainter.setDonutRadiusRelative(donutRadiusRelative);
+	}
+
+	public Paint getInnerCirclePaint() {
+		return donutChartPainter.getInnerCirclePaint();
+	}
+
+	public void setInnerCirclePaint(Paint innerCirclePaint) {
+		this.donutChartPainter.setInnerCirclePaint(innerCirclePaint);
 	}
 
 }

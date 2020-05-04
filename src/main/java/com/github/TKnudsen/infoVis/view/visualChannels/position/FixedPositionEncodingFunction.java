@@ -1,7 +1,10 @@
 package com.github.TKnudsen.infoVis.view.visualChannels.position;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.github.TKnudsen.ComplexDataObject.model.comparators.NumberComparator;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
@@ -20,11 +23,11 @@ import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.01
+ * @version 1.02
  */
 public final class FixedPositionEncodingFunction implements IPositionEncodingFunction {
 
@@ -39,9 +42,11 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 
 	private boolean logarithmicScale = false;
 
+	private boolean flipAxisValues = false;
+
 	private NormalizationFunction scalingFunction;
 
-	private boolean flipAxisValues = false;
+	private List<PositionEncodingFunctionListener> positionEncodingFunctionListeners;
 
 	/**
 	 * classical constructor for a non-inverted axis
@@ -56,6 +61,8 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 		this.mapping.putAll(mapping);
 
 		refresh();
+
+		this.positionEncodingFunctionListeners = new CopyOnWriteArrayList<PositionEncodingFunctionListener>();
 	}
 
 	public void addFixedPosition(Number number, Double pixel) {
@@ -239,6 +246,34 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 
 	public boolean isAllowOtherPositions() {
 		return allowOtherPositions;
+	}
+
+	@Override
+	public void addPositionEncodingFunctionListener(
+			PositionEncodingFunctionListener positionEncodingFunctionListener) {
+		Objects.requireNonNull(positionEncodingFunctionListener,
+				"The positionEncodingFunctionListener may not be null");
+
+		positionEncodingFunctionListeners.remove(positionEncodingFunctionListener);
+		positionEncodingFunctionListeners.add(positionEncodingFunctionListener);
+	}
+
+	@Override
+	public void removePositionEncodingFunctionListener(
+			PositionEncodingFunctionListener positionEncodingFunctionListener) {
+		Objects.requireNonNull(positionEncodingFunctionListener,
+				"The positionEncodingFunctionListener may not be null");
+
+		positionEncodingFunctionListeners.remove(positionEncodingFunctionListener);
+	}
+
+	@Override
+	public void firePositionEncodingParameterChanged() {
+		if (!positionEncodingFunctionListeners.isEmpty()) {
+			for (PositionEncodingFunctionListener positionEncodingFunctionListener : positionEncodingFunctionListeners) {
+				positionEncodingFunctionListener.encodingFunctionChanged();
+			}
+		}
 	}
 
 }

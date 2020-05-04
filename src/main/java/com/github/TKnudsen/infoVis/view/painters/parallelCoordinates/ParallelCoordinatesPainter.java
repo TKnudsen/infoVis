@@ -30,10 +30,12 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.DoubleMappingTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEncodingFunction;
@@ -51,10 +53,10 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
- * @version 1.01
+ * @version 1.03
  */
 public class ParallelCoordinatesPainter<T> extends ChartPainter
 		implements IXPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>, IShapeSelection<T>,
@@ -81,23 +83,28 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	protected boolean externalXPositionEncodingFunction = false;
 	protected boolean externalYPositionEncodingFunctions = false;
 
+	// listening to yPositionEncodingFunctions
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::refreshDataPoints;
+
 	// color coding of data
 	private Function<? super T, ? extends Paint> colorMapping;
 
 	// maps a T to individual double values which can be mapped to x and y position
-//	private final Function<? super T, Double> worldPositionMappingX;
 	private final List<Function<? super T, Double>> worldPositionMappingsY;
 
 	private Function<? super T, Double> sizeEncodingFunction = new ConstantSizeEncodingFunction<>(3);
 	private Function<? super T, Boolean> selectedFunction;
+	private boolean drawSelectedLast = true;
 	private Paint selectionPaint = Color.BLACK;
 
 	public ParallelCoordinatesPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			List<Function<? super T, Double>> worldPositionMappingsY) {
 		this.colorMapping = colorMapping;
-//		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingsY = worldPositionMappingsY;
-		this.data = Collections.unmodifiableList(data);
+
+		// data sanity check
+		this.data = Collections
+				.unmodifiableList(DoubleMappingTools.sanityCheckFilter(data, worldPositionMappingsY, true));
 
 		initializePositionEncodingFunctions();
 
@@ -121,11 +128,16 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 			this.yPositionEncodingFunctions
 					.add(new PositionEncodingFunction(yStatistics.getMin(), yStatistics.getMax(), 0d, 1d, true));
+
+			// TODO expensive as for every axis event every axis is refreshed
+			for (IPositionEncodingFunction positionEncodingFunction : this.yPositionEncodingFunctions)
+				positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 		}
 
 //		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
 
 		this.xPositionEncodingFunction = new PositionEncodingFunction(0, worldPositionMappingsY.size() - 1, 0d, 1d);
+		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
 	protected void refreshDataPoints() {
@@ -162,10 +174,13 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 	@Override
 	public void draw(Graphics2D g2) {
-
 		if (chartRectangle == null)
 			return;
 
+		drawLinesAndPoints(g2);
+	}
+
+	private void drawLinesAndPoints(Graphics2D g2) {
 		Color c = g2.getColor();
 
 		// point size
@@ -174,6 +189,16 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		for (int i = 0; i < data.size(); i++) {
 			Point2D[] point = screenPoints.get(i);
 			if (point == null)
+				continue;
+
+			boolean selected = false;
+			if (selectedFunction != null) {
+				Boolean apply = selectedFunction.apply(data.get(i));
+				if (apply != null)
+					selected = apply.booleanValue();
+			}
+
+			if (drawSelectedLast && selected)
 				continue;
 
 			Paint colorToPaint = colorMapping.apply(data.get(i));
@@ -186,15 +211,37 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 			if (Double.isNaN(pointSize))
 				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
-			boolean selected = false;
-			if (selectedFunction != null) {
-				Boolean apply = selectedFunction.apply(data.get(i));
-				if (apply != null)
-					selected = apply.booleanValue();
-			}
-
 			drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
 		}
+
+		if (drawSelectedLast) // second loop
+			for (int i = 0; i < data.size(); i++) {
+				Point2D[] point = screenPoints.get(i);
+				if (point == null)
+					continue;
+
+				boolean selected = false;
+				if (selectedFunction != null) {
+					Boolean apply = selectedFunction.apply(data.get(i));
+					if (apply != null)
+						selected = apply.booleanValue();
+				}
+
+				if (!selected)
+					continue;
+
+				Paint colorToPaint = colorMapping.apply(data.get(i));
+				if (colorToPaint == null)
+					colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
+
+				// new concept with the size-encoding
+				if (Double.isNaN(pointSize))
+					pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
+				if (Double.isNaN(pointSize))
+					pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+
+				drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
+			}
 
 		g2.setColor(c);
 	}
@@ -217,6 +264,9 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		for (int i = 0; i < pointArray.length; i++) {
 			Point2D point = pointArray[i];
 
+			float size = pointSize * 1.33f;
+//			float sizeSelected = Math.max(size + 1, pointSize * 1.66f);
+
 			if (selected) {
 				// line
 				if (lastPoint != null) {
@@ -228,8 +278,8 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 				}
 
 				// point
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.66, selectionPaint, true);
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
+//				DisplayTools.drawPoint(g2, point.getX(), point.getY(), sizeSelected, selectionPaint, true);
+				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
 			} else {
 				// line
 				if (lastPoint != null)
@@ -237,7 +287,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 							new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 
 				// point
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
+				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
 			}
 
 			lastPoint = point;
@@ -461,12 +511,24 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 	@Override
 	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
+		this.xPositionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.xPositionEncodingFunction = xPositionEncodingFunction;
+		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalXPositionEncodingFunction = true;
 	}
 
 	public void setYPositionEncodingFunctions(List<IPositionEncodingFunction> yPositionEncodingFunctions) {
+		for (IPositionEncodingFunction positionEncodingFunction : this.yPositionEncodingFunctions)
+			positionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.yPositionEncodingFunctions = yPositionEncodingFunctions;
+
+		// TODO expensive as for every axis event every axis is refreshed
+		for (IPositionEncodingFunction positionEncodingFunction : this.yPositionEncodingFunctions)
+			positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalYPositionEncodingFunctions = true;
 	}
 
@@ -476,6 +538,14 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 	public void setSelectionPaint(Paint selectionPaint) {
 		this.selectionPaint = selectionPaint;
+	}
+
+	public boolean isDrawSelectedLast() {
+		return drawSelectedLast;
+	}
+
+	public void setDrawSelectedLast(boolean drawSelectedLast) {
+		this.drawSelectedLast = drawSelectedLast;
 	}
 
 }

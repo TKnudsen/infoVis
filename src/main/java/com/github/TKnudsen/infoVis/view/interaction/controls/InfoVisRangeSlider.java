@@ -6,6 +6,7 @@ import java.awt.event.ComponentListener;
 
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoder;
 import com.jidesoft.swing.RangeSlider;
 
@@ -31,6 +32,9 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 	private final PositionEncodingFunction positionEncodingFunction;
 
+	// listening to the positionEncodingFunction
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::refreshPositionMapping;
+
 	/**
 	 * Creates a horizontal slider using the specified min and max with an initial
 	 * value equal to the average of the min plus max. and initial low and high
@@ -43,6 +47,8 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 		super(min, max);
 
 		this.positionEncodingFunction = new PositionEncodingFunction(getMinimum(), getMaximum(), 0.0, 0.0, false);
+
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 
 		initialize();
 	}
@@ -59,6 +65,8 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 		super(min, max, low, high);
 
 		this.positionEncodingFunction = new PositionEncodingFunction(getMinimum(), getMaximum(), 0.0, 0.0, false);
+
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 
 		initialize();
 	}

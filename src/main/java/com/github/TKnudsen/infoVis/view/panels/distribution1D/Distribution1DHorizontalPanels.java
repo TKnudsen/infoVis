@@ -2,6 +2,7 @@ package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,6 +54,34 @@ public class Distribution1DHorizontalPanels {
 
 		return new Distribution1DHorizontalPanel<Double>(data, worldToDoubleMapping, colorMapping, minGlobal,
 				maxGlobal);
+	}
+
+	/**
+	 * applies a filter operation using a list of data. Returns a new list, only
+	 * containing those elements which can be applied by the position mapping
+	 * function.
+	 * 
+	 * @param data
+	 * @param worldPositionMapping
+	 * @param warnForQualityLeaks
+	 * @return
+	 */
+	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
+			boolean warnForQualityLeaks) {
+		List<T> returnList = new ArrayList<T>();
+
+		try {
+			for (T t : data) {
+				Double apply = worldPositionMapping.apply(t);
+				if (apply != null && !Double.isNaN(apply))
+					returnList.add(t);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return returnList;
 	}
 
 }

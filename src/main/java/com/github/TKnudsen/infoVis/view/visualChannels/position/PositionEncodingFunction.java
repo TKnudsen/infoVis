@@ -1,5 +1,9 @@
 package com.github.TKnudsen.infoVis.view.visualChannels.position;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LogarithmicNormalizationFunction;
@@ -15,11 +19,11 @@ import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.07
+ * @version 1.08
  */
 public final class PositionEncodingFunction implements IPositionEncodingFunction {
 
@@ -33,6 +37,8 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	private NormalizationFunction scalingFunction;
 
 	private boolean flipAxisValues = false;
+
+	private List<PositionEncodingFunctionListener> positionEncodingFunctionListeners;
 
 	/**
 	 * classical constructor for a non-inverted axis
@@ -56,6 +62,8 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 		this.flipAxisValues = flipAxisValues;
 
 		initializeScalingFunction();
+
+		this.positionEncodingFunctionListeners = new CopyOnWriteArrayList<PositionEncodingFunctionListener>();
 	}
 
 	private void initializeScalingFunction() {
@@ -165,6 +173,8 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 		this.logarithmicScale = logarithmicScale;
 
 		initializeScalingFunction();
+
+		firePositionEncodingParameterChanged();
 	}
 
 	@Override
@@ -209,6 +219,35 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	@Override
 	public void setFlipAxisValues(boolean flipAxisValues) {
 		this.flipAxisValues = flipAxisValues;
+
+		firePositionEncodingParameterChanged();
+	}
+
+	@Override
+	public void addPositionEncodingFunctionListener(PositionEncodingFunctionListener positionEncodingFunctionListener) {
+		Objects.requireNonNull(positionEncodingFunctionListener,
+				"The positionEncodingFunctionListener may not be null");
+
+		positionEncodingFunctionListeners.remove(positionEncodingFunctionListener);
+		positionEncodingFunctionListeners.add(positionEncodingFunctionListener);
+	}
+
+	@Override
+	public void removePositionEncodingFunctionListener(
+			PositionEncodingFunctionListener positionEncodingFunctionListener) {
+		Objects.requireNonNull(positionEncodingFunctionListener,
+				"The positionEncodingFunctionListener may not be null");
+
+		positionEncodingFunctionListeners.remove(positionEncodingFunctionListener);
+	}
+
+	@Override
+	public void firePositionEncodingParameterChanged() {
+		if (!positionEncodingFunctionListeners.isEmpty()) {
+			for (PositionEncodingFunctionListener positionEncodingFunctionListener : positionEncodingFunctionListeners) {
+				positionEncodingFunctionListener.encodingFunctionChanged();
+			}
+		}
 	}
 
 }

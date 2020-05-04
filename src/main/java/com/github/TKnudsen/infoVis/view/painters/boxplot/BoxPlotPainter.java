@@ -18,6 +18,7 @@ import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>
@@ -29,11 +30,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.02
+ * @version 2.03
  */
 public abstract class BoxPlotPainter extends ChartPainter implements IRectangleSelection<Double>, ITooltip {
 
@@ -64,6 +65,9 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 
 	private boolean toolTipping = true;
 
+	// listening to the positionEncodingFunction
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::intializeScreenCoordinates;
+
 	public BoxPlotPainter(double[] data) {
 		double[] copy = Arrays.copyOf(data, data.length);
 		Arrays.sort(copy);
@@ -89,6 +93,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	private void initializePositionEncodingFunction() {
 		this.positionEncodingFunction = new PositionEncodingFunction(dataStatistics.getMin(), dataStatistics.getMax(),
 				0d, 1d, isInvertedAxis());
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
 	protected abstract boolean isInvertedAxis();
@@ -244,7 +249,11 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	}
 
 	public void setPositionEncodingFunction(IPositionEncodingFunction positionEncodingFunction) {
+		this.positionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.positionEncodingFunction = positionEncodingFunction;
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalPositionEncodingFunction = true;
 	}
 

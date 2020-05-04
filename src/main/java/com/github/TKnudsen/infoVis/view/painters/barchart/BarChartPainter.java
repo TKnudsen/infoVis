@@ -23,6 +23,7 @@ import com.github.TKnudsen.infoVis.view.painters.barchart.bar.BarPainter;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>
@@ -60,6 +61,10 @@ public abstract class BarChartPainter extends ChartPainter
 
 	private IPositionEncodingFunction positionEncodingFunction;
 	protected boolean externalPositionEncodingFunction = false;
+
+	// listening to the positionEncodingFunction
+	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = () -> updatePositionEncoding(
+			rectangle);
 
 	// interaction
 	private Function<? super Integer, Boolean> selectedFunction;
@@ -108,6 +113,8 @@ public abstract class BarChartPainter extends ChartPainter
 
 		this.positionEncodingFunction = new PositionEncodingFunction(0, dataStatistics.getMax(), 0d, 1d,
 				isInvertedAxis());
+
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
 	protected abstract boolean isInvertedAxis();
@@ -296,7 +303,11 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public void setPositionEncodingFunction(IPositionEncodingFunction positionEncodingFunction) {
+		this.positionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.positionEncodingFunction = positionEncodingFunction;
+		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
 		this.externalPositionEncodingFunction = true;
 
 		if (barPainters != null)

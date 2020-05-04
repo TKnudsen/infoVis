@@ -117,6 +117,11 @@ public abstract class YAxisNumericalChartPanel<Y extends Number> extends InfoVis
 
 		this.yAxisPainter = yAxisPainter;
 
+		for (ChartPainter chartPainter : getChartPainters())
+			if (chartPainter instanceof IYPositionEncoding)
+				((IYPositionEncoding) chartPainter)
+						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
+
 		setBackgroundColor(getBackgroundColor());
 
 		updateBounds();

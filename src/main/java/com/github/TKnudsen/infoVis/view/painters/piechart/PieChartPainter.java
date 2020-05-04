@@ -17,8 +17,12 @@ import java.util.function.Function;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
+import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 
 /**
  * <p>
@@ -34,9 +38,10 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
-public class PieChartPainter extends ChartPainter implements IClickSelection<Integer>, ISelectionVisualizer<Integer> {
+public class PieChartPainter extends ChartPainter
+		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, ITooltip {
 
 	// data
 	protected final List<Double> piecesRelative;
@@ -49,6 +54,7 @@ public class PieChartPainter extends ChartPainter implements IClickSelection<Int
 
 	// interaction
 	private Function<? super Integer, Boolean> selectedFunction;
+	private boolean toolTipping = true;
 
 	public PieChartPainter(List<Double> pieces, List<Color> colors) {
 		Objects.requireNonNull(pieces);
@@ -177,5 +183,40 @@ public class PieChartPainter extends ChartPainter implements IClickSelection<Int
 	@Override
 	public void setSelectedFunction(Function<? super Integer, Boolean> selectedFunction) {
 		this.selectedFunction = selectedFunction;
+	}
+
+	@Override
+	public ChartPainter getTooltip(Point p) {
+		List<Integer> elementsAtPoint = getElementsAtPoint(p);
+
+		if (elementsAtPoint == null || elementsAtPoint.isEmpty())
+			return null;
+
+		String toolTipString = "";
+
+		int index = elementsAtPoint.iterator().next();
+		Double valueRelative = piecesRelative.get(index);
+		toolTipString = MathFunctions.round(valueRelative, 2) + "";
+
+		StringPainter stringPainter = new StringPainter(toolTipString);
+
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 36, 32);
+		stringPainter.setRectangle(rect);
+
+		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
+		stringPainter.setFontColor(Color.WHITE);
+		stringPainter.setFontSize(15);
+
+		return stringPainter;
+	}
+
+	@Override
+	public boolean isToolTipping() {
+		return toolTipping;
+	}
+
+	@Override
+	public void setToolTipping(boolean toolTipping) {
+		this.toolTipping = toolTipping;
 	}
 }

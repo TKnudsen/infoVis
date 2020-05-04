@@ -74,12 +74,16 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		if (this.xyAxisChartRectangleLayout.isDrawXAxis())
 			if (xAxisPainter != null) {
 				xAxisPainter.setFont(this.getFont());
+//				xAxisPainter.setFontColor(getForeground());
+//				xAxisPainter.setPaint(getForeground());
 				xAxisPainter.draw(g2);
 			}
 
 		if (this.xyAxisChartRectangleLayout.isDrawYAxis())
 			if (yAxisPainter != null) {
 				yAxisPainter.setFont(this.getFont());
+//				yAxisPainter.setFontColor(getForeground());
+//				yAxisPainter.setPaint(getForeground());
 				yAxisPainter.draw(g2);
 			}
 	}
@@ -148,6 +152,11 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 
 		this.xAxisPainter = xAxisPainter;
 
+		for (ChartPainter chartPainter : getChartPainters())
+			if (chartPainter instanceof IXPositionEncoding)
+				((IXPositionEncoding) chartPainter)
+						.setXPositionEncodingFunction(xAxisPainter.getPositionEncodingFunction());
+
 		setBackgroundColor(getBackgroundColor());
 
 		updateBounds();
@@ -160,6 +169,11 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 						"XYAxisNumericalPainter: set of axis painter implicitly switched between log and linear scale(!)");
 
 		this.yAxisPainter = yAxisPainter;
+		
+		for (ChartPainter chartPainter : getChartPainters())
+			if (chartPainter instanceof IYPositionEncoding)
+				((IYPositionEncoding) chartPainter)
+						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
 
 		setBackgroundColor(getBackgroundColor());
 

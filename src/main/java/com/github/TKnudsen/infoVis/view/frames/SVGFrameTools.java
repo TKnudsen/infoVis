@@ -41,7 +41,7 @@ public class SVGFrameTools {
 		SVGFrame frame = new SVGFrame();
 
 		frame.setTitle(title);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(0, 1));
 
 		frame.setSize(x, y);
@@ -54,18 +54,18 @@ public class SVGFrameTools {
 		return frame;
 	}
 
-	public static SVGFrame dropSVGFrame(JComponent panel, String title, int x, int y) {
+	public static SVGFrame dropSVGFrame(JComponent component, String title, int x, int y) {
 		SVGFrame frame = new SVGFrame();
 
 		frame.setTitle(title);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(0, 1));
 
 		frame.setSize(x, y);
 		frame.setLocation(50, 50);
 		frame.setVisible(true);
 
-		frame.add(panel);
+		frame.add(component);
 		frame.revalidate();
 		frame.repaint();
 		return frame;
@@ -73,7 +73,7 @@ public class SVGFrameTools {
 
 	public static SVGFrame populateSVGFrame(SVGFrame frame, String title, int x, int y) {
 		frame.setTitle(title);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(0, 1));
 
 		frame.setSize(x, y);
@@ -82,7 +82,7 @@ public class SVGFrameTools {
 
 		frame.revalidate();
 		frame.repaint();
-		
+
 		return frame;
 	}
 

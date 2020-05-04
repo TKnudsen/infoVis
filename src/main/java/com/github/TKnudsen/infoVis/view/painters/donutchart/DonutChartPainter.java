@@ -2,6 +2,7 @@ package com.github.TKnudsen.infoVis.view.painters.donutchart;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
@@ -35,6 +36,8 @@ public class DonutChartPainter extends PieChartPainter {
 	protected Rectangle2D.Double squareInner;
 	private Arc2D.Double arcInner;
 
+	private Paint innerCirclePaint = null;
+
 	public DonutChartPainter(List<Double> pieces, List<Color> colors) {
 		super(pieces, colors);
 
@@ -47,6 +50,11 @@ public class DonutChartPainter extends PieChartPainter {
 		Color c = g2.getColor();
 
 		super.drawPie(g2);
+
+		if (innerCirclePaint != null) {
+			g2.setPaint(innerCirclePaint);
+			g2.fill(arcInner);
+		}
 
 		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
@@ -92,6 +100,14 @@ public class DonutChartPainter extends PieChartPainter {
 		this.donutRadiusRelative = donutRadiusRelative;
 
 		setRectangle(rectangle);
+	}
+
+	public Paint getInnerCirclePaint() {
+		return innerCirclePaint;
+	}
+
+	public void setInnerCirclePaint(Paint innerCirclePaint) {
+		this.innerCirclePaint = innerCirclePaint;
 	}
 
 }

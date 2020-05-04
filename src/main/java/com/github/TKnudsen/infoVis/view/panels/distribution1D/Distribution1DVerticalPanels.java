@@ -1,12 +1,18 @@
 package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
+
+import de.javagl.selection.SelectionModel;
 
 public class Distribution1DVerticalPanels {
 
@@ -54,4 +60,65 @@ public class Distribution1DVerticalPanels {
 		return new Distribution1DVerticalPanel<Double>(data, worldToDoubleMapping, colorMapping, minGlobal, maxGlobal);
 	}
 
+	public static <T> void addInteraction(Distribution1DVerticalPanel<T> distributionPanel,
+			SelectionModel<T> selectionModel) {
+
+		// SELECTION HANDLER
+		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(selectionModel);
+		selectionHandler.attachTo(distributionPanel);
+
+		// add rectangle selection
+		selectionHandler.setRectangleSelection(distributionPanel);
+
+		distributionPanel.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
+
+//		distributionPanel.setSelectedFunction(new Function<T, Boolean>() {
+//			@Override
+//			public Boolean apply(T t) {
+//				return selectionHandler.getSelectionModel().isSelected(t);
+//			}
+//		});
+
+//		selectionModel.addSelectionListener(new SelectionListener<T>() {
+//
+//			@Override
+//			public void selectionChanged(SelectionEvent<T> selectionEvent) {
+//				distributionPanel.repaint();
+//				distributionPanel.revalidate();
+//			}
+//		});
+	}
+
+	/**
+	 * applies a filter operation using a list of data. Returns a new list, only
+	 * containing those elements which can be applied by the position mapping
+	 * function.
+	 * 
+	 * @param data
+	 * @param worldPositionMapping
+	 * @param warnForQualityLeaks
+	 * @return
+	 */
+	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
+			boolean warnForQualityLeaks) {
+		List<T> returnList = new ArrayList<T>();
+
+		try {
+			for (T t : data) {
+				Double apply = worldPositionMapping.apply(t);
+				if (apply != null && !Double.isNaN(apply))
+					returnList.add(t);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return returnList;
+	}
 }
