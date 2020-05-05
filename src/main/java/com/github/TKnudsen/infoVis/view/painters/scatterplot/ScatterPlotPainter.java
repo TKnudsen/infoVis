@@ -29,6 +29,7 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.DoubleMappingTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
@@ -107,7 +108,9 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.colorMapping = colorMapping;
 		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingY = worldPositionMappingY;
-		this.data = Collections.unmodifiableList(data);
+
+		this.data = Collections
+				.unmodifiableList(DoubleMappingTools.sanityCheckFilter(data, worldPositionMappingX, true));
 
 		initializePositionEncodingFunctions();
 
