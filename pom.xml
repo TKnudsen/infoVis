@@ -43,6 +43,11 @@
 		</dependency>
 		<dependency>
 			<groupId>de.javagl</groupId>
+			<artifactId>common-ui</artifactId>
+			<version>0.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>de.javagl</groupId>
 			<artifactId>selection</artifactId>
 			<version>0.0.1</version>
 		</dependency>
