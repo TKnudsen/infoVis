@@ -87,7 +87,7 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 		if (!specialValues.isEmpty() && highlightsAtTheUpperBound)
 			hReduced = chartRectangle.getHeight() * getRelativeHighlightHeight();
 
-		return chartRectangle.getMinY() + hReduced;
+		return chartRectangle.getMaxY() + hReduced;
 	}
 
 	public void drawHighlightTriangle(Graphics2D g2, T worldData, Paint paint) {

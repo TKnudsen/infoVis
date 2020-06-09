@@ -41,7 +41,7 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	// constructor attributes
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
-
+	
 	public Distribution1DVerticalPanel(List<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		this(values, worldToDoubleMapping, Double.NaN, Double.NaN);
 	}
@@ -126,4 +126,13 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	public void setTriangleSize(double triangleSize) {
 		this.distribution1DVerticalPainter.setTriangleSize(triangleSize);
 	}
+
+	public boolean isToolTipping() {
+		return this.distribution1DVerticalPainter.isToolTipping();
+	}
+
+	public void setToolTipping(boolean toolTipping) {
+		this.distribution1DVerticalPainter.setToolTipping(toolTipping);
+	}
+	
 }

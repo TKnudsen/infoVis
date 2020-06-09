@@ -45,7 +45,7 @@ public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T>
 
 	@Override
 	public void drawLine(Graphics2D g2, Double positionValue, double capSize) {
-		DisplayTools.drawLine(g2, positionValue, chartRectangle.getMaxY() - capSize, positionValue,
+		DisplayTools.drawLine(g2, positionValue, chartRectangle.getMinY() - capSize, positionValue,
 				getValueYEndPosition() + capSize);
 	}
 

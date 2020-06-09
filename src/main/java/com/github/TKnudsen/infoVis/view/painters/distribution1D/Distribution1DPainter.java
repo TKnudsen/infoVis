@@ -96,8 +96,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
 
-		this.setPositionEncodingFunction(
-				new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d, 1d));
+		positionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d, 1d);
 	}
 
 	@Override

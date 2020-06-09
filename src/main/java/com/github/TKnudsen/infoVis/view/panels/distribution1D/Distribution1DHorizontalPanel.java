@@ -134,4 +134,11 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 		this.distribution1DHorizontalPainter.setAlpha(alpha);
 	}
 
+	public boolean isToolTipping() {
+		return this.distribution1DHorizontalPainter.isToolTipping();
+	}
+
+	public void setToolTipping(boolean toolTipping) {
+		this.distribution1DHorizontalPainter.setToolTipping(toolTipping);
+	}
 }
