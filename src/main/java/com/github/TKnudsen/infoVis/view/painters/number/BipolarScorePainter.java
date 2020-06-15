@@ -28,11 +28,22 @@ public class BipolarScorePainter extends ChartPainter {
 
 	private boolean horizontalOrientation = true;
 
+	/**
+	 * relative value between zero and one to express the uncertainty of the score.
+	 * Lower means more certain.
+	 */
+	private double uncertainty;
+
 	public BipolarScorePainter(double score, double minValue, double maxValue) {
 		this(score, minValue, 0.0, maxValue);
 	}
 
 	public BipolarScorePainter(double score, double minValue, double neutralValue, double maxValue) {
+		this(score, minValue, neutralValue, maxValue, 0.0);
+	}
+
+	public BipolarScorePainter(double score, double minValue, double neutralValue, double maxValue,
+			double uncertainty) {
 		this.score = score;
 
 		if (minValue >= neutralValue)
@@ -45,6 +56,8 @@ public class BipolarScorePainter extends ChartPainter {
 		this.minValue = minValue;
 		this.neutralValue = neutralValue;
 		this.maxValue = maxValue;
+
+		this.uncertainty = uncertainty;
 
 		normalization = (score < neutralValue) ? new LinearNormalizationFunction(minValue, neutralValue)
 				: new LinearNormalizationFunction(neutralValue, maxValue);
@@ -64,9 +77,14 @@ public class BipolarScorePainter extends ChartPainter {
 		double w;
 		double h = rectangle.getHeight();
 
+		double certainty = 1.0 - (Double.isNaN(uncertainty) ? 0 : uncertainty);
+
 		if (horizontalOrientation) {
 			y = rectangle.getMinY();
 			h = rectangle.getHeight();
+
+			y += (h * (1 - certainty)) * 0.5;
+			h *= certainty;
 
 			if (score < neutralValue) {
 				x = rectangle.getMinX() + relativeViewPosition * rectangle.getWidth() * 0.5;
@@ -79,9 +97,12 @@ public class BipolarScorePainter extends ChartPainter {
 			x = rectangle.getMinX();
 			w = rectangle.getWidth();
 
+			x += (w * (1 - certainty)) * 0.5;
+			w *= certainty;
+
 			if (score < neutralValue) {
 				y = rectangle.getCenterY();
-				h = (1-relativeViewPosition) * rectangle.getHeight() * 0.5;
+				h = (1 - relativeViewPosition) * rectangle.getHeight() * 0.5;
 			} else {
 				y = rectangle.getCenterY() - relativeViewPosition * rectangle.getHeight() * 0.5;
 				h = relativeViewPosition * rectangle.getHeight() * 0.5;
@@ -111,6 +132,11 @@ public class BipolarScorePainter extends ChartPainter {
 		else
 			DisplayTools.drawLine(g2, rectangle.getMinX(), rectangle.getCenterY(), rectangle.getMaxX(),
 					rectangle.getCenterY(), DisplayTools.standardDashedStroke, neutralMarkColor);
+
+		if (isDrawOutline()) {
+			g2.setColor(neutralMarkColor);
+			g2.draw(chartRectangle);
+		}
 
 		g2.setColor(c);
 	}
@@ -153,5 +179,13 @@ public class BipolarScorePainter extends ChartPainter {
 
 	public void setHorizontalOrientation(boolean horizontalOrientation) {
 		this.horizontalOrientation = horizontalOrientation;
+	}
+
+	public double getUncertainty() {
+		return uncertainty;
+	}
+
+	public void setUncertainty(double uncertainty) {
+		this.uncertainty = uncertainty;
 	}
 }
