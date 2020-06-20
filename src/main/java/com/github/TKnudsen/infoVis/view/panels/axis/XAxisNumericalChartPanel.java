@@ -116,7 +116,7 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 						"InfoVisXAxisNumericalChartPanel: setting axis painter implicitly switched between log and linear scale(!)");
 
 		this.xAxisPainter = yAxisPainter;
-		
+
 		for (ChartPainter chartPainter : getChartPainters())
 			if (chartPainter instanceof IXPositionEncoding)
 				((IXPositionEncoding) chartPainter)
@@ -172,6 +172,12 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 	@Override
 	public void setXAxisLegendHeight(double xAxisLegendHeight) {
 		this.xAxisChartRectangleLayout.setXAxisLegendHeight(xAxisLegendHeight);
+
+		updateBounds();
+	}
+
+	public void setMinHeightToDrawXAxis(double minHeightToDrawXAxis) {
+		this.xAxisChartRectangleLayout.setMinHeightToDrawXAxis(minHeightToDrawXAxis);
 
 		updateBounds();
 	}
