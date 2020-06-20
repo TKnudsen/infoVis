@@ -150,12 +150,12 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 		this.xAxisPainter = xAxisPainter;
 	}
 
-	public boolean isOverlayOfXAxis() {
-		return this.xAxisChartRectangleLayout.isOverlayOfXAxis();
+	public boolean isXAxisOverlay() {
+		return this.xAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.xAxisChartRectangleLayout.setOverlayOfXAxis(overlayOfXAxis);
+	public void setXAxisOverlay(boolean overlayOfXAxis) {
+		this.xAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
 	}
 
 	public boolean isDrawTickLinesInChart() {

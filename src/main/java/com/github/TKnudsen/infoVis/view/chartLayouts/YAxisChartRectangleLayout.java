@@ -18,7 +18,7 @@ public class YAxisChartRectangleLayout extends ChartRectangleLayout {
 	private double yAxisLegendWidth = 40;
 	private boolean drawYAxis = true;
 
-	private boolean overlayOfYAxis = false;
+	private boolean yAxisOverlay = false;
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
@@ -38,7 +38,7 @@ public class YAxisChartRectangleLayout extends ChartRectangleLayout {
 		double yAxisLegendWidth = this.yAxisLegendWidth;
 
 		double chartWidth = width - yAxisLegendWidth - border;
-		if (overlayOfYAxis)
+		if (yAxisOverlay)
 			chartWidth = width - border;
 
 		if (drawYAxis)
@@ -73,11 +73,11 @@ public class YAxisChartRectangleLayout extends ChartRectangleLayout {
 		this.drawYAxis = drawYAxis;
 	}
 
-	public boolean isOverlayOfYAxis() {
-		return overlayOfYAxis;
+	public boolean isYAxisOverlay() {
+		return yAxisOverlay;
 	}
 
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.overlayOfYAxis = overlayOfYAxis;
+	public void setYAxisOverlay(boolean yAxisOverlay) {
+		this.yAxisOverlay = yAxisOverlay;
 	}
 }

@@ -79,8 +79,8 @@ public class ScatterPlotChartPanelTester {
 
 		ScatterPlot<Double[]> panel = ScatterPlots.createForDoubles(points, colors);
 //		ScatterPlotChartPanel panel = new ScatterPlotChartPanel(points, colors);
-		panel.setOverlayOfXAxis(true);
-		panel.setOverlayOfYAxis(false);
+		panel.setXAxisOverlay(true);
+		panel.setYAxisOverlay(false);
 
 		// SELECTION MODEL
 		SelectionModel<Double[]> selectionModel = SelectionModels.create();

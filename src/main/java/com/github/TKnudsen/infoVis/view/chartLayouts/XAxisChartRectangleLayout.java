@@ -23,7 +23,7 @@ public class XAxisChartRectangleLayout extends ChartRectangleLayout {
 	private boolean drawXAxis = true;
 	private double minHeightToDrawXAxis = 100.0;
 
-	private boolean overlayOfXAxis = false;
+	private boolean xAxisOverlay = false;
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
@@ -61,7 +61,7 @@ public class XAxisChartRectangleLayout extends ChartRectangleLayout {
 			xAxisRectangle = new Rectangle2D.Double(chartMinX, rectangle.getMaxY() - border - xAxisLegendHeight,
 					chartWidth, 0);
 
-		if (!overlayOfXAxis)
+		if (!xAxisOverlay)
 			chartRectangle = new Rectangle2D.Double(chartMinX, minY + border, chartWidth,
 					height - xAxisLegendHeight - 2 * border);
 		else
@@ -96,12 +96,12 @@ public class XAxisChartRectangleLayout extends ChartRectangleLayout {
 		this.minHeightToDrawXAxis = minHeightToDrawXAxis;
 	}
 
-	public boolean isOverlayOfXAxis() {
-		return overlayOfXAxis;
+	public boolean isXAxisOverlay() {
+		return xAxisOverlay;
 	}
 
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.overlayOfXAxis = overlayOfXAxis;
+	public void setXAxisOverlay(boolean xAxisOverlay) {
+		this.xAxisOverlay = xAxisOverlay;
 	}
 
 }

@@ -127,8 +127,31 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 		updateBounds();
 	}
 
+	/////////// X-AXIS
+
+	/**
+	 * 
+	 * @return
+	 * @deprecated naming convention. method now called isXAxisOverlay
+	 */
 	public boolean isOverlayOfXAxis() {
-		return xAxisChartRectangleLayout.isOverlayOfXAxis();
+		return isXAxisOverlay();
+	}
+
+	/**
+	 * lets the chart painter(s) begin on top of the x axis, not (only) in the
+	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
+	 * Automatically removes background paint of axisPainter.
+	 * 
+	 * @param overlayOfXAxis
+	 * @deprecated naming convention. method now called setXAxisOverlay
+	 */
+	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
+		this.setXAxisOverlay(overlayOfXAxis);
+	}
+
+	public boolean isXAxisOverlay() {
+		return xAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
 	/**
@@ -138,15 +161,13 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 	 * 
 	 * @param overlayOfXAxis
 	 */
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.xAxisChartRectangleLayout.setOverlayOfXAxis(overlayOfXAxis);
+	public void setXAxisOverlay(boolean overlayOfXAxis) {
+		this.xAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
 		this.xAxisPainter.setAxisLineAlignment(AxisLineAlignment.BOTTOM);
 		this.xAxisPainter.setBackgroundPaint(null);
 
 		updateBounds();
 	}
-
-	/////////// X-AXIS
 
 	@Override
 	public void setXAxisMinValue(X xAxisMinValue) {
