@@ -11,11 +11,11 @@ import java.awt.geom.Rectangle2D;
  * and a chartRectangle.
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 
@@ -24,14 +24,14 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 	protected boolean drawXAxis = true;
 	private double minHeightToDrawXAxis = 100.0;
 
-	private boolean overlayOfXAxis = false;
+	private boolean xAxisOverlay = false;
 
 	protected Rectangle2D yAxisRectangle;
 	protected double yAxisLegendWidth = 40;
 	protected boolean drawYAxis = true;
 	private double minWidthToDrawYAxis = 100.0;
 
-	private boolean overlayOfYAxis = false;
+	private boolean yAxisOverlay = false;
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
@@ -69,7 +69,7 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 
 		// define chart sizes
 		double chartMinX = minX + yAxisLegendWidth;
-		if (overlayOfYAxis)
+		if (yAxisOverlay)
 			chartMinX = minX;
 		if (!drawYAxis)
 			chartMinX += border;
@@ -77,7 +77,7 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 		double chartMinY = minY + border;
 
 		double chartWidth = width - yAxisLegendWidth - border;
-		if (overlayOfYAxis)
+		if (yAxisOverlay)
 			chartWidth = width - border;
 
 		// TODO validate!!
@@ -86,7 +86,7 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 			chartWidth = width - border;
 
 		double chartHeight = height - xAxisLegendHeight - 2 * border;
-		if (overlayOfXAxis)
+		if (xAxisOverlay)
 			chartHeight = height - 2 * border; // use more height
 
 		// X-AXIS
@@ -157,19 +157,19 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 		this.minWidthToDrawYAxis = minWidthToDrawYAxis;
 	}
 
-	public boolean isOverlayOfXAxis() {
-		return overlayOfXAxis;
+	public boolean isXAxisOverlay() {
+		return xAxisOverlay;
 	}
 
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.overlayOfXAxis = overlayOfXAxis;
+	public void setXAxisOverlay(boolean xAxisOverlay) {
+		this.xAxisOverlay = xAxisOverlay;
 	}
 
-	public boolean isOverlayOfYAxis() {
-		return overlayOfYAxis;
+	public boolean isYAxisOverlay() {
+		return yAxisOverlay;
 	}
 
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.overlayOfYAxis = overlayOfYAxis;
+	public void setYAxisOverlay(boolean yAxisOverlay) {
+		this.yAxisOverlay = yAxisOverlay;
 	}
 }

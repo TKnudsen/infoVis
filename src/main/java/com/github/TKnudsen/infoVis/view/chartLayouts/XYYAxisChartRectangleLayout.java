@@ -63,15 +63,15 @@ public class XYYAxisChartRectangleLayout extends XYAxisChartRectangleLayout {
 
 		// define chart sizes
 		double chartMinX = minX + yAxisLegendWidth;
-		if (isOverlayOfYAxis())
+		if (isYAxisOverlay())
 			chartMinX = minX;
 
 		double chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * border;
-		if (isOverlayOfYAxis())
+		if (isYAxisOverlay())
 			chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * border;
 
 		double chartHeight = height - xAxisLegendHeight - 2 * border;
-		if (isOverlayOfXAxis())
+		if (isXAxisOverlay())
 			chartHeight = height - 2 * border; // use more height
 
 		xAxisRectangle = new Rectangle2D.Double(chartMinX + border, rectangle.getMaxY() - border - xAxisLegendHeight,

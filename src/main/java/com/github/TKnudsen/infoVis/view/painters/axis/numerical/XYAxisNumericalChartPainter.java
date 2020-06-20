@@ -232,19 +232,19 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 		setBackgroundPaint(getBackgroundPaint());
 	}
 
-	public boolean isOverlayOfXAxis() {
-		return xyAxisChartRectangleLayout.isOverlayOfXAxis();
+	public boolean isXAxisOverlay() {
+		return xyAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.xyAxisChartRectangleLayout.setOverlayOfXAxis(overlayOfXAxis);
+	public void setXAxisOverlay(boolean overlayOfXAxis) {
+		this.xyAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
 	}
 
-	public boolean isOverlayOfYAxis() {
-		return xyAxisChartRectangleLayout.isOverlayOfYAxis();
+	public boolean isYAxisOverlay() {
+		return xyAxisChartRectangleLayout.isYAxisOverlay();
 	}
 
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.xyAxisChartRectangleLayout.setOverlayOfYAxis(overlayOfYAxis);
+	public void setYAxisOverlay(boolean overlayOfYAxis) {
+		this.xyAxisChartRectangleLayout.setYAxisOverlay(overlayOfYAxis);
 	}
 }

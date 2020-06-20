@@ -140,20 +140,29 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 						"XYAxisNumericalPainter: set of axis painter implicitly switched between log and linear scale(!)");
 
 		this.yAxisPainter = yAxisPainter;
-		
+
 		for (ChartPainter chartPainter : getChartPainters())
 			if (chartPainter instanceof IYPositionEncoding)
 				((IYPositionEncoding) chartPainter)
 						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
-
 
 		setBackgroundColor(getBackgroundColor());
 
 		updateBounds();
 	}
 
+	@Deprecated
 	public boolean isOverlayOfXAxis() {
-		return xyAxisChartRectangleLayout.isOverlayOfXAxis();
+		return isXAxisOverlay();
+	}
+
+	@Deprecated
+	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
+		this.setXAxisOverlay(overlayOfXAxis);
+	}
+
+	public boolean isXAxisOverlay() {
+		return xyAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
 	/**
@@ -163,16 +172,26 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	 * 
 	 * @param overlayOfXAxis
 	 */
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.xyAxisChartRectangleLayout.setOverlayOfXAxis(overlayOfXAxis);
+	public void setXAxisOverlay(boolean overlayOfXAxis) {
+		this.xyAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
 		// this.xAxisPainter.setAxisLineAlignment(AxisLineAlignment.BOTTOM);
 		this.xAxisPainter.setBackgroundPaint(null);
 
 		updateBounds();
 	}
 
+	@Deprecated
 	public boolean isOverlayOfYAxis() {
-		return xyAxisChartRectangleLayout.isOverlayOfYAxis();
+		return isYAxisOverlay();
+	}
+
+	@Deprecated
+	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
+		this.setYAxisOverlay(overlayOfYAxis);
+	}
+
+	public boolean isYAxisOverlay() {
+		return xyAxisChartRectangleLayout.isYAxisOverlay();
 	}
 
 	/**
@@ -180,10 +199,10 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	 * Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param overlayOfYAxis
+	 * @param yAxisOverlay
 	 */
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.xyAxisChartRectangleLayout.setOverlayOfYAxis(overlayOfYAxis);
+	public void setYAxisOverlay(boolean yAxisOverlay) {
+		this.xyAxisChartRectangleLayout.setYAxisOverlay(yAxisOverlay);
 		this.yAxisPainter.setAxisLineAlignment(AxisLineAlignment.LEFT);
 		this.yAxisPainter.setBackgroundPaint(null);
 

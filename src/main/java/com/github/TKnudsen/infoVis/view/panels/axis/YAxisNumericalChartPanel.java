@@ -127,8 +127,18 @@ public abstract class YAxisNumericalChartPanel<Y extends Number> extends InfoVis
 		updateBounds();
 	}
 
+	@Deprecated
 	public boolean isOverlayOfYAxis() {
-		return yAxisChartRectangleLayout.isOverlayOfYAxis();
+		return isYAxisOverlay();
+	}
+
+	@Deprecated
+	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
+		this.setYAxisOverlay(overlayOfYAxis);
+	}
+
+	public boolean isYAxisOverlay() {
+		return yAxisChartRectangleLayout.isYAxisOverlay();
 	}
 
 	/**
@@ -136,10 +146,10 @@ public abstract class YAxisNumericalChartPanel<Y extends Number> extends InfoVis
 	 * Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param overlayOfYAxis
+	 * @param yAxisOverlay
 	 */
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.yAxisChartRectangleLayout.setOverlayOfYAxis(overlayOfYAxis);
+	public void setYAxisOverlay(boolean yAxisOverlay) {
+		this.yAxisChartRectangleLayout.setYAxisOverlay(yAxisOverlay);
 		this.yAxisPainter.setAxisLineAlignment(AxisLineAlignment.LEFT);
 		this.yAxisPainter.setBackgroundPaint(null);
 
