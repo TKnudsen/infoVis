@@ -119,32 +119,33 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 						painters[i][j].draw(g2);
 
 		// draw outlines of the grid elements
-		if (drawOutline && rectangle != null && getBorderPaint() != null)
-			for (int i = 0; i < grid.length; i++)
-				for (int j = 0; j < grid[i].length; j++) {
-					if (grid[i][j] == null)
-						continue;
+		if (isDrawOutline() && rectangle != null && getBorderPaint() != null)
+			if (grid != null)
+				for (int i = 0; i < grid.length; i++)
+					for (int j = 0; j < grid[i].length; j++) {
+						if (grid[i][j] == null)
+							continue;
 
-					// if grid is too small, the outline transparency is reduced
-					float cellSize = (float) Math.min(rectangle.getWidth() / grid.length,
-							rectangle.getHeight() / grid[0].length);
-					float alpha = 1.0f;
-					if (cellSize > 10)
-						alpha = 0.66f;
-					else if (cellSize > 5)
-						alpha = 0.33f;
-					else if (cellSize > 2)
-						alpha = 0.16f;
-					else if (cellSize > 1)
-						alpha = 0.1f;
-					else
-						alpha = 0.05f;
-					g2.setColor(ColorTools.setAlpha(getBorderPaint(), alpha));
-					g2.draw(grid[i][j]);
-				}
+						// if grid is too small, the outline transparency is reduced
+						float cellSize = (float) Math.min(rectangle.getWidth() / grid.length,
+								rectangle.getHeight() / grid[0].length);
+						float alpha = 1.0f;
+						if (cellSize > 10)
+							alpha = 0.66f;
+						else if (cellSize > 5)
+							alpha = 0.33f;
+						else if (cellSize > 2)
+							alpha = 0.16f;
+						else if (cellSize > 1)
+							alpha = 0.1f;
+						else
+							alpha = 0.05f;
+						g2.setColor(ColorTools.setAlpha(getBorderPaint(), alpha));
+						g2.draw(grid[i][j]);
+					}
 
 		// draw outline of the entire grid
-		if (drawOutline && rectangle != null) {
+		if (isDrawOutline() && rectangle != null) {
 			g2.setPaint(getBorderPaint());
 			g2.draw(rectangle);
 		}

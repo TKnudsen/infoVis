@@ -1,9 +1,6 @@
 package com.github.TKnudsen.infoVis.view.panels.barChart;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
@@ -22,7 +19,7 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard,
+ * Copyright: (c) 2018-2020 Juergen Bernard,
  * https://github.com/TKnudsen/InfoVis<br>
  * </p>
  * 
@@ -31,59 +28,32 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.01
+ * @version 1.02
  */
 public class BarChartVerticalPanelTester {
 	public static void main(String[] args) {
-		// create data
-		List<Double> points = new ArrayList<>();
-		List<Color> colors = new ArrayList<>();
-		List<String> labels = new ArrayList<>();
-
-		labels.add("Flug");
-		points.add(340.42 * 4);
-		colors.add(new Color(120, 180, 87));
-
-		labels.add("Mietauto");
-		points.add(536.0);
-		colors.add(new Color(106, 161, 215));
-
-		labels.add("Essen");
-		points.add(461.4);
-		colors.add(new Color(236, 137, 69));
-
-		labels.add("Unterkunft");
-		points.add(420.0);
-		colors.add(new Color(172, 172, 172));
-
-		labels.add("Einkaufen");
-		points.add(239.16);
-		colors.add(new Color(254, 196, 27));
-
-		labels.add("Tanken");
-		points.add(75.0);
-		colors.add(new Color(82, 120, 193));
-
-//		BarChart panel = new BarChart(points, colors);
-		BarChart panel = BarCharts.createBarChart(points, colors);
+//		BarChart barChart = new BarChart(points, colors);
+		BarChart barChart = BarCharts.createBarChart(BarChartDataForTesting.values(), BarChartDataForTesting.colors());
+		barChart.setBackground(null);
+		BarCharts.addLegend(barChart, BarChartDataForTesting.labels());
 
 		// SELECTION MODEL
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
 
 		// SELECTION HANDLER
 		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
-		selectionHandler.attachTo(panel);
-		selectionHandler.setClickSelection(panel);
-		selectionHandler.setRectangleSelection(panel);
+		selectionHandler.attachTo(barChart);
+		selectionHandler.setClickSelection(barChart);
+		selectionHandler.setRectangleSelection(barChart);
 
-		panel.addChartPainter(new ChartPainter() {
+		barChart.addChartPainter(new ChartPainter() {
 			@Override
 			public void draw(Graphics2D g2) {
 				selectionHandler.draw(g2);
 			}
 		});
 
-		panel.setSelectedFunction(new Function<Integer, Boolean>() {
+		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
 
 			@Override
 			public Boolean apply(Integer t) {
@@ -93,7 +63,7 @@ public class BarChartVerticalPanelTester {
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
-		SVGFrameTools.dropSVGFrame(panel, "BarChartVerticalPanelTester", 800, 400);
+		SVGFrameTools.dropSVGFrame(barChart, "BarChartVerticalPanelTester", 800, 400);
 	}
 
 }

@@ -33,7 +33,7 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
  * @author Juergen Bernard
  * @version 2.06
  */
-public class BarChartHorizontalPanel extends XAxisNumericalChartPanel<Double>
+public class BarChartHorizontal extends XAxisNumericalChartPanel<Double>
 		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer> {
 
 	/**
@@ -47,19 +47,19 @@ public class BarChartHorizontalPanel extends XAxisNumericalChartPanel<Double>
 	private List<Color> colors;
 	private double maxGlobal = Double.NaN;
 
-	public BarChartHorizontalPanel(Double[] data, Color[] colors) {
+	public BarChartHorizontal(Double[] data, Color[] colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartHorizontalPanel(Double[] data, Color[] colors, Double maxGlobal) {
+	public BarChartHorizontal(Double[] data, Color[] colors, Double maxGlobal) {
 		this(DataConversion.arrayToList(data), DataConversion.arrayToList(colors), maxGlobal);
 	}
 
-	public BarChartHorizontalPanel(List<Double> data, List<Color> colors) {
+	public BarChartHorizontal(List<Double> data, List<Color> colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartHorizontalPanel(List<Double> data, List<Color> colors, Double maxGlobal) {
+	public BarChartHorizontal(List<Double> data, List<Color> colors, Double maxGlobal) {
 		if (data == null || data.size() == 0)
 			throw new IllegalArgumentException("BarChartHorizontalPanel: no data");
 		else

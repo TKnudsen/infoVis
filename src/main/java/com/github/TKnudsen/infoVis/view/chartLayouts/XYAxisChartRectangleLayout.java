@@ -58,7 +58,7 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 		if (!drawXAxis)
 			xAxisLegendHeight = 0;
 		if (height < xAxisLegendHeight * 4.0)
-			xAxisLegendHeight = height / 4.0;
+			xAxisLegendHeight = (!xAxisOverlay) ? height / 4.0 : height / 2.0;
 
 		// adjust yAxisLegendWidth
 		double yAxisLegendWidth = this.yAxisLegendWidth;
