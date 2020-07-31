@@ -199,12 +199,12 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		return string;
 	}
 
-	@Deprecated // use orientation
+	@Deprecated // use vertical orientation
 	public boolean isVerticalAlignment() {
 		return verticalOrientation;
 	}
 
-	@Deprecated // use orientation
+	@Deprecated // use vertical orientation
 	public void setVerticalAlignment(boolean verticalOrientation) {
 		this.verticalOrientation = verticalOrientation;
 	}

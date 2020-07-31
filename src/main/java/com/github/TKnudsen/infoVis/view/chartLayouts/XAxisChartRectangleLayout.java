@@ -52,7 +52,7 @@ public class XAxisChartRectangleLayout extends ChartRectangleLayout {
 		if (!drawXAxis || height < minHeightToDrawXAxis)
 			xAxisLegendHeight = 0;
 		if (height < xAxisLegendHeight * 4.0)
-			xAxisLegendHeight = height / 4.0;
+			xAxisLegendHeight = (!xAxisOverlay) ? height / 4.0 : height / 2.0;
 
 		if (xAxisLegendHeight > 0) {
 			xAxisRectangle = new Rectangle2D.Double(chartMinX, rectangle.getMaxY() - border - xAxisLegendHeight,
