@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.tknudsen</groupId>
-	<artifactId>infoVis</artifactId>
+	<artifactId>info-vis</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>infoVis</name>
-	<description>A library that provides InfoVis functionality. Charts and stuff.</description>
+	<description>A library that provides InfoVis functionality.</description>
 	<url>https://github.com/TKnudsen/infoVis</url>
 
 	<licenses>
