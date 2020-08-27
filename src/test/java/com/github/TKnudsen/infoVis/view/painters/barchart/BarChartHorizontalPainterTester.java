@@ -1,10 +1,26 @@
 package com.github.TKnudsen.infoVis.view.painters.barchart;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
+import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataObject;
+import com.github.TKnudsen.ComplexDataObject.model.io.csv.CSVParser;
+import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.DoubleParser;
+import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.IntegerParser;
+import com.github.TKnudsen.infoVis.data.barChart.BarChartDataForTesting;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontal;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
+
+import de.javagl.selection.LoggingSelectionListener;
+import de.javagl.selection.SelectionModel;
+import de.javagl.selection.SelectionModels;
 
 /**
  * <p>
@@ -12,7 +28,7 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard,
+ * Copyright: (c) 2018-2020 Juergen Bernard,
  * https://github.com/TKnudsen/InfoVis<br>
  * </p>
  * 
@@ -21,45 +37,76 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.01
+ * @version 1.02
  */
 public class BarChartHorizontalPainterTester {
+
+	private static IntegerParser integerParser = new IntegerParser();
+	private static DoubleParser doubleParser = new DoubleParser();
+
 	public static void main(String[] args) {
+
+		System.out.println(
+				"BarChartHorizontalPainterTester: always try to use (barchart) panels directly instead of painters");
+
 		// create data
 		List<Double> points = new ArrayList<>();
 		List<Color> colors = new ArrayList<>();
 		List<String> labels = new ArrayList<>();
 
-		labels.add("Flug");
-		points.add(340.42 * 4);
-		colors.add(new Color(120, 180, 87));
+		// try data import
+		CSVParser parser = new CSVParser("");
+		try {
+			List<ComplexDataObject> parsed = parser.parse("barchartData.csv");
+			if (parsed != null) {
+				for (ComplexDataObject cdo : parsed) {
+					labels.add(cdo.getAttribute("Device").toString());
+					points.add(doubleParser.apply(cdo.getAttribute("Count")));
+					colors.add(new Color(integerParser.apply(cdo.getAttribute("R")),
+							integerParser.apply(cdo.getAttribute("G")), integerParser.apply(cdo.getAttribute("B"))));
+				}
+			}
+		} catch (IOException e) {
+			// e.printStackTrace();
+		}
+		if (points.isEmpty()) {
+			labels = BarChartDataForTesting.labels();
+			points = BarChartDataForTesting.values();
+			colors = BarChartDataForTesting.colors();
+		}
 
-		labels.add("Mietauto");
-		points.add(536.0);
-		colors.add(new Color(106, 161, 215));
+		// BARCHART
+		BarChartHorizontal barChart = new BarChartHorizontal(points, colors);
+		barChart.setBackground(null);
+		BarCharts.addLegend(barChart, labels);
 
-		labels.add("Essen");
-		points.add(461.4);
-		colors.add(new Color(236, 137, 69));
+		// SELECTION MODEL
+		SelectionModel<Integer> selectionModel = SelectionModels.create();
 
-		labels.add("Unterkunft");
-		points.add(420.0);
-		colors.add(new Color(172, 172, 172));
+		// SELECTION HANDLER
+		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
+		selectionHandler.attachTo(barChart);
+		selectionHandler.setClickSelection(barChart);
+		selectionHandler.setRectangleSelection(barChart);
 
-		labels.add("Einkaufen");
-		points.add(239.16);
-		colors.add(new Color(254, 196, 27));
+		barChart.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
 
-		labels.add("Tanken");
-		points.add(75.0);
-		colors.add(new Color(82, 120, 193));
+		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
 
-		BarChartHorizontalPainter painter = new BarChartHorizontalPainter(points, colors);
+			@Override
+			public Boolean apply(Integer t) {
+				return selectionHandler.getSelectionModel().isSelected(t);
+			}
+		});
 
-		SVGFrameTools.dropSVGFrame(painter, "Bar Chart Painter Test", 800, 400);
+		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
-		System.err
-				.println("For an interaction demo you need a panel (see, e.g., InfoVisBarChartHorizontalPanelTester)");
+		SVGFrameTools.dropSVGFrame(barChart, "BarChartHorizontalPainterTester", 800, 400);
 	}
 
 }
