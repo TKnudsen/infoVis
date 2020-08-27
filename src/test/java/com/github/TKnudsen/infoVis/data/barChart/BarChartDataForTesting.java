@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.view.panels.barChart;
+package com.github.TKnudsen.infoVis.data.barChart;
 
 import java.awt.Color;
 import java.util.ArrayList;
