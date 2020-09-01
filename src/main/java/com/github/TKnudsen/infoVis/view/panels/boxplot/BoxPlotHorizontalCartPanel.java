@@ -20,7 +20,7 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
@@ -107,7 +107,7 @@ public class BoxPlotHorizontalCartPanel extends XAxisNumericalChartPanel<Double>
 
 	public void setColor(Color color) {
 		if (boxPlotPainterHorizontal != null)
-			boxPlotPainterHorizontal.setColor(color);
+			boxPlotPainterHorizontal.setPaint(color);
 	}
 
 //	public void setFlipAxisValues(boolean flip) {

@@ -112,6 +112,7 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 		super.paintComponent(g);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void refreshScatterplotMatrix() {
 		if (data == null)
 			return;
@@ -139,7 +140,7 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 					}
 
 //				ScatterPlotChartPanel panel = new ScatterPlotChartPanel(localdata, localColors);
-				ScatterPlot panel = ScatterPlots.createForDoubles(localdata, localColors);
+				ScatterPlot<Double[]> panel = ScatterPlots.createForDoubles(localdata, localColors);
 
 				infoVisScatterPlotChartPanels[x][y] = panel;
 

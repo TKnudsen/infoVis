@@ -102,7 +102,7 @@ public class BoxPlotVerticalChartPanel extends YAxisNumericalChartPanel<Double> 
 
 	public void setColor(Color color) {
 		if (boxPlotPainterVertical != null)
-			boxPlotPainterVertical.setColor(color);
+			boxPlotPainterVertical.setPaint(color);
 	}
 
 //	public void setFlipAxisValues(boolean flip) {
