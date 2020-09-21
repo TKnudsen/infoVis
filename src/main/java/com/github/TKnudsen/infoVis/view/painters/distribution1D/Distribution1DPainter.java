@@ -20,7 +20,7 @@ import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
-import com.github.TKnudsen.infoVis.view.tools.DoubleMappingTools;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
@@ -75,7 +75,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		if (values != null)
 			this.data = Collections
-					.unmodifiableCollection(DoubleMappingTools.sanityCheckFilter(values, worldToDoubleMapping, true));
+					.unmodifiableCollection(VisualMappings.sanityCheckFilter(values, worldToDoubleMapping, true));
 		else
 			this.data = new ArrayList<>();
 		if (data.isEmpty())

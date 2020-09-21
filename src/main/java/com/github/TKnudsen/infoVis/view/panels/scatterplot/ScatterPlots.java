@@ -3,7 +3,6 @@ package com.github.TKnudsen.infoVis.view.panels.scatterplot;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -11,6 +10,7 @@ import com.github.TKnudsen.infoVis.view.interaction.handlers.LassoSelectionHandl
 import com.github.TKnudsen.infoVis.view.interaction.handlers.MouseButton;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 
 import de.javagl.selection.SelectionEvent;
@@ -38,16 +38,16 @@ public class ScatterPlots {
 
 	public static ScatterPlot<Double[]> createForDoubles(List<Double[]> points, List<? extends Paint> colors) {
 		ColorEncodingFunction<Double[]> colorMapping = new ColorEncodingFunction<Double[]>(points, colors);
-		Function<Double[], Double> worldPositionMappingX = p -> p[0];
-		Function<Double[], Double> worldPositionMappingY = p -> p[1];
-		return new ScatterPlot<>(points, colorMapping, worldPositionMappingX, worldPositionMappingY);
+		Function<Double[], Double> worldToDoubleMappingX = p -> p[0];
+		Function<Double[], Double> worldDoubleMappingY = p -> p[1];
+		return new ScatterPlot<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
 	}
 
 	public static ScatterPlot<Point2D> createForPoints(List<Point2D> points, List<? extends Paint> colors) {
 		ColorEncodingFunction<Point2D> colorMapping = new ColorEncodingFunction<Point2D>(points, colors);
-		Function<Point2D, Double> worldPositionMappingX = p -> p.getX();
-		Function<Point2D, Double> worldPositionMappingY = p -> p.getY();
-		return new ScatterPlot<>(points, colorMapping, worldPositionMappingX, worldPositionMappingY);
+		Function<Point2D, Double> worldToDoubleMappingX = p -> p.getX();
+		Function<Point2D, Double> worldDoubleMappingY = p -> p.getY();
+		return new ScatterPlot<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
 	}
 
 	public static <T> SelectionModel<T> addInteraction(ScatterPlot<T> scatterPlot, boolean addClickSelection,
@@ -118,13 +118,13 @@ public class ScatterPlots {
 	 * mapping functions.
 	 * 
 	 * @param data
-	 * @param worldPositionMappingX
-	 * @param worldPositionMappingY
+	 * @param worldToDoubleMappingX
+	 * @param worldDoubleMappingY
 	 * @return
 	 */
-	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMappingX,
-			Function<? super T, Double> worldPositionMappingY) {
-		return sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY, false);
+	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldToDoubleMappingX,
+			Function<? super T, Double> worldDoubleMappingY) {
+		return sanityCheckFilter(data, worldToDoubleMappingX, worldDoubleMappingY, false);
 	}
 
 	/**
@@ -133,29 +133,14 @@ public class ScatterPlots {
 	 * functions.
 	 * 
 	 * @param data
-	 * @param worldPositionMappingX
-	 * @param worldPositionMappingY
+	 * @param worldToDoubleMappingX
+	 * @param worldDoubleMappingY
 	 * @param warnForQualityLeaks
 	 * @return
 	 */
-	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMappingX,
-			Function<? super T, Double> worldPositionMappingY, boolean warnForQualityLeaks) {
-		List<T> returnList = new ArrayList<T>();
+	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldToDoubleMappingX,
+			Function<? super T, Double> worldDoubleMappingY, boolean warnForQualityLeaks) {
 
-		try {
-			for (T t : data) {
-				Double x = worldPositionMappingX.apply(t);
-				Double y = worldPositionMappingY.apply(t);
-				if (x != null && !Double.isNaN(x) && y != null && !Double.isNaN(y))
-					returnList.add(t);
-				else if (warnForQualityLeaks)
-					System.err
-							.println("ScatterPlots.sanityCheckFilter: object " + t + " did not pass the sanity check");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return returnList;
+		return VisualMappings.sanityCheckFilter(data, worldToDoubleMappingX, worldDoubleMappingY, warnForQualityLeaks);
 	}
 }
