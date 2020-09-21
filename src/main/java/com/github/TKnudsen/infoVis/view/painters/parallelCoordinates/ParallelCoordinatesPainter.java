@@ -30,8 +30,8 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
-import com.github.TKnudsen.infoVis.view.tools.DoubleMappingTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
@@ -104,7 +104,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 		// data sanity check
 		this.data = Collections
-				.unmodifiableList(DoubleMappingTools.sanityCheckFilter(data, worldPositionMappingsY, true));
+				.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingsY, true));
 
 		initializePositionEncodingFunctions();
 

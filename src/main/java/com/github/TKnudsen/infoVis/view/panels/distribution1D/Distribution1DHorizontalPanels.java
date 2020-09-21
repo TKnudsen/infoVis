@@ -1,13 +1,18 @@
 package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
+
+import de.javagl.selection.SelectionModel;
 
 public class Distribution1DHorizontalPanels {
 
@@ -56,6 +61,25 @@ public class Distribution1DHorizontalPanels {
 				maxGlobal);
 	}
 
+	public static <T> void addInteraction(Distribution1DHorizontalPanel<T> distributionPanel,
+			SelectionModel<T> selectionModel) {
+
+		// SELECTION HANDLER
+		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(selectionModel);
+		selectionHandler.attachTo(distributionPanel);
+
+		// add rectangle selection
+		selectionHandler.setRectangleSelection(distributionPanel);
+
+		distributionPanel.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
+
+	}
+
 	/**
 	 * applies a filter operation using a list of data. Returns a new list, only
 	 * containing those elements which can be applied by the position mapping
@@ -68,20 +92,7 @@ public class Distribution1DHorizontalPanels {
 	 */
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
 			boolean warnForQualityLeaks) {
-		List<T> returnList = new ArrayList<T>();
-
-		try {
-			for (T t : data) {
-				Double apply = worldPositionMapping.apply(t);
-				if (apply != null && !Double.isNaN(apply))
-					returnList.add(t);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return returnList;
+		return VisualMappings.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
 	}
 
 }

@@ -3,15 +3,18 @@ package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 
+import de.javagl.selection.SelectionEvent;
+import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 public class Distribution1DVerticalPanels {
@@ -63,6 +66,21 @@ public class Distribution1DVerticalPanels {
 	public static <T> void addInteraction(Distribution1DVerticalPanel<T> distributionPanel,
 			SelectionModel<T> selectionModel) {
 
+		addInteraction(distributionPanel, selectionModel, null);
+	}
+
+	/**
+	 * 
+	 * @param <T>
+	 * @param distributionPanel
+	 * @param selectionModel
+	 * @param selectionShapeAttribtes adds visual encodings to selected objects.
+	 *                                ShapeAttributes include a selection color and
+	 *                                a stroke.
+	 */
+	public static <T> void addInteraction(Distribution1DVerticalPanel<T> distributionPanel,
+			SelectionModel<T> selectionModel, ShapeAttributes selectionShapeAttribtes) {
+
 		// SELECTION HANDLER
 		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(selectionModel);
 		selectionHandler.attachTo(distributionPanel);
@@ -77,21 +95,21 @@ public class Distribution1DVerticalPanels {
 			}
 		});
 
-//		distributionPanel.setSelectedFunction(new Function<T, Boolean>() {
-//			@Override
-//			public Boolean apply(T t) {
-//				return selectionHandler.getSelectionModel().isSelected(t);
-//			}
-//		});
+		if (selectionShapeAttribtes != null) {
+			selectionModel.addSelectionListener(new SelectionListener<T>() {
 
-//		selectionModel.addSelectionListener(new SelectionListener<T>() {
-//
-//			@Override
-//			public void selectionChanged(SelectionEvent<T> selectionEvent) {
-//				distributionPanel.repaint();
-//				distributionPanel.revalidate();
-//			}
-//		});
+				@Override
+				public void selectionChanged(SelectionEvent<T> selectionEvent) {
+					distributionPanel.clearSpecialValues();
+
+					for (T t : selectionEvent.getSelectionModel().getSelection()) {
+						{
+							distributionPanel.addSpecialValue(t, selectionShapeAttribtes);
+						}
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -106,19 +124,6 @@ public class Distribution1DVerticalPanels {
 	 */
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
 			boolean warnForQualityLeaks) {
-		List<T> returnList = new ArrayList<T>();
-
-		try {
-			for (T t : data) {
-				Double apply = worldPositionMapping.apply(t);
-				if (apply != null && !Double.isNaN(apply))
-					returnList.add(t);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return returnList;
+		return VisualMappings.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
 	}
 }
