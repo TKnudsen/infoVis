@@ -31,6 +31,11 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 
 	private boolean drawYAxisSecondRight = false;
 
+	/**
+	 * enables setting the margin explicitly
+	 */
+	private double margin = Double.NaN;
+
 	protected XYAxisChartRectangleLayout xyAxisChartRectangleLayout = new XYAxisChartRectangleLayout();
 	protected XAxisCategoricalPainter<X> xAxisPainter;
 	protected YAxisNumericalPainter<Y> yAxisPainter;
@@ -56,7 +61,9 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 		if (rectangle == null)
 			return;
 
-		double border = Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005);
+		double border = Double.isNaN(margin)
+				? Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005)
+				: margin;
 		xyAxisChartRectangleLayout.setBorder(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
@@ -87,9 +94,9 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 
 		drawChart(g2);
 
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 
-		if (drawOutline)
+		if (isDrawOutline())
 			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
 
 		g2.setColor(c);
@@ -219,6 +226,15 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 			xyAxisChartRectangleLayout = new XYAxisChartRectangleLayout();
 
 		this.drawYAxisSecondRight = drawYAxisSecondRight;
+	}
+
+	public double getMargin() {
+		return margin;
+	}
+
+	public void setMargin(double margin) {
+		this.margin = margin;
+		setRectangle(rectangle);
 	}
 
 }

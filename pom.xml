@@ -48,16 +48,13 @@
 		<project.build.sourceEncoding>cp1250</project.build.sourceEncoding>
 		<maven-compiler-plugin.source>1.8</maven-compiler-plugin.source>
 		<maven-compiler-plugin.target>1.8</maven-compiler-plugin.target>
-		<junit.version>4.12</junit.version>
-		<commons-math3.version>3.4.1</commons-math3.version>
-		<weka.version>3.8.0</weka.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
+			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -88,7 +85,7 @@
 		<dependency>
 			<groupId>com.github.tknudsen</groupId>
 			<artifactId>complex-data-object</artifactId>
-			<version>0.2.5</version>
+			<version>0.2.13-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
