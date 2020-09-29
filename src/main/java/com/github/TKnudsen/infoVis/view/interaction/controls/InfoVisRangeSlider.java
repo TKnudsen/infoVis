@@ -30,6 +30,12 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 	 */
 	private static final long serialVersionUID = -3952780438465441561L;
 
+	/**
+	 * slider has a width of 16 pixels, 8 of these pixels lead to a margin on both
+	 * sides (left and right).
+	 */
+	public static final int SLIDER_POINTER_WIDTH = 16;
+
 	private final PositionEncodingFunction positionEncodingFunction;
 
 	// listening to the positionEncodingFunction
@@ -101,6 +107,14 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 	}
 
+	public boolean inRange(double worldValue) {
+		if (Double.isNaN(worldValue))
+			return false;
+		if (worldValue >= getValue() && worldValue <= (getExtent() + getValue()))
+			return true;
+		return false;
+	}
+
 	private void refreshPositionMapping() {
 		Rectangle bounds = getBounds();
 
@@ -108,8 +122,8 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 			this.positionEncodingFunction.setMinPixel(0.0);
 			this.positionEncodingFunction.setMaxPixel(0.0);
 		} else {
-			this.positionEncodingFunction.setMinPixel(bounds.getMinX() + 8);
-			this.positionEncodingFunction.setMaxPixel(bounds.getMaxX() - 8);
+			this.positionEncodingFunction.setMinPixel(bounds.getMinX() + (int) (SLIDER_POINTER_WIDTH * 0.5));
+			this.positionEncodingFunction.setMaxPixel(bounds.getMaxX() - (int) (SLIDER_POINTER_WIDTH * 0.5));
 		}
 	}
 
