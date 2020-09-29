@@ -127,11 +127,11 @@ public class AxisCartTools {
 			tmp = 0.1;
 		else if (tmp < 0.5)
 			tmp = 0.25;
-		else if (tmp < 1.1)
+		else if (tmp < 0.85)
 			tmp = 0.5;
 		else if (tmp < 1.66)
 			tmp = 1;
-		else if (tmp < 3)
+		else if (tmp < 4.5)
 			tmp = 2;
 		else if (tmp < 8)
 			tmp = 5;

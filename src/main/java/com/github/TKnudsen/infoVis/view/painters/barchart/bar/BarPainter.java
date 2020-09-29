@@ -22,17 +22,17 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodin
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public abstract class BarPainter extends ChartPainter implements ITooltip {
 
 	// external attributes
-	private final Double minValue;
-	private final Double value;
+	private final Number minValue;
+	private final Number value;
 
 	private boolean fillBar = true;
 	private boolean drawBarOutlines = true;
@@ -44,7 +44,7 @@ public abstract class BarPainter extends ChartPainter implements ITooltip {
 
 	private IPositionEncodingFunction positionEncodingFunction;
 
-	public BarPainter(Double value, Double minValue, Paint color) {
+	public BarPainter(Number value, Number minValue, Paint color) {
 		this.value = value;
 		this.minValue = minValue;
 
@@ -129,11 +129,11 @@ public abstract class BarPainter extends ChartPainter implements ITooltip {
 		this.fillBar = fillBar;
 	}
 
-	public Double getValue() {
+	public Number getValue() {
 		return value;
 	}
 
-	public Double getMinValue() {
+	public Number getMinValue() {
 		return minValue;
 	}
 

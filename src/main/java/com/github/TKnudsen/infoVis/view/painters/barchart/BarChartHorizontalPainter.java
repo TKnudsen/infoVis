@@ -20,11 +20,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class BarChartHorizontalPainter extends BarChartPainter implements IXPositionEncoding {
 
@@ -32,11 +32,11 @@ public class BarChartHorizontalPainter extends BarChartPainter implements IXPosi
 		super(data, colors);
 	}
 
-	public BarChartHorizontalPainter(Double[] data, Color[] colors) {
+	public BarChartHorizontalPainter(Number[] data, Color[] colors) {
 		super(data, colors);
 	}
 
-	public BarChartHorizontalPainter(List<Double> data, List<Color> colors) {
+	public BarChartHorizontalPainter(List<? extends Number> data, List<Color> colors) {
 		super(data, colors);
 	}
 

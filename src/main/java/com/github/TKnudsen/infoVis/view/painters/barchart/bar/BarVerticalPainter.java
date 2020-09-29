@@ -19,15 +19,15 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class BarVerticalPainter extends BarPainter implements IYPositionEncoding {
 
-	public BarVerticalPainter(Double value, Double minValue, Paint color) {
+	public BarVerticalPainter(Number value, Number minValue, Paint color) {
 		super(value, minValue, color);
 	}
 

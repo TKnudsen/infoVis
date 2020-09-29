@@ -33,7 +33,7 @@ import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
  * @author Juergen Bernard
  * @version 2.06
  */
-public class BarChart extends YAxisNumericalChartPanel<Double>
+public class BarChart extends YAxisNumericalChartPanel<Number>
 		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, IRectangleSelection<Integer> {
 
 	/**
@@ -44,23 +44,23 @@ public class BarChart extends YAxisNumericalChartPanel<Double>
 	private final BarChartVerticalPainter barChartPainterVertical;
 
 	// constructor attributes
-	private List<Double> data;
+	private List<? extends Number> data;
 	private List<Color> colors;
-	private double maxGlobal = Double.NaN;
+	private Number maxGlobal = Double.NaN;
 
-	public BarChart(Double[] data, Color[] colors) {
+	public BarChart(Number[] data, Color[] colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChart(Double[] data, Color[] colors, Double maxGlobal) {
+	public BarChart(Number[] data, Color[] colors, Number maxGlobal) {
 		this(DataConversion.arrayToList(data), DataConversion.arrayToList(colors), maxGlobal);
 	}
 
-	public BarChart(List<Double> data, List<Color> colors) {
+	public BarChart(List<? extends Number> data, List<Color> colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChart(List<Double> data, List<Color> colors, Double maxGlobal) {
+	public BarChart(List<? extends Number> data, List<Color> colors, Number maxGlobal) {
 		if (data == null)
 			throw new IllegalArgumentException("BarChartVerticalPanel: data was null");
 		else
@@ -83,11 +83,11 @@ public class BarChart extends YAxisNumericalChartPanel<Double>
 	}
 
 	protected void initializeData() {
-		if (data == null && Double.isNaN(maxGlobal))
+		if (data == null && Double.isNaN(maxGlobal.doubleValue()))
 			throw new IllegalArgumentException("BarChartVerticalPanel: no valid input given");
 
-		double max = Double.NEGATIVE_INFINITY;
-		if (!Double.isNaN(maxGlobal))
+		Number max = Double.NEGATIVE_INFINITY;
+		if (!Double.isNaN(maxGlobal.doubleValue()))
 			max = maxGlobal;
 		else
 			max = MathFunctions.getMax(data);
@@ -96,8 +96,8 @@ public class BarChart extends YAxisNumericalChartPanel<Double>
 	}
 
 	@Override
-	public void initializeYAxisPainter(Double min, Double max) {
-		YAxisNumericalPainter<Double> yAxisNumericalPainter = new YAxisNumericalPainter<Double>(min, max);
+	public void initializeYAxisPainter(Number min, Number max) {
+		YAxisNumericalPainter<Number> yAxisNumericalPainter = new YAxisNumericalPainter<Number>(min, max);
 		yAxisNumericalPainter.setFlipAxisValues(true);
 
 		setYAxisPainter(yAxisNumericalPainter);
