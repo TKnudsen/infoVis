@@ -11,6 +11,7 @@ import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DVe
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	// constructor attributes
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
-	
+
 	public Distribution1DVerticalPanel(List<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		this(values, worldToDoubleMapping, Double.NaN, Double.NaN);
 	}
@@ -124,7 +125,11 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	}
 
 	public void setTriangleSize(double triangleSize) {
-		this.distribution1DVerticalPainter.setTriangleSize(triangleSize);
+		this.distribution1DVerticalPainter.setSizeOfTriangle(triangleSize);
+	}
+
+	public void setShowTrianglesForSelection(boolean showTrianglesForSelection) {
+		this.distribution1DVerticalPainter.setShowTrianglesForSelection(showTrianglesForSelection);
 	}
 
 	public boolean isToolTipping() {
@@ -134,5 +139,12 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	public void setToolTipping(boolean toolTipping) {
 		this.distribution1DVerticalPainter.setToolTipping(toolTipping);
 	}
-	
+
+	public IPositionEncodingFunction getPositionEncodingFunction() {
+		return this.distribution1DVerticalPainter.getPositionEncodingFunction();
+	}
+
+	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
+		this.distribution1DVerticalPainter.setPositionEncodingFunction(xPositionEncodingFunction);
+	}
 }

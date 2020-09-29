@@ -26,17 +26,12 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
 public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVerticalPainter<T> {
 
 	private double relativeHighlightLength = 0.25;
 	private float highlightLineStroke = 3.0f;
-
-	/**
-	 * length of triangle can also be set externally
-	 */
-	private double sizeOfTriangle = 7.0f;
 
 	/**
 	 * forgot what this was good for
@@ -72,7 +67,8 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 			if (entry.getValue() != null)
 				paint = entry.getValue().getColor();
 
-			drawHighlightTriangle(g2, t, paint);
+			if (isShowTrianglesForSelection())
+				drawHighlightTriangle(g2, t, paint);
 		}
 
 		g2.setStroke(stroke);
@@ -83,7 +79,7 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 	protected double getValueXEndPosition() {
 		double hReduced = 0;
 
-		if (!specialValues.isEmpty() && highlightsAtTheRightBound)
+		if (!specialValues.isEmpty() && highlightsAtTheRightBound && isShowTrianglesForSelection())
 			hReduced = chartRectangle.getWidth() * getRelativeHighlightLength();
 
 		return chartRectangle.getMaxX() - hReduced;
@@ -96,8 +92,8 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 		Double d = getWorldToDoubleMapping().apply(worldData);
 		double yCord = getPositionEncodingFunction().apply(d);
 
-		double length = (Double.isNaN(sizeOfTriangle)) ? chartRectangle.getWidth() * getRelativeHighlightLength()
-				: sizeOfTriangle;
+		double length = (Double.isNaN(getSizeOfTriangle())) ? chartRectangle.getWidth() * getRelativeHighlightLength()
+				: getSizeOfTriangle();
 
 		Path2D path = new Path2D.Double();
 
@@ -155,13 +151,6 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 
 	public void setFillHighlights(boolean fillHighlights) {
 		this.fillHighlights = fillHighlights;
-	}
-
-	public void setTriangleSize(double sizeOfTriangle) {
-		if (sizeOfTriangle < 0)
-			System.err.println(getClass().getSimpleName() + "setSizeOfTriangle: size was negative (" + sizeOfTriangle
-					+ ") set to 0");
-		this.sizeOfTriangle = Math.max(0, sizeOfTriangle);
 	}
 
 }

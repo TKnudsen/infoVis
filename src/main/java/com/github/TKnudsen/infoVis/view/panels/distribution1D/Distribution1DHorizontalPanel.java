@@ -11,6 +11,7 @@ import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DHo
 import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 
 /**
  * <p>
@@ -134,6 +135,14 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 		this.distribution1DHorizontalPainter.setAlpha(alpha);
 	}
 
+	public void setTriangleSize(double triangleSize) {
+		this.distribution1DHorizontalPainter.setSizeOfTriangle(triangleSize);
+	}
+
+	public void setShowTrianglesForSelection(boolean showTrianglesForSelection) {
+		this.distribution1DHorizontalPainter.setShowTrianglesForSelection(showTrianglesForSelection);
+	}
+
 	public boolean isToolTipping() {
 		return this.distribution1DHorizontalPainter.isToolTipping();
 	}
@@ -141,4 +150,13 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 	public void setToolTipping(boolean toolTipping) {
 		this.distribution1DHorizontalPainter.setToolTipping(toolTipping);
 	}
+
+	public IPositionEncodingFunction getPositionEncodingFunction() {
+		return this.distribution1DHorizontalPainter.getPositionEncodingFunction();
+	}
+
+	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
+		this.distribution1DHorizontalPainter.setPositionEncodingFunction(xPositionEncodingFunction);
+	}
+
 }

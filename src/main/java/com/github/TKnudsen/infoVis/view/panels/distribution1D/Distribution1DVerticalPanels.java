@@ -107,6 +107,8 @@ public class Distribution1DVerticalPanels {
 							distributionPanel.addSpecialValue(t, selectionShapeAttribtes);
 						}
 					}
+
+					distributionPanel.repaint();
 				}
 			});
 		}
