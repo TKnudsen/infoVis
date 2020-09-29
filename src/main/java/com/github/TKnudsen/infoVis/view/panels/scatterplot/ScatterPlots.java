@@ -50,27 +50,29 @@ public class ScatterPlots {
 		return new ScatterPlot<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
 	}
 
-	public static <T> SelectionModel<T> addInteraction(ScatterPlot<T> scatterPlot, boolean addClickSelection,
-			boolean addRectangleSelection, boolean addLassoInteraction) {
+	public static <T> SelectionModel<T> addInteraction(ScatterPlot<T> scatterPlot, boolean clickSelection,
+			boolean rectangleSelection, boolean addLassoInteraction) {
 		// SELECTION MODEL
 		SelectionModel<T> selectionModel = SelectionModels.create();
 
-		addInteraction(scatterPlot, selectionModel, addClickSelection, addRectangleSelection, addLassoInteraction);
+		addInteraction(scatterPlot, selectionModel, clickSelection, rectangleSelection, addLassoInteraction);
 
 		return selectionModel;
 	}
 
 	public static <T> void addInteraction(ScatterPlot<T> scatterPlot, SelectionModel<T> selectionModel,
-			boolean addClickSelection, boolean addRectangleSelection, boolean addLassoInteraction) {
+			boolean clickSelection, boolean rectangleSelection, boolean addLassoInteraction) {
+		if (!clickSelection && !rectangleSelection)
+			return;
 
 		// SELECTION HANDLER
 		SelectionHandler<T> selectionHandler = new SelectionHandler<>(selectionModel);
 		selectionHandler.attachTo(scatterPlot);
 
-		if (addClickSelection)
+		if (clickSelection)
 			selectionHandler.setClickSelection(scatterPlot);
 
-		if (addRectangleSelection)
+		if (rectangleSelection)
 			selectionHandler.setRectangleSelection(scatterPlot);
 
 		scatterPlot.addChartPainter(new ChartPainter() {
