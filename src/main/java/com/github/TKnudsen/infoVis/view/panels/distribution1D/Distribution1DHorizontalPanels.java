@@ -9,9 +9,12 @@ import java.util.function.Function;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 
+import de.javagl.selection.SelectionEvent;
+import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 public class Distribution1DHorizontalPanels {
@@ -61,8 +64,40 @@ public class Distribution1DHorizontalPanels {
 				maxGlobal);
 	}
 
+	public static <T> Distribution1DHorizontalPanel<T> create(List<T> data,
+			Function<? super T, Double> worldToDoubleMapping) {
+		return create(data, worldToDoubleMapping, null, Double.NaN, Double.NaN);
+	}
+
+	public static <T> Distribution1DHorizontalPanel<T> create(List<T> data,
+			Function<? super T, Double> worldToDoubleMapping, Double minGlobal, Double maxGlobal) {
+		return create(data, worldToDoubleMapping, null, minGlobal, maxGlobal);
+	}
+
+	public static <T> Distribution1DHorizontalPanel<T> create(List<T> data,
+			Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction, Double minGlobal, Double maxGlobal) {
+		return new Distribution1DHorizontalPanel<T>(data, worldToDoubleMapping, colorEncodingFunction, minGlobal,
+				maxGlobal);
+	}
+
 	public static <T> void addInteraction(Distribution1DHorizontalPanel<T> distributionPanel,
 			SelectionModel<T> selectionModel) {
+
+		addInteraction(distributionPanel, selectionModel, null);
+	}
+
+	/**
+	 * 
+	 * @param <T>
+	 * @param distributionPanel
+	 * @param selectionModel
+	 * @param selectionShapeAttribtes adds visual encodings to selected objects.
+	 *                                ShapeAttributes include a selection color and
+	 *                                a stroke.
+	 */
+	public static <T> void addInteraction(Distribution1DHorizontalPanel<T> distributionPanel,
+			SelectionModel<T> selectionModel, ShapeAttributes selectionShapeAttribtes) {
 
 		// SELECTION HANDLER
 		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(selectionModel);
@@ -78,6 +113,23 @@ public class Distribution1DHorizontalPanels {
 			}
 		});
 
+		if (selectionShapeAttribtes != null) {
+			selectionModel.addSelectionListener(new SelectionListener<T>() {
+
+				@Override
+				public void selectionChanged(SelectionEvent<T> selectionEvent) {
+					distributionPanel.clearSpecialValues();
+
+					for (T t : selectionEvent.getSelectionModel().getSelection()) {
+						{
+							distributionPanel.addSpecialValue(t, selectionShapeAttribtes);
+						}
+					}
+
+					distributionPanel.repaint();
+				}
+			});
+		}
 	}
 
 	/**

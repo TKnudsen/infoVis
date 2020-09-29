@@ -56,6 +56,16 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	private boolean toolTipping = true;
 
 	/**
+	 * length of triangle can also be set externally
+	 */
+	private double sizeOfTriangle = Double.NaN;
+
+	/**
+	 * whether or not selected elements are highlighted with an additional triangle
+	 */
+	private boolean showTrianglesForSelection = true;
+
+	/**
 	 * world coordinates/position/values of the x dimension
 	 */
 	private final Function<? super T, Double> worldToDoubleMapping;
@@ -229,6 +239,25 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	public Function<? super T, Double> getWorldToDoubleMapping() {
 		return worldToDoubleMapping;
+	}
+
+	public double getSizeOfTriangle() {
+		return this.sizeOfTriangle;
+	}
+
+	public void setSizeOfTriangle(double sizeOfTriangle) {
+		if (sizeOfTriangle < 0)
+			System.err.println(getClass().getSimpleName() + "setSizeOfTriangle: size was negative (" + sizeOfTriangle
+					+ ") set to 0");
+		this.sizeOfTriangle = Math.max(0, sizeOfTriangle);
+	}
+
+	public boolean isShowTrianglesForSelection() {
+		return showTrianglesForSelection;
+	}
+
+	public void setShowTrianglesForSelection(boolean showTrianglesForSelection) {
+		this.showTrianglesForSelection = showTrianglesForSelection;
 	}
 
 }
