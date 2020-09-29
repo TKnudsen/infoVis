@@ -3,6 +3,7 @@ package com.github.TKnudsen.infoVis.view.painters.barchart;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.TKnudsen.infoVis.view.painters.barchart.bar.BarVerticalPainter;
@@ -20,11 +21,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class BarChartVerticalPainter extends BarChartPainter implements IYPositionEncoding {
 
@@ -32,11 +33,11 @@ public class BarChartVerticalPainter extends BarChartPainter implements IYPositi
 		super(data, colors);
 	}
 
-	public BarChartVerticalPainter(Double[] data, Color[] colors) {
+	public BarChartVerticalPainter(Number[] data, Color[] colors) {
 		super(data, colors);
 	}
 
-	public BarChartVerticalPainter(List<Double> data, List<Color> colors) {
+	public BarChartVerticalPainter(Collection<? extends Number> data, List<Color> colors) {
 		super(data, colors);
 	}
 

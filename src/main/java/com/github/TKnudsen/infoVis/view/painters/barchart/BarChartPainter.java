@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -35,19 +36,19 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.07
+ * @version 2.08
  */
 public abstract class BarChartPainter extends ChartPainter
 		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer>, ITooltip {
 
 	// external attributes
-	protected List<Double> data = null;
+	protected List<? extends Number> data = null;
 	protected List<Color> colors;
-	private Double minValue = 0.0;
+	private Number minValue = 0.0;
 
 	// visuals
 	private boolean fillBars = true;
@@ -78,7 +79,7 @@ public abstract class BarChartPainter extends ChartPainter
 		initialize();
 	}
 
-	public BarChartPainter(Double[] data, Color[] colors) {
+	public BarChartPainter(Number[] data, Color[] colors) {
 		this.data = DataConversion.arrayToList(data);
 		this.colors = DataConversion.arrayToList(colors);
 
@@ -87,8 +88,8 @@ public abstract class BarChartPainter extends ChartPainter
 		initialize();
 	}
 
-	public BarChartPainter(List<Double> data) {
-		this.data = Collections.unmodifiableList(data);
+	public BarChartPainter(Collection<? extends Number> data) {
+		this.data = new ArrayList<>(data);
 
 		this.colors = new ArrayList<>();
 		for (int i = 0; i < data.size(); i++)
@@ -99,8 +100,8 @@ public abstract class BarChartPainter extends ChartPainter
 		initialize();
 	}
 
-	public BarChartPainter(List<Double> data, List<Color> colors) {
-		this.data = Collections.unmodifiableList(data);
+	public BarChartPainter(Collection<? extends Number> data, List<Color> colors) {
+		this.data = new ArrayList<>(data);
 		this.colors = Collections.unmodifiableList(colors);
 
 		initializePositionEncodingFunction();
@@ -315,11 +316,11 @@ public abstract class BarChartPainter extends ChartPainter
 				barPainter.setPositionEncodingFunction(positionEncodingFunction);
 	}
 
-	public Double getMinValue() {
+	public Number getMinValue() {
 		return minValue;
 	}
 
-	public void setMinValue(Double minValue) {
+	public void setMinValue(Number minValue) {
 		this.minValue = minValue;
 
 		initialize();

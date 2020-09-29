@@ -1,12 +1,23 @@
 package com.github.TKnudsen.infoVis.view.panels.barchart;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
+
+import de.javagl.selection.LoggingSelectionListener;
+import de.javagl.selection.SelectionModel;
+import de.javagl.selection.SelectionModels;
 
 /**
  * <p>
@@ -26,40 +37,64 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalSt
  */
 public class BarCharts {
 
-	public static BarChart createBarChart(List<Double> bars, List<Color> colors) {
+	/**
+	 * creates a bar chart with all bars having the same color
+	 * 
+	 * @param bars
+	 * @param color
+	 * @return
+	 */
+	public static BarChart createBarChart(List<Double> bars, Color color) {
+		List<Color> colors = new ArrayList<Color>();
+
+		for (@SuppressWarnings("unused")
+		Double d : bars)
+			colors.add(color);
 
 		return new BarChart(bars, colors);
 	}
 
+	public static BarChart createBarChart(List<Double> bars, List<Color> colors) {
+		return new BarChart(bars, colors);
+	}
+
 	public static BarChartHorizontal createBarChartHorizontal(List<Double> bars, List<Color> colors) {
-
 		return new BarChartHorizontal(bars, colors);
+	}
 
-//		// SELECTION MODEL
-//		SelectionModel<Integer> selectionModel = SelectionModels.create();
-//
-//		// SELECTION HANDLER
-//		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
-//		selectionHandler.attachTo(panel);
-//		selectionHandler.setClickSelection(panel);
-//		selectionHandler.setRectangleSelection(panel);
-//
-//		panel.addChartPainter(new ChartPainter() {
-//			@Override
-//			public void draw(Graphics2D g2) {
-//				selectionHandler.draw(g2);
-//			}
-//		});
-//
-//		panel.setSelectedFunction(new Function<Integer, Boolean>() {
-//
-//			@Override
-//			public Boolean apply(Integer t) {
-//				return selectionHandler.getSelectionModel().isSelected(t);
-//			}
-//		});
-//
-//		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
+	/**
+	 * 
+	 * @param data   list of bar chart data
+	 * @param colors one color for each bar chart layer
+	 * @return
+	 */
+	public static BarChart createLayeredBarChart(List<List<Double>> data, List<Color> barchartColors) {
+		Objects.requireNonNull(data);
+
+		if (data.isEmpty())
+			return null;
+
+		// create bar chart
+		Color color = Color.GRAY;
+		if (barchartColors != null && !barchartColors.isEmpty())
+			color = barchartColors.get(0);
+		BarChart barChart = createBarChart(data.get(0), color);
+
+		// add additional bar chart layers
+		for (int i = 1; i < data.size(); i++) {
+			List<Double> bars = data.get(i);
+
+			List<Color> colors = new ArrayList<Color>();
+			Color c = barchartColors.size() > i ? barchartColors.get(i) : Color.BLACK;
+			for (@SuppressWarnings("unused")
+			Double d : bars)
+				colors.add(c);
+
+			BarChartVerticalPainter barChartVerticalPainter = new BarChartVerticalPainter(bars, colors);
+			barChart.addChartPainter(barChartVerticalPainter, true);
+		}
+
+		return barChart;
 	}
 
 	public static void addLegend(BarChart barChart, List<String> labels) {
@@ -97,6 +132,32 @@ public class BarCharts {
 		gridPainter.setBackgroundPaint(null);
 
 		barChart.addChartPainter(gridPainter);
+	}
+
+	public static void addInteraction(BarChart barChart) {
+		SelectionModel<Integer> selectionModel = SelectionModels.create();
+
+		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
+		selectionHandler.attachTo(barChart);
+		selectionHandler.setClickSelection(barChart);
+		selectionHandler.setRectangleSelection(barChart);
+
+		barChart.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
+
+		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
+
+			@Override
+			public Boolean apply(Integer t) {
+				return selectionHandler.getSelectionModel().isSelected(t);
+			}
+		});
+
+		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 	}
 
 	/**

@@ -27,13 +27,13 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
-public class BarChartHorizontal extends XAxisNumericalChartPanel<Double>
+public class BarChartHorizontal extends XAxisNumericalChartPanel<Number>
 		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer> {
 
 	/**
@@ -43,23 +43,23 @@ public class BarChartHorizontal extends XAxisNumericalChartPanel<Double>
 
 	private final BarChartHorizontalPainter barChartPainterHorizontal;
 
-	private List<Double> data;
+	private List<Number> data;
 	private List<Color> colors;
-	private double maxGlobal = Double.NaN;
+	private Number maxGlobal = Double.NaN;
 
-	public BarChartHorizontal(Double[] data, Color[] colors) {
+	public BarChartHorizontal(Number[] data, Color[] colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartHorizontal(Double[] data, Color[] colors, Double maxGlobal) {
+	public BarChartHorizontal(Number[] data, Color[] colors, Number maxGlobal) {
 		this(DataConversion.arrayToList(data), DataConversion.arrayToList(colors), maxGlobal);
 	}
 
-	public BarChartHorizontal(List<Double> data, List<Color> colors) {
+	public BarChartHorizontal(List<? extends Number> data, List<Color> colors) {
 		this(data, colors, Double.NaN);
 	}
 
-	public BarChartHorizontal(List<Double> data, List<Color> colors, Double maxGlobal) {
+	public BarChartHorizontal(List<? extends Number> data, List<Color> colors, Number maxGlobal) {
 		if (data == null || data.size() == 0)
 			throw new IllegalArgumentException("BarChartHorizontalPanel: no data");
 		else
@@ -82,11 +82,11 @@ public class BarChartHorizontal extends XAxisNumericalChartPanel<Double>
 	}
 
 	protected void initializeData() {
-		if (data == null && Double.isNaN(maxGlobal))
+		if (data == null && Double.isNaN(maxGlobal.doubleValue()))
 			throw new IllegalArgumentException("BarChartHorizontalPanel: no valid input given");
 
-		double max = Double.NEGATIVE_INFINITY;
-		if (!Double.isNaN(maxGlobal))
+		Number max = Double.NEGATIVE_INFINITY;
+		if (!Double.isNaN(maxGlobal.doubleValue()))
 			max = maxGlobal;
 		else
 			max = MathFunctions.getMax(data);
@@ -95,8 +95,8 @@ public class BarChartHorizontal extends XAxisNumericalChartPanel<Double>
 	}
 
 	@Override
-	public void initializeXAxisPainter(Double min, Double max) {
-		XAxisNumericalPainter<Double> xAxisNumericalPainter = new XAxisNumericalPainter<Double>(min, max);
+	public void initializeXAxisPainter(Number min, Number max) {
+		XAxisNumericalPainter<Number> xAxisNumericalPainter = new XAxisNumericalPainter<Number>(min, max);
 		xAxisNumericalPainter.setFlipAxisValues(false);
 
 		setXAxisPainter(xAxisNumericalPainter);

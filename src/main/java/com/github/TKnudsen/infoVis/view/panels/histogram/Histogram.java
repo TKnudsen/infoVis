@@ -1,0 +1,255 @@
+package com.github.TKnudsen.infoVis.view.panels.histogram;
+
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
+import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
+import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
+import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
+import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
+import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
+import com.github.TKnudsen.infoVis.view.panels.axis.XYNumericalChartPanel;
+import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
+
+import de.javagl.selection.SelectionEvent;
+import de.javagl.selection.SelectionListener;
+
+public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
+		implements IClickSelection<T>, IRectangleSelection<T>, FilterStatusListener<T>, SelectionListener<T> {
+
+	// Histogram is not a ISelectionVisualizer<T>, because it requires a
+	// selection change event to re-create the selection bar chart. Instead
+	// Histogram is a SelectionListener<T>.
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final Collection<? extends T> data;
+	private Collection<? extends T> filterStatusData;
+
+	private static final int DEFAULT_BIN_COUNT = 50;
+
+	private static final Color DEFAULT_COLOR = Color.GRAY;
+	private static final Color DEFAULT_FILTER_COLOR = Color.DARK_GRAY;
+	private Color selectionColor = InfoVisColors.SELECTION_COLOR;
+	private Function<? super T, Boolean> selectedFunction;
+
+	private final BarChartVerticalPainter globalDistributionBarchartPainter;
+	private BarChartVerticalPainter filterDistributionBarchartPainter;
+	private BarChartVerticalPainter selectionDistributionBarchartPainter;
+
+	private final Function<Collection<? extends T>, List<? extends Number>> valuesToCounts;
+	private final Function<List<Integer>, List<T>> binsToValues;
+
+	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping) {
+		this(data, worldToNumberMapping, null, null, null);
+	}
+
+	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
+			Function<Number, Integer> aggregationFunction, Color color) {
+		this(data, worldToNumberMapping, aggregationFunction, null, color);
+	}
+
+	/**
+	 * 
+	 * @param data                 numerical values which will be aggregated
+	 *                             (binned), value count per bin will define the
+	 *                             height of bars
+	 * @param worldToNumberMapping mapping from a real-world object to the number
+	 *                             that shall be used in the histogram.
+	 * @param aggregationFunction  an external binning function. must work for the
+	 *                             given data, but should also work of other values
+	 *                             than given
+	 * @param maxGlobal            optional global maximum number
+	 * @param colors
+	 */
+	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
+			Function<Number, Integer> aggregationFunction, Number maxGlobal, Color color) {
+
+		Objects.requireNonNull(data);
+		Objects.requireNonNull(worldToNumberMapping);
+
+		this.data = Collections.unmodifiableCollection(data);
+		this.filterStatusData = Collections.unmodifiableCollection(data);
+
+		Number min = Double.POSITIVE_INFINITY;
+		Number max = Double.NEGATIVE_INFINITY;
+		for (T t : data) {
+			Number d = worldToNumberMapping.apply(t);
+			min = Math.min(min.doubleValue(), d.doubleValue());
+			max = Math.max(max.doubleValue(), d.doubleValue());
+		}
+		if (maxGlobal != null && !Double.isNaN(maxGlobal.doubleValue()))
+			max = maxGlobal;
+
+		Function<Number, Integer> aggregation = aggregationFunction != null ? aggregationFunction
+				: Histograms.defaultAggregationFunction(min, max, DEFAULT_BIN_COUNT);
+
+		final Number m = max;
+		this.valuesToCounts = values -> {
+			int binCount = aggregation.apply(m);
+			double[] counts = new double[binCount];
+
+			for (T t : values) {
+				Number d = worldToNumberMapping.apply(t);
+				Integer index = aggregation.apply(d);
+				// necessary because the maxGlobal may not be the max value
+				if (index < counts.length)
+					counts[index]++;
+			}
+
+			return DataConversion.doublePrimitivesToList(counts);
+		};
+
+		List<? extends Number> counts = valuesToCounts.apply(data);
+
+		// initialize axes. special case here: the x Axis shows values but is not
+		// synchronized with the bar chart painters. This is due to the fact that bar
+		// charts do not have a numerical axis, still it would be nice here to see the
+		// value distribution
+		initializeXAxisPainter(min, max);
+
+		initializeYAxisPainter(0.0, MathFunctions.getMax(counts));
+
+		// last: initialize and register painters
+		Color defaultColor = color != null ? color : DEFAULT_COLOR;
+		List<Color> colors = DataConversion.constantValueList(defaultColor, counts.size());
+		globalDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
+		globalDistributionBarchartPainter.setBackgroundPaint(null);
+		this.addChartPainter(globalDistributionBarchartPainter, false, true);
+
+		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter();
+		this.addChartPainter(filterDistributionBarchartPainter, false, true);
+
+		this.binsToValues = bars -> {
+			List<T> elements = new ArrayList<T>();
+			for (T t : this.filterStatusData) {
+				Number d = worldToNumberMapping.apply(t);
+				if (bars.contains(aggregation.apply(d)))
+					elements.add(t);
+			}
+
+			return elements;
+		};
+	}
+
+	private BarChartVerticalPainter createFilterStatusDistributionBarchartPainter() {
+		List<? extends Number> counts = valuesToCounts.apply(filterStatusData);
+		List<Color> colors = DataConversion.constantValueList(DEFAULT_FILTER_COLOR, counts.size());
+		BarChartVerticalPainter selectionDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
+		selectionDistributionBarchartPainter.setBackgroundPaint(null);
+
+		return selectionDistributionBarchartPainter;
+	}
+
+	public Color getSelectionColor() {
+		return selectionColor;
+	}
+
+	public void setSelectionColor(Color selectionColor) {
+		this.selectionColor = selectionColor;
+	}
+
+	@Override
+	public void initializeXAxisPainter(Number min, Number max) {
+		setXAxisPainter(new XAxisNumericalPainter<Number>(min, max));
+	}
+
+	@Override
+	public void initializeYAxisPainter(Number min, Number max) {
+		YAxisNumericalPainter<Number> yAxisNumericalPainter = new YAxisNumericalPainter<Number>(min, max);
+		yAxisNumericalPainter.setFlipAxisValues(true);
+
+		setYAxisPainter(yAxisNumericalPainter);
+	}
+
+	@Override
+	public List<T> getElementsAtPoint(Point p) {
+		List<Integer> bars = globalDistributionBarchartPainter.getElementsAtPoint(p);
+
+		return binsToValues.apply(bars);
+	}
+
+	@Override
+	public List<T> getElementsInRectangle(RectangularShape rectangle) {
+		List<Integer> bars = globalDistributionBarchartPainter.getElementsInRectangle(rectangle);
+
+		return binsToValues.apply(bars);
+	}
+
+	/**
+	 * the visual representation of selected elements is handled with a third bar
+	 * char painter layer: the selectionDistributionBarchartPainter.
+	 * 
+	 * This and only this bar chart painter has to be recreated in case of three
+	 * events:
+	 * 
+	 * 1) the filterStatusData has changed
+	 * 
+	 * 2) the selectedFunction has changed
+	 * 
+	 * 3) the selection has changed
+	 */
+	private void handleSelectionChanged() {
+		if (selectionDistributionBarchartPainter != null)
+			removeChartPainter(selectionDistributionBarchartPainter);
+
+		if (selectedFunction == null)
+			return;
+
+		List<T> selection = new ArrayList<T>();
+		for (T t : this.filterStatusData)
+			if (selectedFunction.apply(t))
+				selection.add(t);
+
+		List<? extends Number> counts = valuesToCounts.apply(selection);
+		List<Color> colors = DataConversion.constantValueList(selectionColor, counts.size());
+		selectionDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
+		selectionDistributionBarchartPainter.setBackgroundPaint(null);
+
+		this.addChartPainter(selectionDistributionBarchartPainter, false, true);
+
+		repaint();
+	}
+
+	@Override
+	public void filterStatusChanged(FilterChangedEvent<T> filterChangedEvent) {
+		if (filterChangedEvent == null || filterChangedEvent.getFilterStatus() == null)
+			return;
+
+		List<T> filterStatusData = new ArrayList<T>();
+
+		for (T t : this.data)
+			if (filterChangedEvent.getFilterStatus().test(t))
+				filterStatusData.add(t);
+		this.filterStatusData = filterStatusData;
+
+		removeChartPainter(filterDistributionBarchartPainter);
+
+		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter();
+		addChartPainter(1, filterDistributionBarchartPainter, false, true);
+
+		handleSelectionChanged();
+	}
+
+	@Override
+	public void selectionChanged(SelectionEvent<T> selectionEvent) {
+		this.selectedFunction = t -> selectionEvent.getSelectionModel().isSelected(t);
+
+		handleSelectionChanged();
+	}
+
+}

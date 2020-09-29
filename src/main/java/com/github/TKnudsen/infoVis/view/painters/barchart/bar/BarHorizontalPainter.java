@@ -19,15 +19,15 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class BarHorizontalPainter extends BarPainter implements IXPositionEncoding {
 
-	public BarHorizontalPainter(Double value, Double minValue, Paint color) {
+	public BarHorizontalPainter(Number value, Number minValue, Paint color) {
 		super(value, minValue, color);
 	}
 

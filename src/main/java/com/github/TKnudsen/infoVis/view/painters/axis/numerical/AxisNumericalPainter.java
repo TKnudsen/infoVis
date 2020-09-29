@@ -126,42 +126,30 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		markerPositionsWithLabels = new ArrayList<Entry<Double, String>>();
 
 		// internal variables
-		double interval = Math.abs(maxValue.doubleValue() - minValue.doubleValue());
-		// double width = Math.abs(maxPixel - minPixel);
-		// double width = maxPixel - minPixel;
-		// double markerCount = Math.max(2, Math.abs(width) / (double)
-		// markerDistanceInPixels);
+		double valueInterval = Math.abs(maxValue.doubleValue() - minValue.doubleValue());
 
 		if (!isLogarithmicScale()) {
-			double valueInterval = AxisCartTools.suggestMeaningfulValueIntervalLinear(interval / markerCount);
+			double quantization = AxisCartTools.suggestMeaningfulValueIntervalLinear(valueInterval / markerCount);
 			double startValue = minValue.doubleValue();
 
-			// if (!pruneMinValue)
-			// markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double,
-			// String>(minPixel,
-			// AxisCartTools.suggestMeaningfulValueString(position1DMapping.apply(startValue))));
-			//
-			// else {
 			double d = startValue;
-			double mod = d % valueInterval;
+			double mod = d % quantization;
 			startValue = d - mod;
 
 			if (startValue < minValue.doubleValue())
-				startValue += valueInterval;
+				startValue += quantization;
 
 			double pixValue = positionEncodingFunction.apply(startValue);
-
-			markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double, String>(pixValue,
-					AxisCartTools.suggestMeaningfulValueString(startValue)));
+			addMarkerPosition(pixValue, startValue);
 
 			// iterate...
-			double loop = valueInterval;
+			double loop = quantization;
 			while (!Double.isNaN(loop) && !Double.isInfinite(loop)
-					&& new BigDecimal(loop).doubleValue() <= new BigDecimal(interval).doubleValue()) {
+					&& new BigDecimal(loop).doubleValue() <= new BigDecimal(valueInterval).doubleValue()
+					&& new BigDecimal(startValue + loop).doubleValue() < maxValue.doubleValue()) {
 				pixValue = positionEncodingFunction.apply(startValue + loop);
-				markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double, String>(pixValue,
-						AxisCartTools.suggestMeaningfulValueString(startValue + loop)));
-				loop += valueInterval;
+				addMarkerPosition(pixValue, startValue + loop);
+				loop += quantization;
 			}
 		} else {
 			// logarithmicScale
@@ -170,8 +158,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 			if (meaningfulValuesLogarithmic != null)
 				for (Double value : meaningfulValuesLogarithmic) {
 					Double pixValue = positionEncodingFunction.apply(value);
-					markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double, String>(pixValue,
-							AxisCartTools.suggestMeaningfulValueString(value)));
+					addMarkerPosition(pixValue, value);
 				}
 		}
 
@@ -186,6 +173,11 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 			} else
 				lastEntry = entry;
 		}
+	}
+
+	private void addMarkerPosition(Double pixValue, Double value) {
+		markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double, String>(pixValue,
+				AxisCartTools.suggestMeaningfulValueString(value)));
 	}
 
 	@Override
