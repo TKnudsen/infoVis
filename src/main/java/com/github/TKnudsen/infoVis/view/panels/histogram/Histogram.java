@@ -18,6 +18,7 @@ import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.XYNumericalChartPanel;
 import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
@@ -25,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
 import de.javagl.selection.SelectionEvent;
 import de.javagl.selection.SelectionListener;
 
-public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
+public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		implements IClickSelection<T>, IRectangleSelection<T>, FilterStatusListener<T>, SelectionListener<T> {
 
 	// Histogram is not a ISelectionVisualizer<T>, because it requires a
@@ -38,29 +39,37 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	private static final long serialVersionUID = 1L;
 
 	private final Collection<? extends T> data;
-	private Collection<? extends T> filterStatusData;
+	protected Collection<? extends T> filterStatusData;
 
 	private static final int DEFAULT_BIN_COUNT = 50;
 
 	private static final Color DEFAULT_COLOR = Color.GRAY;
+	private Color allDataColor;
+
 	private static final Color DEFAULT_FILTER_COLOR = Color.DARK_GRAY;
+	private Color filterColor;
+
 	private Color selectionColor = InfoVisColors.SELECTION_COLOR;
 	private Function<? super T, Boolean> selectedFunction;
 
-	private final BarChartVerticalPainter globalDistributionBarchartPainter;
-	private BarChartVerticalPainter filterDistributionBarchartPainter;
-	private BarChartVerticalPainter selectionDistributionBarchartPainter;
+	/**
+	 * vertical or horizontal orientation?
+	 */
+	private final boolean vertical;
+	private final BarChartPainter globalDistributionBarchartPainter;
+	private BarChartPainter filterDistributionBarchartPainter;
+	private BarChartPainter selectionDistributionBarchartPainter;
 
-	private final Function<Collection<? extends T>, List<? extends Number>> valuesToCounts;
+	protected final Function<Collection<? extends T>, List<? extends Number>> valuesToCounts;
 	private final Function<List<Integer>, List<T>> binsToValues;
 
-	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping) {
-		this(data, worldToNumberMapping, null, null, null);
+	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping, boolean vertical) {
+		this(data, worldToNumberMapping, null, null, vertical, null, null);
 	}
 
-	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
-			Function<Number, Integer> aggregationFunction, Color color) {
-		this(data, worldToNumberMapping, aggregationFunction, null, color);
+	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
+			Function<Number, Integer> aggregationFunction, boolean vertical, Color defaultColor, Color filterColor) {
+		this(data, worldToNumberMapping, aggregationFunction, null, vertical, defaultColor, filterColor);
 	}
 
 	/**
@@ -74,16 +83,21 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	 *                             given data, but should also work of other values
 	 *                             than given
 	 * @param maxGlobal            optional global maximum number
-	 * @param colors
+	 * @param vertical             vertical or horizontal orientation?
+	 * @param defaultColor
+	 * @param filterColor
 	 */
-	public Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
-			Function<Number, Integer> aggregationFunction, Number maxGlobal, Color color) {
+	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
+			Function<Number, Integer> aggregationFunction, Number maxGlobal, boolean vertical, Color defaultColor,
+			Color filterColor) {
 
 		Objects.requireNonNull(data);
 		Objects.requireNonNull(worldToNumberMapping);
 
 		this.data = Collections.unmodifiableCollection(data);
 		this.filterStatusData = Collections.unmodifiableCollection(data);
+		this.vertical = vertical;
+		this.filterColor = filterColor;
 
 		Number min = Double.POSITIVE_INFINITY;
 		Number max = Double.NEGATIVE_INFINITY;
@@ -100,8 +114,8 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		final Number m = max;
 		this.valuesToCounts = values -> {
-			int binCount = aggregation.apply(m);
-			double[] counts = new double[binCount];
+			int largestBinIndex = aggregation.apply(m);
+			double[] counts = new double[largestBinIndex + 1];
 
 			for (T t : values) {
 				Number d = worldToNumberMapping.apply(t);
@@ -116,22 +130,23 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		List<? extends Number> counts = valuesToCounts.apply(data);
 
-		// initialize axes. special case here: the x Axis shows values but is not
-		// synchronized with the bar chart painters. This is due to the fact that bar
-		// charts do not have a numerical axis, still it would be nice here to see the
-		// value distribution
-		initializeXAxisPainter(min, max);
+		// initialize axes - special case here: for the vertical variant the x Axis
+		// shows values but is not synchronized with the bar chart painters.
+		// Accordingly, for the horizontal variant the y Axis shows these values.
 
-		initializeYAxisPainter(0.0, MathFunctions.getMax(counts));
+		// For both cases this is due to the fact that bar charts do not have a
+		// numerical axis, still it would be nice here to see the value distribution
+		initializeAxisPainters(min, max, counts);
+//		initializeXAxisPainter(min, max);
+//		initializeYAxisPainter(0.0, MathFunctions.getMax(counts));
 
-		// last: initialize and register painters
-		Color defaultColor = color != null ? color : DEFAULT_COLOR;
-		List<Color> colors = DataConversion.constantValueList(defaultColor, counts.size());
-		globalDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
-		globalDistributionBarchartPainter.setBackgroundPaint(null);
+		// initialize and register painters
+		globalDistributionBarchartPainter = createAllDataDistributionBarchart(counts,
+				defaultColor != null ? defaultColor : DEFAULT_COLOR);
 		this.addChartPainter(globalDistributionBarchartPainter, false, true);
 
-		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter();
+		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter(
+				filterColor != null ? filterColor : DEFAULT_FILTER_COLOR);
 		this.addChartPainter(filterDistributionBarchartPainter, false, true);
 
 		this.binsToValues = bars -> {
@@ -146,21 +161,67 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		};
 	}
 
-	private BarChartVerticalPainter createFilterStatusDistributionBarchartPainter() {
+	/**
+	 * initialize axes - special case here: for the vertical variant the x Axis
+	 * shows values but is not synchronized with the bar chart painters.
+	 * Accordingly, for the horizontal variant the y Axis shows these values.
+	 * 
+	 * For both cases this is due to the fact that bar charts do not have a
+	 * numerical axis, still it would be nice here to see the value distribution
+	 */
+	private void initializeAxisPainters(Number min, Number max, List<? extends Number> counts) {
+		if (vertical) {
+			initializeXAxisPainter(min, max);
+			initializeYAxisPainter(0.0, MathFunctions.getMax(counts));
+		} else {
+			initializeXAxisPainter(0.0, MathFunctions.getMax(counts));
+			initializeYAxisPainter(min, max);
+		}
+	}
+
+	/**
+	 * by default a vertical bar chart is created
+	 * 
+	 * @param counts
+	 * @param defaultColor
+	 * @return
+	 */
+	protected BarChartPainter createAllDataDistributionBarchart(List<? extends Number> counts, Color defaultColor) {
+		List<Color> colors = DataConversion.constantValueList(defaultColor, counts.size());
+
+		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
+		barChart.setBackgroundPaint(null);
+		return barChart;
+	}
+
+	/**
+	 * by default a vertical bar chart is created
+	 * 
+	 * @return
+	 */
+	protected BarChartPainter createFilterStatusDistributionBarchartPainter(Color filterColor) {
 		List<? extends Number> counts = valuesToCounts.apply(filterStatusData);
-		List<Color> colors = DataConversion.constantValueList(DEFAULT_FILTER_COLOR, counts.size());
-		BarChartVerticalPainter selectionDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
-		selectionDistributionBarchartPainter.setBackgroundPaint(null);
+		List<Color> colors = DataConversion.constantValueList(filterColor, counts.size());
 
-		return selectionDistributionBarchartPainter;
+		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
+		barChart.setBackgroundPaint(null);
+
+		return barChart;
 	}
 
-	public Color getSelectionColor() {
-		return selectionColor;
-	}
+	/**
+	 * by default a vertical bar chart is created
+	 * 
+	 * @return
+	 */
+	protected BarChartPainter createSelectionDistributionBarchartPainter(List<T> selection, Color color) {
+		List<? extends Number> counts = valuesToCounts.apply(selection);
+		List<Color> colors = DataConversion.constantValueList(color, counts.size());
 
-	public void setSelectionColor(Color selectionColor) {
-		this.selectionColor = selectionColor;
+		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
+		barChart.setBackgroundPaint(null);
+
+		return barChart;
 	}
 
 	@Override
@@ -177,15 +238,25 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	}
 
 	@Override
+	/**
+	 * checks if a point intersects with the bars showing the data distribution -
+	 * the bars are used which show that data that is not filtered out. not filtered
+	 * out.
+	 */
 	public List<T> getElementsAtPoint(Point p) {
-		List<Integer> bars = globalDistributionBarchartPainter.getElementsAtPoint(p);
+		List<Integer> bars = filterDistributionBarchartPainter.getElementsAtPoint(p);
 
 		return binsToValues.apply(bars);
 	}
 
 	@Override
+	/**
+	 * checks if a rectangle intersects with the bars showing the data distribution
+	 * - the bars are used which show that data that is not filtered out. not
+	 * filtered out.
+	 */
 	public List<T> getElementsInRectangle(RectangularShape rectangle) {
-		List<Integer> bars = globalDistributionBarchartPainter.getElementsInRectangle(rectangle);
+		List<Integer> bars = filterDistributionBarchartPainter.getElementsInRectangle(rectangle);
 
 		return binsToValues.apply(bars);
 	}
@@ -215,10 +286,7 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 			if (selectedFunction.apply(t))
 				selection.add(t);
 
-		List<? extends Number> counts = valuesToCounts.apply(selection);
-		List<Color> colors = DataConversion.constantValueList(selectionColor, counts.size());
-		selectionDistributionBarchartPainter = new BarChartVerticalPainter(counts, colors);
-		selectionDistributionBarchartPainter.setBackgroundPaint(null);
+		selectionDistributionBarchartPainter = createSelectionDistributionBarchartPainter(selection, selectionColor);
 
 		this.addChartPainter(selectionDistributionBarchartPainter, false, true);
 
@@ -239,7 +307,8 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		removeChartPainter(filterDistributionBarchartPainter);
 
-		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter();
+		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter(
+				filterColor != null ? filterColor : DEFAULT_FILTER_COLOR);
 		addChartPainter(1, filterDistributionBarchartPainter, false, true);
 
 		handleSelectionChanged();
@@ -250,6 +319,51 @@ public class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		this.selectedFunction = t -> selectionEvent.getSelectionModel().isSelected(t);
 
 		handleSelectionChanged();
+	}
+
+	public boolean isVertical() {
+		return vertical;
+	}
+
+	public Color getAllDataColor() {
+		return allDataColor;
+	}
+
+	public void setAllDataColor(Color allDataColor) {
+		this.allDataColor = allDataColor;
+
+		this.globalDistributionBarchartPainter.setColor(allDataColor);
+	}
+
+	public Color getFilterColor() {
+		return filterColor;
+	}
+
+	public void setFilterColor(Color filterColor) {
+		this.filterColor = filterColor;
+
+		this.filterDistributionBarchartPainter.setColor(filterColor);
+	}
+
+	public Color getSelectionColor() {
+		return selectionColor;
+	}
+
+	public void setSelectionColor(Color selectionColor) {
+		this.selectionColor = selectionColor;
+
+		if (this.selectionDistributionBarchartPainter != null)
+			this.selectionDistributionBarchartPainter.setColor(selectionColor);
+	}
+
+	@Override
+	public void setShowingTooltips(boolean showingTooltips) {
+		super.setShowingTooltips(showingTooltips);
+
+		if (this.xAxisPainter != null)
+			this.xAxisPainter.setToolTipping(showingTooltips);
+		if (this.yAxisPainter != null)
+			this.yAxisPainter.setToolTipping(showingTooltips);
 	}
 
 }

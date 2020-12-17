@@ -149,12 +149,12 @@ public abstract class ChartPainter {
 		return backgroundPaint;
 	}
 
-	public void setBorderPaint(Paint borderColor) {
-		this.borderPaint = borderColor;
-	}
-
 	public Paint getBorderPaint() {
 		return borderPaint;
+	}
+
+	public void setBorderPaint(Paint borderColor) {
+		this.borderPaint = borderColor;
 	}
 
 	public Rectangle2D getPanel() {

@@ -155,11 +155,15 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 			}
 		} else
 			this.outlierScreenCoordinates = null;
+		
+		quartilesRectangle = calculateQuartilesRectangle();
 	}
 
 	private void calculateOutlierValues() {
 		this.outlierValues = dataStatistics.getOutliers(outlierPercentile);
 	}
+	
+	abstract Rectangle2D calculateQuartilesRectangle();
 
 	@Override
 	public void setStroke(BasicStroke stroke) {

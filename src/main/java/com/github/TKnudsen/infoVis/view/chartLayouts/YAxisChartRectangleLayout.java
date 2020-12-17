@@ -37,20 +37,20 @@ public class YAxisChartRectangleLayout extends ChartRectangleLayout {
 
 		double yAxisLegendWidth = this.yAxisLegendWidth;
 
-		double chartWidth = width - yAxisLegendWidth - border;
+		double chartWidth = width - yAxisLegendWidth - margin;
 		if (yAxisOverlay)
-			chartWidth = width - border;
+			chartWidth = width - margin;
 
 		if (drawYAxis)
-			yAxisRectangle = new Rectangle2D.Double(minX + border, minY + border, yAxisLegendWidth - border,
-					height - 2 * border);
+			yAxisRectangle = new Rectangle2D.Double(minX + margin, minY + margin, yAxisLegendWidth - margin,
+					height - 2 * margin);
 		else {
-			yAxisRectangle = new Rectangle2D.Double(minX + border, minY + border, 0, height - 2 * border);
-			chartWidth = width - border;
+			yAxisRectangle = new Rectangle2D.Double(minX + margin, minY + margin, 0, height - 2 * margin);
+			chartWidth = width - margin;
 		}
 
-		chartRectangle = new Rectangle2D.Double(yAxisRectangle.getMaxX(), this.rectangle.getY() + border, chartWidth,
-				height - 2 * border);
+		chartRectangle = new Rectangle2D.Double(yAxisRectangle.getMaxX(), this.rectangle.getY() + margin, chartWidth,
+				height - 2 * margin);
 	}
 
 	public Rectangle2D getYAxisRectangle() {

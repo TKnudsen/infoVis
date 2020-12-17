@@ -35,7 +35,7 @@ public class ShapeAttributes {
 
 	@Override
 	public String toString() {
-		return "Color: " + color + ", Stroke: " + stroke;
+		return "Color: " + getColor() + ", Stroke: " + getStroke();
 	}
 
 	public Paint getColor() {

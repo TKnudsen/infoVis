@@ -2,6 +2,7 @@ package com.github.TKnudsen.infoVis.view.panels.legend;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.LayoutManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ public class LegendPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private LayoutManager layoutManager = new GridLayout(0, 1);
 	private List<LegendItemPanel> legendItemPanels;
 
 	public LegendPanel() {
@@ -28,7 +30,14 @@ public class LegendPanel extends JPanel {
 
 		this.legendItemPanels = legendItemPanels;
 
-		this.setLayout(new GridLayout(1, 1));
+		super.setLayout(new GridLayout(1, 1));
+
+		refresh();
+	}
+
+	@Override
+	public void setLayout(LayoutManager mgr) {
+		this.layoutManager = mgr;
 
 		refresh();
 	}
@@ -36,10 +45,11 @@ public class LegendPanel extends JPanel {
 	private void refresh() {
 		this.removeAll();
 
-		JPanel legend = new JPanel(new GridLayout(0, 1));
+		JPanel legend = new JPanel(layoutManager);
 
-		for (LegendItemPanel legendItemPanel : legendItemPanels)
-			legend.add(legendItemPanel);
+		if (legendItemPanels != null)
+			for (LegendItemPanel legendItemPanel : legendItemPanels)
+				legend.add(legendItemPanel);
 
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(legend, BorderLayout.NORTH);

@@ -3,6 +3,7 @@ package com.github.TKnudsen.infoVis.view.painters.barchart;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.github.TKnudsen.infoVis.view.painters.barchart.bar.BarHorizontalPainter;
@@ -36,7 +37,7 @@ public class BarChartHorizontalPainter extends BarChartPainter implements IXPosi
 		super(data, colors);
 	}
 
-	public BarChartHorizontalPainter(List<? extends Number> data, List<Color> colors) {
+	public BarChartHorizontalPainter(Collection<? extends Number> data, List<Color> colors) {
 		super(data, colors);
 	}
 

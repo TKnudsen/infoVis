@@ -1,20 +1,15 @@
 package com.github.TKnudsen.infoVis.view.panels.barchart;
 
 import java.awt.Color;
-import java.awt.Point;
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
-import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
-import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
-import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartHorizontalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
 
 /**
@@ -31,17 +26,16 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.07
+ * @version 2.08
  */
-public class BarChartHorizontal extends XAxisNumericalChartPanel<Number>
-		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer> {
+public class BarChartHorizontal extends XAxisNumericalChartPanel<Number> implements IBarChart {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4980260395011582723L;
 
-	private final BarChartHorizontalPainter barChartPainterHorizontal;
+	protected final BarChartHorizontalPainter barChartPainterHorizontal;
 
 	private List<Number> data;
 	private List<Color> colors;
@@ -103,18 +97,8 @@ public class BarChartHorizontal extends XAxisNumericalChartPanel<Number>
 	}
 
 	@Override
-	public List<Integer> getElementsAtPoint(Point p) {
-		return barChartPainterHorizontal.getElementsAtPoint(p);
-	}
-
-	@Override
-	public List<Integer> getElementsInRectangle(RectangularShape rectangle) {
-		return barChartPainterHorizontal.getElementsInRectangle(rectangle);
-	}
-
-	@Override
-	public void setSelectedFunction(Function<? super Integer, Boolean> selectedFunction) {
-		this.barChartPainterHorizontal.setSelectedFunction(selectedFunction);
+	public BarChartPainter getBarChartPainter() {
+		return barChartPainterHorizontal;
 	}
 
 }

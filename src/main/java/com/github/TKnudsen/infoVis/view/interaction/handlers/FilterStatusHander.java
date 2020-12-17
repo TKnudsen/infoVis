@@ -1,6 +1,7 @@
 package com.github.TKnudsen.infoVis.view.interaction.handlers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -17,10 +18,10 @@ import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  *
  */
-public class FilterStatusHander<T> implements FilterStatusListener<T> {
+public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate<T> {
 
 	private final List<Predicate<T>> filters = new ArrayList<>();
 
@@ -35,6 +36,8 @@ public class FilterStatusHander<T> implements FilterStatusListener<T> {
 		this.filters.remove(predicate);
 
 		this.filters.add(predicate);
+
+		handleFilterStatusChange();
 	}
 
 	public void addFilterStatusListener(FilterStatusListener<T> listener) {
@@ -54,15 +57,18 @@ public class FilterStatusHander<T> implements FilterStatusListener<T> {
 	}
 
 	private void handleFilterStatusChange() {
-		FilterChangedEvent<T> filterChangedEvent = new FilterChangedEvent<>(this, t -> {
-			for (Predicate<T> p : filters)
-				if (!p.test(t))
-					return false;
-			return true;
-		});
+		FilterChangedEvent<T> filterChangedEvent = new FilterChangedEvent<>(this, this);
 
 		for (FilterStatusListener<T> filterStatusListener : filterStatusListeners)
 			filterStatusListener.filterStatusChanged(filterChangedEvent);
+	}
+
+	@Override
+	public boolean test(T t) {
+		for (Predicate<T> p : filters)
+			if (!p.test(t))
+				return false;
+		return true;
 	}
 
 }

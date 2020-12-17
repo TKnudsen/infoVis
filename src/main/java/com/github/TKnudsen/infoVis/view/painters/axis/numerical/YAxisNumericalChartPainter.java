@@ -39,7 +39,7 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 		double border = 0;
 		if (rectangle.getWidth() > 0 && rectangle.getHeight() > 0)
 			border = Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005);
-		yAxisChartRectangleLayout.setBorder(border);
+		yAxisChartRectangleLayout.setMargin(border);
 
 		yAxisChartRectangleLayout.setRectangle(rectangle);
 		this.chartRectangle = yAxisChartRectangleLayout.getChartRectangle();

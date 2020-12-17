@@ -26,6 +26,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>
@@ -48,6 +49,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	protected Collection<T> data;
 
+	private boolean alphaOnSpecialValues;
 	protected List<Entry<T, ShapeAttributes>> specialValues = new ArrayList<>();
 
 	private boolean dynamicAlpha = true;
@@ -107,6 +109,9 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
 
 		positionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d, 1d);
+
+		// painter has no state information, no need to add a
+		// PositionEncodingFunctionListener to the PositionEncodingFunction
 	}
 
 	@Override
@@ -146,7 +151,8 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 				g2.setStroke(shapeAttributes.getStroke());
 				Paint color = (shapeAttributes.getColor() != null) ? shapeAttributes.getColor()
 						: getColorEncodingFunction().apply(worldValue);
-				// color = ColorTools.setAlpha(color, alpha);//no dynamic alpha here
+				if (alphaOnSpecialValues)
+					color = ColorTools.setAlpha(color, alpha);
 				drawValue(g2, worldValue, color);
 			}
 		}
@@ -235,6 +241,9 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	public void setPositionEncodingFunction(IPositionEncodingFunction positionEncodingFunction) {
 		this.positionEncodingFunction = positionEncodingFunction;
 		this.externalPositionEncodingFunction = true;
+
+		// painter has no state information, no need to add a
+		// PositionEncodingFunctionListener to the PositionEncodingFunction
 	}
 
 	public Function<? super T, Double> getWorldToDoubleMapping() {
@@ -258,6 +267,14 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 	public void setShowTrianglesForSelection(boolean showTrianglesForSelection) {
 		this.showTrianglesForSelection = showTrianglesForSelection;
+	}
+
+	public boolean isAlphaOnSpecialValues() {
+		return alphaOnSpecialValues;
+	}
+
+	public void setAlphaOnSpecialValues(boolean alphaOnSpecialValues) {
+		this.alphaOnSpecialValues = alphaOnSpecialValues;
 	}
 
 }

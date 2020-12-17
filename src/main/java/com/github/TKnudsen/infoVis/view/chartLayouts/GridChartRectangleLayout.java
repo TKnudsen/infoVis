@@ -12,11 +12,11 @@ import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
  * Creates a grid based on the master chartRectangle
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  */
 public class GridChartRectangleLayout extends ChartRectangleLayout {
 
@@ -31,8 +31,8 @@ public class GridChartRectangleLayout extends ChartRectangleLayout {
 		this.yCount = yCount;
 		this.spacing = spacing;
 
-		// no outer border
-		setBorder(0);
+		// no outer border/margin
+		setMargin(0);
 	}
 
 	@Override

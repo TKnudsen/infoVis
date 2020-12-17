@@ -12,6 +12,7 @@ import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFunction;
 
 import de.javagl.selection.SelectionEvent;
 import de.javagl.selection.SelectionListener;
@@ -24,17 +25,20 @@ import de.javagl.selection.SelectionModels;
  * InfoVis
  * </p>
  * 
- * Creates scatterplots
+ * Creates Scatterplots and/or adds interaction.
  * 
  * <p>
  * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.05
+ * @version 1.06
  *
  */
 public class ScatterPlots {
+
+	private static double SCALE = 0.95;
+	private static double MIN_SIZE = 2.0;
 
 	public static ScatterPlot<Double[]> createForDoubles(List<Double[]> points, List<? extends Paint> colors) {
 		ColorEncodingFunction<Double[]> colorMapping = new ColorEncodingFunction<Double[]>(points, colors);
@@ -50,9 +54,46 @@ public class ScatterPlots {
 		return new ScatterPlot<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
 	}
 
+	/**
+	 * most general form for creating a scatter plot.
+	 * 
+	 * @param <T>
+	 * @param data
+	 * @param worldPositionMappingX
+	 * @param worldPositionMappingY
+	 * @param colorMapping
+	 * @param alarmWhenDataSanitiCheckFails
+	 * @param selectionModel
+	 * @return
+	 */
+	public static <T> ScatterPlot<T> create(List<T> data, Function<? super T, Double> worldPositionMappingX,
+			Function<? super T, Double> worldPositionMappingY, Function<? super T, ? extends Paint> colorMapping,
+			boolean alarmWhenDataSanitiCheckFails, SelectionModel<T> selectionModel) {
+
+		List<T> filteredData = ScatterPlots.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
+				alarmWhenDataSanitiCheckFails);
+
+		ScatterPlot<T> scatterPlot = new ScatterPlot<T>(filteredData, colorMapping, worldPositionMappingX,
+				worldPositionMappingY);
+
+		scatterPlot.setSizeEncodingFunction(new SizeEncodingFunction<>(scatterPlot, SCALE, MIN_SIZE));
+
+		scatterPlot.setDrawXAxis(true);
+		scatterPlot.setDrawYAxis(true);
+
+		scatterPlot.setXAxisOverlay(false);
+		scatterPlot.setYAxisOverlay(false);
+
+		if (selectionModel != null)
+			addInteraction(scatterPlot, selectionModel, true, true, true);
+		else
+			addInteraction(scatterPlot, true, true, true);
+
+		return scatterPlot;
+	}
+
 	public static <T> SelectionModel<T> addInteraction(ScatterPlot<T> scatterPlot, boolean clickSelection,
 			boolean rectangleSelection, boolean addLassoInteraction) {
-		// SELECTION MODEL
 		SelectionModel<T> selectionModel = SelectionModels.create();
 
 		addInteraction(scatterPlot, selectionModel, clickSelection, rectangleSelection, addLassoInteraction);
@@ -65,7 +106,6 @@ public class ScatterPlots {
 		if (!clickSelection && !rectangleSelection)
 			return;
 
-		// SELECTION HANDLER
 		SelectionHandler<T> selectionHandler = new SelectionHandler<>(selectionModel);
 		selectionHandler.attachTo(scatterPlot);
 
@@ -89,7 +129,7 @@ public class ScatterPlots {
 			}
 		});
 
-		// LASSO SELECTION (RIGHT MOUSE BUTTON)
+		// lasso selection with the right mouse button
 		if (addLassoInteraction) {
 			LassoSelectionHandler<T> lassoSelectionHandler = new LassoSelectionHandler<>(selectionModel,
 					MouseButton.RIGHT);
@@ -115,7 +155,7 @@ public class ScatterPlots {
 	}
 
 	/**
-	 * applies a filter operation using a given dataset. and returns a new list,
+	 * applies a filter operation using a given data set. and returns a new list,
 	 * only containing those elements which can be applied by both given position
 	 * mapping functions.
 	 * 
@@ -130,7 +170,7 @@ public class ScatterPlots {
 	}
 
 	/**
-	 * applies a filter operation using a given dataset. returns a new list, only
+	 * applies a filter operation using a given data set. returns a new list, only
 	 * containing those elements which can be applied by both given position mapping
 	 * functions.
 	 * 

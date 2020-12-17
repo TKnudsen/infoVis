@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 
@@ -67,6 +68,7 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 			Paint paint = getPaint();
 			if (entry.getValue() != null)
 				paint = entry.getValue().getColor();
+			paint = ColorTools.setAlpha(paint, alpha);
 
 			if (isShowTrianglesForSelection())
 				drawHighlightTriangle(g2, worldData, paint);

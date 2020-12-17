@@ -50,7 +50,10 @@ public class Distribution1DHorizontalHighlightPanelTester {
 			colors.add(new Color(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
 		}
 
-		Distribution1DHorizontalPanel<Double> panel = Distribution1DHorizontalPanels.createForDoubles(data);
+		Distribution1DHorizontalPanel<Double> panel = (Distribution1DHorizontalPanel<Double>) Distribution1DPanels
+				.createForDoubles(data, false);
+		// Distribution1DHorizontalPanel<Double> panel =
+		// Distribution1DHorizontalPanels.createForDoubles(data);
 
 		for (int i = 0; i < samples.size(); i++)
 			panel.addSpecialValue(samples.get(i), new ShapeAttributes(colors.get(i), DisplayTools.standardStroke));

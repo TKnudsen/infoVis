@@ -31,11 +31,11 @@ import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
 public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
@@ -52,7 +52,8 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 	private final ChartRectangleLayout chartRectangleLayout;
 
-	private boolean allowBorder = true;
+	private boolean autoMargin = true;
+	private double margin = Double.NaN;
 
 	private final List<ChartPainter> chartPainters = new CopyOnWriteArrayList<>();
 
@@ -67,14 +68,14 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	private boolean quadraticBounds = false;
 
 	/**
-	 * enable tooltipping support
+	 * enable tool tipping support
 	 */
 	private boolean showingTooltips;
 
 	private TooltipHandler tooltipHandler;
 
 	/**
-	 * tooltip
+	 * tool tip
 	 */
 	private ChartPainter toolTipPainter = null;
 
@@ -147,12 +148,14 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 			return;
 
 		double border = 0;
-		if (allowBorder) {
-			double min = Math.min(rectangle.getWidth(), rectangle.getHeight());
+		double min = Math.min(rectangle.getWidth(), rectangle.getHeight());
+		if (autoMargin) {
 			border = Math.max(1, min * borderSpaceRatio);
+		} else if (!Double.isNaN(margin)) {
+			border = Math.min(min * 0.5, margin);
 		}
 
-		chartRectangleLayout.setBorder(border);
+		chartRectangleLayout.setMargin(border);
 
 		chartRectangleLayout.setRectangle(rectangle);
 
@@ -203,7 +206,7 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	 * (optional operation). Shifts the element currently at that position (if any)
 	 * and any subsequent elements to the right (adds one to their indices).
 	 * 
-	 * Helps to manage layers of Chartpainters.
+	 * Helps to manage layers of chart painters.
 	 * 
 	 * Works like the add (int , E) method of the List interface.
 	 * 
@@ -260,12 +263,28 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		this.showingTooltips = showingTooltips;
 	}
 
+	/**
+	 * @deprecated now called isAutoMargin
+	 * @return
+	 */
 	public boolean isAllowBorder() {
-		return allowBorder;
+		return isAutoMargin();
 	}
 
-	public void setAllowBorder(boolean allowBorder) {
-		this.allowBorder = allowBorder;
+	/**
+	 * @deprecated now called setAutoMargin
+	 * @param allowMargin
+	 */
+	public void setAllowBorder(boolean allowMargin) {
+		this.setAutoMargin(allowMargin);
+	}
+
+	public boolean isAutoMargin() {
+		return autoMargin;
+	}
+
+	public void setAutoMargin(boolean autoMargin) {
+		this.autoMargin = autoMargin;
 	}
 
 	public ChartRectangleLayout getChartRectangleLayout() {
@@ -290,6 +309,17 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 	public void setQuadraticBounds(boolean quadraticBounds) {
 		this.quadraticBounds = quadraticBounds;
+	}
+
+	public double getMargin() {
+		return margin;
+	}
+
+	public void setMargin(double margin) {
+		this.margin = margin;
+		this.setAutoMargin(false);
+
+		updateBounds();
 	}
 
 }

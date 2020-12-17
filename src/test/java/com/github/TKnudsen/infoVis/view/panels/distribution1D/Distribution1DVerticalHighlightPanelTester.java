@@ -49,9 +49,11 @@ public class Distribution1DVerticalHighlightPanelTester {
 			values.add(0.3 + Math.random() * 0.2);
 			values.add(1.0);
 		}
-
-		Distribution1DVerticalPanel<Double> panel = Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
-				-0.5, 3.3);
+		Distribution1DVerticalPanel<Double> panel = (Distribution1DVerticalPanel<Double>) Distribution1DPanels
+				.createForDoubles(values, Color.BLACK, -0.5, 3.3, true);
+		// Distribution1DVerticalPanel<Double> panel =
+		// Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
+		// -0.5, 3.3);
 
 		// special values, such as clusters
 		panel.addSpecialValue(1.1, new ShapeAttributes(Color.MAGENTA, DisplayTools.ultraThickStroke));

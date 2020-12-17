@@ -13,7 +13,7 @@ import javax.swing.event.ChangeListener;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DHorizontalPanel;
-import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DHorizontalPanels;
+import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DPanels;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
@@ -58,13 +58,16 @@ public class RangeSliderValueDistributionTest {
 			}
 		});
 
-		Distribution1DHorizontalPanel<Double> distributionPanel = Distribution1DHorizontalPanels
-				.createForDoubles(values);
+		Distribution1DHorizontalPanel<Double> distributionPanel = (Distribution1DHorizontalPanel<Double>) Distribution1DPanels
+				.createForDoubles(values, false);
+		// Distribution1DHorizontalPanel<Double> distributionPanel =
+		// Distribution1DHorizontalPanels
+		// .createForDoubles(values);
 		// THIS MAGIC LINE COORDINATES THE WORLD AND PIXEL COORDINATES OF THE X-AXIS
-		distributionPanel.setXPositionEncodingFunction(rangeSlider.getXPositionEncodingFunction());
+		distributionPanel.setPositionEncodingFunction(rangeSlider.getXPositionEncodingFunction());
 		distributionPanel.setShowTrianglesForSelection(false);
-		
-		//add boxplot
+
+		// add box plot
 		BoxPlotHorizontalPainter boxPlotPainter = new BoxPlotHorizontalPainter(values);
 		// THIS MAGIC LINE COORDINATES THE WORLD AND PIXEL COORDINATES OF THE X-AXIS
 		boxPlotPainter.setXPositionEncodingFunction(rangeSlider.getXPositionEncodingFunction());
@@ -74,7 +77,9 @@ public class RangeSliderValueDistributionTest {
 
 		// interaction
 		ShapeAttributes shapeAttributes = new ShapeAttributes(Color.BLUE, DisplayTools.standardStroke);
-		Distribution1DHorizontalPanels.addInteraction(distributionPanel, selectionModel, shapeAttributes);
+		Distribution1DPanels.addInteraction(distributionPanel, selectionModel, shapeAttributes);
+		// Distribution1DHorizontalPanels.addInteraction(distributionPanel,
+		// selectionModel, shapeAttributes);
 
 		contentPane.add(distributionPanel, BorderLayout.CENTER);
 

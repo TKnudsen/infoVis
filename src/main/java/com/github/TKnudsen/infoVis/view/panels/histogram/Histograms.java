@@ -1,9 +1,9 @@
 package com.github.TKnudsen.infoVis.view.panels.histogram;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -62,25 +62,46 @@ public class Histograms {
 		return selectionModel;
 	}
 
-	public static <T> Histogram<T> create(List<T> data, Function<? super T, Number> worldToNumberMapping) {
-		return new Histogram<T>(data, worldToNumberMapping);
+	public static Histogram<Number> create(Collection<? extends Number> data, int binCount, boolean vertical) {
+		return create(data, n -> ((Number) n).doubleValue(), defaultAggregationFunction(data, binCount), null, vertical,
+				null, null);
 	}
 
-	public static <T> Histogram<T> create(List<T> data, Function<? super T, Number> worldToNumberMapping,
-			int binCount) {
+	public static <T> Histogram<T> create(Collection<T> data, Function<? super T, Number> worldToNumberMapping,
+			int binCount, boolean vertical) {
 
-		List<Number> values = new ArrayList<Number>();
+		return create(data, worldToNumberMapping, defaultAggregationFunction(data, worldToNumberMapping, binCount),
+				null, vertical, null, null);
+	}
+
+	public static <T> Histogram<T> create(Collection<T> data, Function<? super T, Number> worldToNumberMapping,
+			boolean vertical) {
+		return create(data, worldToNumberMapping, null, null, vertical, null, null);
+	}
+
+	public static <T> Histogram<T> create(Collection<? extends T> data,
+			Function<? super T, Number> worldToNumberMapping, Function<Number, Integer> aggregationFunction,
+			Number maxGlobal, boolean vertical, Color defaultColor, Color filterColor) {
+		if (vertical)
+			return new HistogramVertical<T>(data, worldToNumberMapping, aggregationFunction, maxGlobal, defaultColor,
+					filterColor);
+		else
+			return new HistogramHorizontal<T>(data, worldToNumberMapping, aggregationFunction, maxGlobal, defaultColor,
+					filterColor);
+	}
+
+	public static <T> Function<Number, Integer> defaultAggregationFunction(Collection<? extends T> data,
+			Function<? super T, Number> worldToNumberMapping, int binCount) {
+
+		Collection<Number> numbers = new ArrayList<>();
 		for (T t : data)
-			values.add(worldToNumberMapping.apply(t));
+			numbers.add(worldToNumberMapping.apply(t));
 
-		return new Histogram<T>(data, worldToNumberMapping, defaultAggregationFunction(values, binCount), null);
+		return defaultAggregationFunction(MathFunctions.getMin(numbers), MathFunctions.getMax(numbers), binCount);
 	}
 
-	public static Histogram<Number> create(List<Number> data, int binCount) {
-		return new Histogram<Number>(data, n -> n.doubleValue(), defaultAggregationFunction(data, binCount), null);
-	}
-
-	public static Function<Number, Integer> defaultAggregationFunction(Collection<Number> data, int binCount) {
+	public static Function<Number, Integer> defaultAggregationFunction(Collection<? extends Number> data,
+			int binCount) {
 		return defaultAggregationFunction(MathFunctions.getMin(data), MathFunctions.getMax(data), binCount);
 	}
 
@@ -125,9 +146,21 @@ public class Histograms {
 					if (t.doubleValue() <= minValue.doubleValue() + (i + 1) * interval)
 						return i;
 
+				// avoid exceptions due to double precision
+				if (MathFunctions.round(t.doubleValue(), 7) <= MathFunctions
+						.round(minValue.doubleValue() + binCount * interval, 7))
+					return binCount;
+
 				throw new IllegalArgumentException(
 						"Histograms.defaultAggregationFunction: value " + t + " could not be binned");
 			}
 		};
+	}
+
+	public static <T> void setShowValueDomainAxis(Histogram<T> histogram, boolean show) {
+		if (histogram.isVertical())
+			histogram.setDrawXAxis(show);
+		else
+			histogram.setDrawYAxis(show);
 	}
 }

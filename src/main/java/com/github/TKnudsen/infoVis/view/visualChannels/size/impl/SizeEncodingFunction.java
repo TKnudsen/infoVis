@@ -10,18 +10,24 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncodingFunctio
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  *
  * @param <T>
  */
 public class SizeEncodingFunction<T> implements ISizeEncodingFunction<T> {
 
 	private final Component component;
+
+	/**
+	 * can be used to adjust the relative point size. The default value is 1.0 which
+	 * means that points will have 0.5% of the min(width,height) of a component.
+	 */
 	private final double scale;
+
 	private final double minSize;
 
 	public SizeEncodingFunction(Component component) {
@@ -32,6 +38,16 @@ public class SizeEncodingFunction<T> implements ISizeEncodingFunction<T> {
 		this(component, scale, 3.0);
 	}
 
+	/**
+	 * 
+	 * @param component the component where the the size encoding shall be live.
+	 *                  with and height of the component decides about the size of
+	 *                  size encodings.
+	 * @param scale     can be used to adjust the relative point size. The default
+	 *                  value is 1.0 which means that points will have 0.5% of the
+	 *                  min(width,height) of a component.
+	 * @param minSize   minimum size of a point. default is 3.0
+	 */
 	public SizeEncodingFunction(Component component, double scale, double minSize) {
 		this.component = component;
 		this.scale = scale;

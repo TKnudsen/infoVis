@@ -64,7 +64,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 		double border = Double.isNaN(margin)
 				? Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005)
 				: margin;
-		xyAxisChartRectangleLayout.setBorder(border);
+		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
 		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();
