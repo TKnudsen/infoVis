@@ -105,13 +105,13 @@ public class StringPainter extends ChartPainter implements ITooltip {
 			if (space > 0.0)
 				switch (verticalStringAlignment) {
 				case UP:
-					additionalHeightOffset = -space * 0.37;
+					additionalHeightOffset = -space * 0.42;
 					break;
 				case CENTER:
 					additionalHeightOffset = 0;
 					break;
 				case DOWN:
-					additionalHeightOffset = +space * 0.33;
+					additionalHeightOffset = +space * 0.42;
 					break;
 				default:
 					break;

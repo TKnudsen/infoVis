@@ -123,14 +123,8 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 	}
 
 	@Override
-	public void setRectangle(Rectangle2D rectangle) {
-		super.setRectangle(rectangle);
-
-		if (chartRectangle == null)
-			return;
-
-		// this is different to the vertical painter
-		quartilesRectangle = new Rectangle2D.Double(Math.min(upperQuartileScreen, lowerQuartileScreen), chartRectangle.getMinY(),
+	Rectangle2D calculateQuartilesRectangle() {
+		return new Rectangle2D.Double(Math.min(upperQuartileScreen, lowerQuartileScreen), chartRectangle.getMinY(),
 				Math.abs(upperQuartileScreen - lowerQuartileScreen), chartRectangle.getHeight());
 	}
 

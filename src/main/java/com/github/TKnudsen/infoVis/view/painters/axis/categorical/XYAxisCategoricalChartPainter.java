@@ -44,7 +44,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 			return;
 
 		double border = Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005);
-		xyAxisChartRectangleLayout.setBorder(border);
+		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
 		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();

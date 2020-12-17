@@ -53,8 +53,9 @@ public class ParallelCoordinatesFactory {
 		return new ParallelCoordinates<Double[]>(points, colorMapping, worldPositionMappingYs);
 	}
 
-	public static <T> void attachInteractions(ParallelCoordinates<T> parallelCoordinates, SelectionModel<T> selectionModel,
-			boolean addClickSelection, boolean addRectangleSelection, boolean addLassoInteraction) {
+	public static <T> SelectionListener<T> attachInteractions(ParallelCoordinates<T> parallelCoordinates,
+			SelectionModel<T> selectionModel, boolean addClickSelection, boolean addRectangleSelection,
+			boolean addLassoInteraction) {
 
 		// SELECTION HANDLER
 		SelectionHandler<T> selectionHandler = new SelectionHandler<>(selectionModel);
@@ -95,12 +96,14 @@ public class ParallelCoordinatesFactory {
 			});
 		}
 
-		selectionModel.addSelectionListener(new SelectionListener<T>() {
+		SelectionListener<T> selectionListener = new SelectionListener<T>() {
 
 			@Override
 			public void selectionChanged(SelectionEvent<T> selectionEvent) {
 				parallelCoordinates.repaint();
 			}
-		});
+		};
+		selectionModel.addSelectionListener(selectionListener);
+		return selectionListener;
 	}
 }

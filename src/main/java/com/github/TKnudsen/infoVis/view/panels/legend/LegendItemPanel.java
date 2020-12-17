@@ -19,20 +19,20 @@ public class LegendItemPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private final String label;
-	private final Color labelColor;
+	private final Color textColor;
 	private final Color color;
 	private final boolean colorRectangleLeft;
 
 	private final String toolTipString;
 
-	public LegendItemPanel(String label, Color labelColor, Color color) {
-		this(label, labelColor, color, label, true);
+	public LegendItemPanel(String label, Color textColor, Color color) {
+		this(label, textColor, color, label, true);
 	}
 
-	public LegendItemPanel(String label, Color labelColor, Color color, String toolTipString,
+	public LegendItemPanel(String label, Color textColor, Color color, String toolTipString,
 			boolean colorRectangleLeft) {
 		this.label = label;
-		this.labelColor = labelColor;
+		this.textColor = textColor;
 		this.color = color;
 		this.toolTipString = toolTipString;
 		this.colorRectangleLeft = colorRectangleLeft;
@@ -51,7 +51,7 @@ public class LegendItemPanel extends JPanel {
 
 		JLabel jLabel = new JLabel(label);
 		jLabel.setToolTipText(toolTipString);
-		jLabel.setForeground(labelColor);
+		jLabel.setForeground(textColor);
 
 		JPanel legendSingle = new JPanel(new BorderLayout());
 		legendSingle.add(q, (colorRectangleLeft) ? BorderLayout.WEST : BorderLayout.EAST);

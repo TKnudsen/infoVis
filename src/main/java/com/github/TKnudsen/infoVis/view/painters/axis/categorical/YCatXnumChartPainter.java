@@ -43,7 +43,7 @@ public abstract class YCatXnumChartPainter<X extends Number, Y extends List<Stri
 			return;
 
 		double border = Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005);
-		xyAxisChartRectangleLayout.setBorder(border);
+		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
 		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();

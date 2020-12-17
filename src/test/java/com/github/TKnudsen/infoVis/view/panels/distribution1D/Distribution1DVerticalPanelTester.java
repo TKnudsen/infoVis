@@ -48,8 +48,11 @@ public class Distribution1DVerticalPanelTester {
 			values.add(1.0);
 		}
 
-		Distribution1DVerticalPanel<Double> panel = Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
-				-0.5, 3.3);
+		Distribution1DVerticalPanel<Double> panel = (Distribution1DVerticalPanel<Double>) Distribution1DPanels
+				.createForDoubles(values, Color.BLACK, -0.5, 3.3, true);
+		// Distribution1DVerticalPanel<Double> panel =
+		// Distribution1DVerticalPanels.createForDoubles(values, Color.BLACK,
+		// -0.5, 3.3);
 
 		SVGFrameTools.dropSVGFrame(panel, "InfoVisDistribution1DVerticalPanel", 800, 400);
 

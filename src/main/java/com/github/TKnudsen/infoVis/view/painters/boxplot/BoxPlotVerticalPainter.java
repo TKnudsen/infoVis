@@ -123,13 +123,8 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 	}
 
 	@Override
-	public void setRectangle(Rectangle2D rectangle) {
-		super.setRectangle(rectangle);
-
-		if (chartRectangle == null)
-			return;
-
-		quartilesRectangle = new Rectangle2D.Double(chartRectangle.getMinX(), Math.min(upperQuartileScreen, lowerQuartileScreen),
+	Rectangle2D calculateQuartilesRectangle() {
+		return new Rectangle2D.Double(chartRectangle.getMinX(), Math.min(upperQuartileScreen, lowerQuartileScreen),
 				chartRectangle.getWidth(), Math.abs(upperQuartileScreen - lowerQuartileScreen));
 	}
 

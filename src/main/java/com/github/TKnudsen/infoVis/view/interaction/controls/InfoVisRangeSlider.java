@@ -4,6 +4,8 @@ import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import javax.swing.plaf.SliderUI;
+
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
@@ -85,23 +87,23 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-				System.out.println("InfoVisRangeSlider: componentShown");
+//				System.out.println("InfoVisRangeSlider: componentShown");
 			}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				System.out.println("InfoVisRangeSlider: componentResized");
+//				System.out.println("InfoVisRangeSlider: componentResized");
 				refreshPositionMapping();
 			}
 
 			@Override
 			public void componentMoved(ComponentEvent e) {
-				System.out.println("InfoVisRangeSlider: componentMoved");
+//				System.out.println("InfoVisRangeSlider: componentMoved");
 			}
 
 			@Override
 			public void componentHidden(ComponentEvent e) {
-				System.out.println("InfoVisRangeSlider: componentHidden");
+//				System.out.println("InfoVisRangeSlider: componentHidden");
 			}
 		});
 

@@ -38,13 +38,25 @@ public class VisualMappings {
 			boolean warnForQualityLeaks) {
 		List<D> returnList = new ArrayList<D>();
 
+		if (data == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.sanityCheckFilter: given data was null");
+			return returnList;
+		}
+
+		if (worldToDoubleMapping == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.sanityCheckFilter: given worldToDoubleMapping was null");
+			return returnList;
+		}
+
 		try {
 			for (D t : data) {
 				Double d = worldToDoubleMapping.apply(t);
 				if (d != null && !Double.isNaN(d))
 					returnList.add(t);
 				else if (warnForQualityLeaks)
-					System.err.println("DoubleMappingTools.sanityCheckFilter: object " + t
+					System.err.println("VisualMappings.sanityCheckFilter: object " + t
 							+ " did not pass the sanity check and was ignored");
 			}
 		} catch (Exception e) {
@@ -92,7 +104,7 @@ public class VisualMappings {
 				if (x != null && !Double.isNaN(x) && y != null && !Double.isNaN(y))
 					returnList.add(t);
 				else if (warnForQualityLeaks)
-					System.err.println("DoubleMappingTools.sanityCheckFilter: object " + t
+					System.err.println("VisualMappings.sanityCheckFilter: object " + t
 							+ " did not pass the sanity check and was ignored");
 			}
 		} catch (Exception e) {
@@ -142,7 +154,7 @@ public class VisualMappings {
 					if (d == null || Double.isNaN(d)) {
 						accepted = false;
 						if (warnForQualityLeaks)
-							System.err.println("DoubleMappingTools.sanityCheckFilter: object " + t
+							System.err.println("VisualMappings.sanityCheckFilter: object " + t
 									+ " did not pass the sanity check and was ignored");
 						break;
 					}

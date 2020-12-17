@@ -49,7 +49,7 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 		double width = rectangle.getWidth();
 		double height = rectangle.getHeight();
 
-		double border = this.border;
+		double border = this.margin;
 		if (width < 2 * border || height < 2 * border)
 			border = 0;
 
@@ -80,7 +80,6 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 		if (yAxisOverlay)
 			chartWidth = width - border;
 
-		// TODO validate!!
 		if (!drawYAxis)
 			// chartWidth -= border; // +=?!
 			chartWidth = width - border;

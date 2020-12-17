@@ -1,17 +1,13 @@
 package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Paint;
-import java.awt.geom.RectangularShape;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Function;
 
-import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DVerticalHighlightPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
-import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
-import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
-import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 
 /**
  * <p>
@@ -27,10 +23,9 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodin
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
-public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Double>
-		implements IColorEncoding<T>, IRectangleSelection<T> {
+public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Double> implements Distribution1DPanel<T> {
 
 	/**
 	 * 
@@ -43,16 +38,16 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
 
-	public Distribution1DVerticalPanel(List<T> values, Function<? super T, Double> worldToDoubleMapping) {
+	public Distribution1DVerticalPanel(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
 		this(values, worldToDoubleMapping, Double.NaN, Double.NaN);
 	}
 
-	public Distribution1DVerticalPanel(List<T> data, Function<? super T, Double> worldToDoubleMapping, Double minGlobal,
-			Double maxGlobal) {
+	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+			Double minGlobal, Double maxGlobal) {
 		this(data, worldToDoubleMapping, null, minGlobal, maxGlobal);
 	}
 
-	public Distribution1DVerticalPanel(List<T> data, Function<? super T, Double> worldToDoubleMapping,
+	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction, Double minGlobal, Double maxGlobal) {
 		this.minGlobal = minGlobal;
 		this.maxGlobal = maxGlobal;
@@ -60,7 +55,7 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 		initializeData(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
-	protected void initializeData(List<T> data, Function<? super T, Double> worldToDoubleMapping,
+	protected void initializeData(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 
 		if (data == null)
@@ -85,6 +80,7 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 
 		this.distribution1DVerticalPainter = new Distribution1DVerticalHighlightPainter<T>(data, worldToDoubleMapping,
 				colorEncodingFunction);
+		this.distribution1DVerticalPainter.setBackgroundPaint(null);
 
 		this.addChartPainter(distribution1DVerticalPainter, true);
 	}
@@ -94,57 +90,8 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 		setYAxisPainter(new YAxisNumericalPainter<Double>(min, max));
 	}
 
-	public void clearSpecialValues() {
-		distribution1DVerticalPainter.clearSpecialValues();
-	}
-
-	public void addSpecialValue(T worldValue, ShapeAttributes shapeAttributes) {
-		distribution1DVerticalPainter.addSpecialValue(worldValue, shapeAttributes);
-	}
-
-	public Function<? super T, ? extends Paint> getColorEncodingFunction() {
-		return distribution1DVerticalPainter.getColorEncodingFunction();
-	}
-
 	@Override
-	public void setColorEncodingFunction(Function<? super T, ? extends Paint> colorEncodingFunction) {
-		this.distribution1DVerticalPainter.setColorEncodingFunction(colorEncodingFunction);
-	}
-
-	@Override
-	public List<T> getElementsInRectangle(RectangularShape rectangle) {
-		return distribution1DVerticalPainter.getElementsInRectangle(rectangle);
-	}
-
-	public float getAlpha() {
-		return distribution1DVerticalPainter.getAlpha();
-	}
-
-	public void setAlpha(float alpha) {
-		this.distribution1DVerticalPainter.setAlpha(alpha);
-	}
-
-	public void setTriangleSize(double triangleSize) {
-		this.distribution1DVerticalPainter.setSizeOfTriangle(triangleSize);
-	}
-
-	public void setShowTrianglesForSelection(boolean showTrianglesForSelection) {
-		this.distribution1DVerticalPainter.setShowTrianglesForSelection(showTrianglesForSelection);
-	}
-
-	public boolean isToolTipping() {
-		return this.distribution1DVerticalPainter.isToolTipping();
-	}
-
-	public void setToolTipping(boolean toolTipping) {
-		this.distribution1DVerticalPainter.setToolTipping(toolTipping);
-	}
-
-	public IPositionEncodingFunction getPositionEncodingFunction() {
-		return this.distribution1DVerticalPainter.getPositionEncodingFunction();
-	}
-
-	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
-		this.distribution1DVerticalPainter.setPositionEncodingFunction(xPositionEncodingFunction);
+	public Distribution1DPainter<T> getDistribution1DPainter() {
+		return distribution1DVerticalPainter;
 	}
 }

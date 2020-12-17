@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -15,6 +15,7 @@ import javax.swing.event.ChangeListener;
 
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSlider;
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanel;
+import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanels;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
@@ -35,14 +36,14 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	private final Function<T, Number> scaledToNumberFunction;
 
-	private static final int Y_AXIS_WIDTH = 25;
+	private static final int Y_AXIS_WIDTH = 22;
 	private final Histogram<T> histogram;
 
 	private final InfoVisRangeSliderPanel rangeSliderPanel;
 	private final InfoVisRangeSlider rangeSlider;
 	private static final int INTEGER_MULTIPLIER = 100;
 
-	private final List<FilterStatusListener<T>> filterStatusListeners = new ArrayList<FilterStatusListener<T>>();
+	private final Collection<FilterStatusListener<T>> filterStatusListeners = new ArrayList<FilterStatusListener<T>>();
 
 	/**
 	 * 
@@ -53,7 +54,8 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	 *                         query (queries). It can be used to synchronize data
 	 *                         selections within the data distribution chart.
 	 */
-	public DynamicQueryView(List<T> data, Function<T, Number> toNumberFunction, SelectionModel<T> selectionModel) {
+	public DynamicQueryView(Collection<T> data, Function<T, Number> toNumberFunction,
+			SelectionModel<T> selectionModel) {
 		this(data, toNumberFunction, selectionModel, 25);
 	}
 
@@ -68,7 +70,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	 * @param binCount         the number of bins for the value histogram. Default:
 	 *                         25
 	 */
-	public DynamicQueryView(List<T> data, Function<T, Number> toNumberFunction, SelectionModel<T> selectionModel,
+	public DynamicQueryView(Collection<T> data, Function<T, Number> toNumberFunction, SelectionModel<T> selectionModel,
 			int binCount) {
 		super(new BorderLayout());
 
@@ -114,11 +116,13 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 			}
 		});
 
-		// histogram and spacing
-		histogram = Histograms.create(data, scaledToNumberFunction, binCount);
-		histogram.setDrawXAxis(false);
+		// vertical histogram and spacing
+		histogram = Histograms.create(data, scaledToNumberFunction, binCount, true);
+		histogram.setDrawXAxis(false); // do not draw the histogram's x axis. it shows numbers according to the
+										// INTEGER_MULTIPLIER. show the axis of the slider instead
 		histogram.setDrawYAxis(true);
 		histogram.setYAxisLegendWidth(Y_AXIS_WIDTH);
+		histogram.setXAxisLegendHeight(20);
 		Histograms.addInteraction(histogram, selectionModel, true, true);
 		addFilterStatusListener(histogram);
 
@@ -131,7 +135,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		add(histogramCanvas, BorderLayout.CENTER);
 	}
 
-	private InfoVisRangeSliderPanel createRangeSliderPanel(List<T> data, Function<T, Number> toNumberFunction) {
+	private InfoVisRangeSliderPanel createRangeSliderPanel(Collection<T> data, Function<T, Number> toNumberFunction) {
 		double min = Double.POSITIVE_INFINITY;
 		double max = Double.NEGATIVE_INFINITY;
 
@@ -147,7 +151,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	}
 
 	public void setTitle(String title) {
-		List<TitlePainter> titlePainters = new ArrayList<>();
+		Collection<TitlePainter> titlePainters = new ArrayList<>();
 		for (ChartPainter painter : histogram.getChartPainters())
 			if (painter instanceof TitlePainter)
 				titlePainters.add((TitlePainter) painter);
@@ -201,6 +205,19 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	 */
 	private static <T> Function<T, Number> scaledToNumberFunction(Function<T, Number> toNumberFunction) {
 		return t -> toNumberFunction.apply(t).doubleValue() * INTEGER_MULTIPLIER;
+	}
+
+	public Histogram<T> getHistogram() {
+		return histogram;
+	}
+
+	public boolean isShowingTooltips(DynamicQueryView<T> view) {
+		return view.getHistogram().isShowingTooltips();
+	}
+
+	public void setShowingTooltips(DynamicQueryView<T> view, boolean showingTooltips) {
+		view.getHistogram().setShowingTooltips(showingTooltips);
+		InfoVisRangeSliderPanels.setShowingTooltips(rangeSliderPanel, showingTooltips);
 	}
 
 }

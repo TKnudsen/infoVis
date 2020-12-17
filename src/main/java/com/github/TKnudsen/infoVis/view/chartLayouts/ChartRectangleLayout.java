@@ -8,17 +8,21 @@ import java.awt.geom.Rectangle2D;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class ChartRectangleLayout {
 
 	protected Rectangle2D rectangle;
 
-	protected double border = 3.0;
+	/**
+	 * space at all four borders within the layout which shall be left unused.
+	 * called border earlier
+	 */
+	protected double margin = 3.0;
 
 	protected Rectangle2D chartRectangle;
 
@@ -39,14 +43,14 @@ public class ChartRectangleLayout {
 		double width = rectangle.getWidth();
 		double height = rectangle.getHeight();
 
-		double border = this.border;
-		if (width < 2 * border || height < 2 * border)
-			border = 0;
+		double margin = this.margin;
+		if (width < 2 * margin || height < 2 * margin)
+			margin = 0;
 
-		double chartMinX = minX + border;
-		double chartMinY = minY + border;
-		double chartWidth = width - 2 * border;
-		double chartHeight = height - 2 * border;
+		double chartMinX = minX + margin;
+		double chartMinY = minY + margin;
+		double chartWidth = width - 2 * margin;
+		double chartHeight = height - 2 * margin;
 
 		chartRectangle = new Rectangle2D.Double(chartMinX, chartMinY, chartWidth, chartHeight);
 	}
@@ -55,11 +59,27 @@ public class ChartRectangleLayout {
 		return chartRectangle;
 	}
 
+	/**
+	 * @deprecated use getMargin
+	 * @return
+	 */
 	public double getBorder() {
-		return border;
+		return getMargin();
 	}
 
-	public void setBorder(double border) {
-		this.border = border;
+	/**
+	 * @deprecated use setMargin
+	 * @param margin
+	 */
+	public void setBorder(double margin) {
+		this.setMargin(margin);
+	}
+
+	public double getMargin() {
+		return margin;
+	}
+
+	public void setMargin(double margin) {
+		this.margin = margin;
 	}
 }

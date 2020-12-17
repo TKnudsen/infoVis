@@ -46,7 +46,7 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 		if (rectangle.getWidth() > 0 && rectangle.getHeight() > 0)
 			border = Math.max(1, min / 200.0);
 
-		xyAxisChartRectangleLayout.setBorder(border);
+		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
 		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();

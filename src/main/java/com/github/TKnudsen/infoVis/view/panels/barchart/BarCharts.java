@@ -1,7 +1,9 @@
 package com.github.TKnudsen.infoVis.view.panels.barchart;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,8 +16,8 @@ import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
+import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
-import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
@@ -25,7 +27,8 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * <p>
- * Factory for BarCharts.
+ * Factory for BarCharts. Also provides tools and bar chart modification
+ * capability.
  * </p>
  * 
  * <p>
@@ -33,7 +36,7 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class BarCharts {
 
@@ -134,20 +137,33 @@ public class BarCharts {
 		barChart.addChartPainter(gridPainter);
 	}
 
-	public static void addInteraction(BarChart barChart) {
-		SelectionModel<Integer> selectionModel = SelectionModels.create();
+	public static SelectionModel<Integer> addInteraction(IBarChart barChart) {
+		return addInteraction(barChart, true, true, null);
+	}
+
+	public static SelectionModel<Integer> addInteraction(IBarChart barChart, boolean clickInteraction,
+			boolean rectangleSelection, SelectionModel<Integer> selectionModel) {
+		if (selectionModel == null)
+			selectionModel = SelectionModels.create();
 
 		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
-		selectionHandler.attachTo(barChart);
-		selectionHandler.setClickSelection(barChart);
-		selectionHandler.setRectangleSelection(barChart);
 
-		barChart.addChartPainter(new ChartPainter() {
-			@Override
-			public void draw(Graphics2D g2) {
-				selectionHandler.draw(g2);
-			}
-		});
+		if (barChart instanceof Component)
+			selectionHandler.attachTo((Component) barChart);
+
+		if (clickInteraction)
+			selectionHandler.setClickSelection(barChart);
+
+		if (rectangleSelection)
+			selectionHandler.setRectangleSelection(barChart);
+
+		if (barChart instanceof InfoVisChartPanel)
+			((InfoVisChartPanel) barChart).addChartPainter(new ChartPainter() {
+				@Override
+				public void draw(Graphics2D g2) {
+					selectionHandler.draw(g2);
+				}
+			});
 
 		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
 
@@ -157,7 +173,37 @@ public class BarCharts {
 			}
 		});
 
-		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
+		return selectionModel;
+	}
+
+	public static double getGridSpacing(IBarChart barChart) {
+		return barChart.getBarChartPainter().getGridSpacing();
+	}
+
+	public static void setGridSpacing(IBarChart barChart, double gridSpacing) {
+		barChart.getBarChartPainter().setGridSpacing(gridSpacing);
+	}
+
+	public static boolean isToolTipping(IBarChart barChart) {
+		if (barChart instanceof InfoVisChartPanel)
+			return ((InfoVisChartPanel) barChart).isShowingTooltips();
+		else
+			return barChart.getBarChartPainter().isToolTipping();
+	}
+
+	public static void setToolTipping(IBarChart barChart, boolean toolTipping) {
+		if (barChart instanceof InfoVisChartPanel)
+			((InfoVisChartPanel) barChart).setShowingTooltips(toolTipping);
+		else
+			barChart.getBarChartPainter().setToolTipping(toolTipping);
+	}
+
+	public static Paint getBorderPaint(IBarChart barChart) {
+		return barChart.getBarChartPainter().getBorderPaint();
+	}
+
+	public static void setBorderPaint(IBarChart barChart, Paint borderPaint) {
+		barChart.getBarChartPainter().setBorderPaint(borderPaint);
 	}
 
 	/**

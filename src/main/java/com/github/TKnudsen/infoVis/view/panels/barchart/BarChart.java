@@ -1,19 +1,14 @@
 package com.github.TKnudsen.infoVis.view.panels.barchart;
 
 import java.awt.Color;
-import java.awt.Point;
-import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
-import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
-import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
-import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 
@@ -27,21 +22,20 @@ import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
-public class BarChart extends YAxisNumericalChartPanel<Number>
-		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, IRectangleSelection<Integer> {
+public class BarChart extends YAxisNumericalChartPanel<Number> implements IBarChart {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4229660375270863154L;
 
-	private final BarChartVerticalPainter barChartPainterVertical;
+	protected final BarChartVerticalPainter barChartPainterVertical;
 
 	// constructor attributes
 	private List<? extends Number> data;
@@ -104,18 +98,8 @@ public class BarChart extends YAxisNumericalChartPanel<Number>
 	}
 
 	@Override
-	public List<Integer> getElementsAtPoint(Point p) {
-		return barChartPainterVertical.getElementsAtPoint(p);
-	}
-
-	@Override
-	public List<Integer> getElementsInRectangle(RectangularShape rectangle) {
-		return barChartPainterVertical.getElementsInRectangle(rectangle);
-	}
-
-	@Override
-	public void setSelectedFunction(Function<? super Integer, Boolean> selectedFunction) {
-		this.barChartPainterVertical.setSelectedFunction(selectedFunction);
+	public BarChartPainter getBarChartPainter() {
+		return barChartPainterVertical;
 	}
 
 }

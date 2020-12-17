@@ -65,18 +65,20 @@ public class TooltipHandler extends InteractionHandler {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				ChartPainter toolTipPainter = null;
-				if (component instanceof InfoVisChartPanel) {
-					List<ChartPainter> chartPainters = ((InfoVisChartPanel) component).getChartPainters();
-					for (ChartPainter chartPainter : chartPainters) {
-						if (chartPainter instanceof ITooltip) {
-							toolTipPainter = ((ITooltip) chartPainter).getTooltip(e.getPoint());
-							break;
+				if (component instanceof InfoVisChartPanel)
+					if (((InfoVisChartPanel) component).isShowingTooltips()) {
+						List<ChartPainter> chartPainters = ((InfoVisChartPanel) component).getChartPainters();
+						for (ChartPainter chartPainter : chartPainters) {
+							if (chartPainter instanceof ITooltip) {
+								toolTipPainter = ((ITooltip) chartPainter).getTooltip(e.getPoint());
+								break;
+							}
 						}
 					}
-				}
 
 				if (component instanceof IToolTipPaintable)
-					((IToolTipPaintable) component).setToolTipPainter(toolTipPainter);
+					if (((InfoVisChartPanel) component).isShowingTooltips())
+						((IToolTipPaintable) component).setToolTipPainter(toolTipPainter);
 			}
 		};
 	}

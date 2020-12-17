@@ -49,9 +49,11 @@ public class Distribution1DHorizontalPanelTester {
 			values.add(0.3 + Math.random() * 0.2);
 		}
 
-		Distribution1DHorizontalPanel<Double> panel = Distribution1DHorizontalPanels.createForDoubles(values,
-				Color.BLACK,
-				-0.5, 3.3);
+		Distribution1DHorizontalPanel<Double> panel = (Distribution1DHorizontalPanel<Double>) Distribution1DPanels
+				.createForDoubles(values, Color.BLACK, -0.5, 3.3, false);
+//		Distribution1DHorizontalPanel<Double> panel = Distribution1DHorizontalPanels.createForDoubles(values,
+//				Color.BLACK,
+//				-0.5, 3.3);
 		
 		// special values, such as clusters
 		// color is masked by the new colorMappingFunction.

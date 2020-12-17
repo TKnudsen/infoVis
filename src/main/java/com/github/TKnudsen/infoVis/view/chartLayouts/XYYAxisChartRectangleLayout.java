@@ -66,20 +66,20 @@ public class XYYAxisChartRectangleLayout extends XYAxisChartRectangleLayout {
 		if (isYAxisOverlay())
 			chartMinX = minX;
 
-		double chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * border;
+		double chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * margin;
 		if (isYAxisOverlay())
-			chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * border;
+			chartWidth = width - yAxisLegendWidth - yAxisLegendWidthRight - 2 * margin;
 
-		double chartHeight = height - xAxisLegendHeight - 2 * border;
+		double chartHeight = height - xAxisLegendHeight - 2 * margin;
 		if (isXAxisOverlay())
-			chartHeight = height - 2 * border; // use more height
+			chartHeight = height - 2 * margin; // use more height
 
-		xAxisRectangle = new Rectangle2D.Double(chartMinX + border, rectangle.getMaxY() - border - xAxisLegendHeight,
+		xAxisRectangle = new Rectangle2D.Double(chartMinX + margin, rectangle.getMaxY() - margin - xAxisLegendHeight,
 				chartWidth, xAxisLegendHeight);
-		yAxisRectangle = new Rectangle2D.Double(minX + border, minY + border, yAxisLegendWidth, chartHeight);
-		yAxisRectangleRight = new Rectangle2D.Double(maxX - border - yAxisLegendWidthRight, minY + border,
+		yAxisRectangle = new Rectangle2D.Double(minX + margin, minY + margin, yAxisLegendWidth, chartHeight);
+		yAxisRectangleRight = new Rectangle2D.Double(maxX - margin - yAxisLegendWidthRight, minY + margin,
 				yAxisLegendWidthRight, chartHeight);
-		chartRectangle = new Rectangle2D.Double(chartMinX + border, minY + border, chartWidth, chartHeight);
+		chartRectangle = new Rectangle2D.Double(chartMinX + margin, minY + margin, chartWidth, chartHeight);
 	}
 
 	public Rectangle2D getyAxisRectangleRight() {
