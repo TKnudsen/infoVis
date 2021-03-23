@@ -20,6 +20,7 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
+import com.github.TKnudsen.ComplexDataObject.model.tools.Threads;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -109,8 +110,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingY = worldPositionMappingY;
 
-		this.data = Collections
-				.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingX, true));
+		this.data = Collections.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingX, true));
 
 		initializePositionEncodingFunctions();
 
@@ -244,11 +244,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	 */
 	private Point2D getScreenPoint(int i) {
 		while (refreshingDataPoints) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Threads.sleep(10);
 		}
 		try {
 			return screenPoints.get(i);

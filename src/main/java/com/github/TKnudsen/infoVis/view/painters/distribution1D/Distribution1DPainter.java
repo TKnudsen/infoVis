@@ -26,7 +26,6 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
-import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>

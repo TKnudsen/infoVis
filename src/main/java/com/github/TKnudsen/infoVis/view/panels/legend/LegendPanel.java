@@ -3,13 +3,19 @@ package com.github.TKnudsen.infoVis.view.panels.legend;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 import javax.swing.JPanel;
+
+import de.javagl.selection.SelectionModel;
+import de.javagl.selection.SelectionModels;
 
 public class LegendPanel extends JPanel {
 
@@ -20,6 +26,7 @@ public class LegendPanel extends JPanel {
 
 	private LayoutManager layoutManager = new GridLayout(0, 1);
 	private List<LegendItemPanel> legendItemPanels;
+	private SelectionModel<String> selectionModel = SelectionModels.create();
 
 	public LegendPanel() {
 		this(new ArrayList<>());
@@ -31,6 +38,33 @@ public class LegendPanel extends JPanel {
 		this.legendItemPanels = legendItemPanels;
 
 		super.setLayout(new GridLayout(1, 1));
+
+		for (LegendItemPanel lp : legendItemPanels)
+			lp.addMouseListener(new MouseListener() {
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					String label = lp.getLabel();
+					if (selectionModel != null)
+						selectionModel.setSelection(Arrays.asList(label));
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+				}
+			});
 
 		refresh();
 	}
@@ -104,5 +138,13 @@ public class LegendPanel extends JPanel {
 		refresh();
 
 		repaint();
+	}
+
+	public SelectionModel<String> getSelectionModel() {
+		return selectionModel;
+	}
+
+	public void setSelectionModel(SelectionModel<String> selectionModel) {
+		this.selectionModel = selectionModel;
 	}
 }

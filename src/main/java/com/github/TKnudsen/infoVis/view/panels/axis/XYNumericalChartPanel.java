@@ -214,8 +214,12 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	 */
 	public void setXAxisOverlay(boolean overlayOfXAxis) {
 		this.xyAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
-		this.xAxisPainter.setAxisLineAlignment(AxisLineAlignment.BOTTOM);
-		this.xAxisPainter.setBackgroundPaint(null);
+
+		if (overlayOfXAxis) {
+			this.xAxisPainter.setAxisLineAlignment(AxisLineAlignment.BOTTOM);
+			this.xAxisPainter.setBackgroundPaint(null);
+		} else
+			this.xAxisPainter.setAxisLineAlignment(AxisLineAlignment.TOP);
 
 		updateBounds();
 	}
@@ -243,8 +247,12 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	 */
 	public void setYAxisOverlay(boolean yAxisOverlay) {
 		this.xyAxisChartRectangleLayout.setYAxisOverlay(yAxisOverlay);
-		this.yAxisPainter.setAxisLineAlignment(AxisLineAlignment.LEFT);
-		this.yAxisPainter.setBackgroundPaint(null);
+
+		if (yAxisOverlay) {
+			this.yAxisPainter.setAxisLineAlignment(AxisLineAlignment.LEFT);
+			this.yAxisPainter.setBackgroundPaint(null);
+		} else
+			this.yAxisPainter.setAxisLineAlignment(AxisLineAlignment.RIGHT);
 
 		updateBounds();
 	}

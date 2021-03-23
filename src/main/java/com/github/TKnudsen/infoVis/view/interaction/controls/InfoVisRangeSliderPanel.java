@@ -1,10 +1,8 @@
 package com.github.TKnudsen.infoVis.view.interaction.controls;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;

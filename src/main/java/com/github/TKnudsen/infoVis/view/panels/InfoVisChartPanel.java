@@ -131,6 +131,8 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	protected void drawChart(Graphics2D g2) {
 		for (ChartPainter chartPainter : chartPainters) {
 			chartPainter.setFont(this.getFont());
+			// chartPainter.setRectangle(new Rectangle2D.Double(0, 0, getWidth() - 1,
+			// getHeight() - 1)); //no! destroys the chart layout
 			chartPainter.draw(g2);
 		}
 	}

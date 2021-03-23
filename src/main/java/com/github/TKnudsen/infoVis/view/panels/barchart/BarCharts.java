@@ -5,10 +5,14 @@ import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
+import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
+import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.NormalizationFunction;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
@@ -36,7 +40,7 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  */
 public class BarCharts {
 
@@ -96,6 +100,39 @@ public class BarCharts {
 			BarChartVerticalPainter barChartVerticalPainter = new BarChartVerticalPainter(bars, colors);
 			barChart.addChartPainter(barChartVerticalPainter, true);
 		}
+
+		return barChart;
+	}
+
+	/**
+	 * values is the collection of numbers (not bins) which will be binned here. The
+	 * result is represented with a bar chart.
+	 * 
+	 * @param values
+	 * @param bins
+	 * @param barColor
+	 * @return
+	 */
+	public static BarChart createHistogramBarchart(Collection<Number> values, int bins, Color barColor) {
+
+		NormalizationFunction normalization = new LinearNormalizationFunction(values);
+
+		Double[] counts = new Double[bins];
+		for (Number value : values)
+			for (int i = 0; i < bins; i++) {
+				if (value == null || Double.isNaN(value.doubleValue()))
+					continue;
+				Number n = normalization.apply(value);
+				if (1 / (int) bins * i < n.doubleValue())
+					counts[i]++;
+			}
+
+		List<Color> colors = new ArrayList<Color>();
+		for (int i = 0; i < bins; i++)
+			colors.add(barColor);
+
+		BarChart barChart = BarCharts.createBarChart(DataConversion.arrayToList(counts), colors);
+		barChart.setBackground(null);
 
 		return barChart;
 	}

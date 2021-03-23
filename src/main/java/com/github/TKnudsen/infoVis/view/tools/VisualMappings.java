@@ -19,7 +19,8 @@ public class VisualMappings {
 	 * @param worldToDoubleMapping
 	 * @return
 	 */
-	public static <D> List<D> sanityCheckFilter(Iterable<D> data, Function<? super D, Double> worldToDoubleMapping) {
+	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
+			Function<? super D, ? extends Number> worldToDoubleMapping) {
 		return sanityCheckFilter(data, worldToDoubleMapping, true);
 	}
 
@@ -34,8 +35,8 @@ public class VisualMappings {
 	 *                             (functionality remains the same)
 	 * @return
 	 */
-	public static <D> List<D> sanityCheckFilter(Iterable<D> data, Function<? super D, Double> worldToDoubleMapping,
-			boolean warnForQualityLeaks) {
+	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
+			Function<? super D, ? extends Number> worldToDoubleMapping, boolean warnForQualityLeaks) {
 		List<D> returnList = new ArrayList<D>();
 
 		if (data == null) {
@@ -52,8 +53,8 @@ public class VisualMappings {
 
 		try {
 			for (D t : data) {
-				Double d = worldToDoubleMapping.apply(t);
-				if (d != null && !Double.isNaN(d))
+				Number d = worldToDoubleMapping.apply(t);
+				if (d != null && !Double.isNaN(d.doubleValue()))
 					returnList.add(t);
 				else if (warnForQualityLeaks)
 					System.err.println("VisualMappings.sanityCheckFilter: object " + t
@@ -76,8 +77,9 @@ public class VisualMappings {
 	 * @param worldToDoubleMappingY
 	 * @return
 	 */
-	public static <D, V> List<D> sanityCheckFilter(Iterable<D> data, Function<? super D, Double> worldToDoubleMappingX,
-			Function<? super D, Double> worldToDoubleMappingY) {
+	public static <D, V> List<D> sanityCheckFilter(Iterable<D> data,
+			Function<? super D, ? extends Number> worldToDoubleMappingX,
+			Function<? super D, ? extends Number> worldToDoubleMappingY) {
 		return sanityCheckFilter(data, worldToDoubleMappingX, worldToDoubleMappingY, true);
 	}
 
@@ -93,15 +95,16 @@ public class VisualMappings {
 	 *                              (functionality remains the same)
 	 * @return
 	 */
-	public static <D> List<D> sanityCheckFilter(Iterable<D> data, Function<? super D, Double> worldToDoubleMappingX,
-			Function<? super D, Double> worldToDoubleMappingY, boolean warnForQualityLeaks) {
+	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
+			Function<? super D, ? extends Number> worldToDoubleMappingX,
+			Function<? super D, ? extends Number> worldToDoubleMappingY, boolean warnForQualityLeaks) {
 		List<D> returnList = new ArrayList<D>();
 
 		try {
 			for (D t : data) {
-				Double x = worldToDoubleMappingX.apply(t);
-				Double y = worldToDoubleMappingY.apply(t);
-				if (x != null && !Double.isNaN(x) && y != null && !Double.isNaN(y))
+				Number x = worldToDoubleMappingX.apply(t);
+				Number y = worldToDoubleMappingY.apply(t);
+				if (x != null && !Double.isNaN(x.doubleValue()) && y != null && !Double.isNaN(y.doubleValue()))
 					returnList.add(t);
 				else if (warnForQualityLeaks)
 					System.err.println("VisualMappings.sanityCheckFilter: object " + t
@@ -149,9 +152,9 @@ public class VisualMappings {
 			for (D t : data) {
 				boolean accepted = true;
 
-				for (Function<? super D, Double> mapping : worldToDoubleMappings) {
-					Double d = mapping.apply(t);
-					if (d == null || Double.isNaN(d)) {
+				for (Function<? super D, ? extends Number> mapping : worldToDoubleMappings) {
+					Number d = mapping.apply(t);
+					if (d == null || Double.isNaN(d.doubleValue())) {
 						accepted = false;
 						if (warnForQualityLeaks)
 							System.err.println("VisualMappings.sanityCheckFilter: object " + t

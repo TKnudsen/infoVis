@@ -39,6 +39,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	private static final int Y_AXIS_WIDTH = 22;
 	private final Histogram<T> histogram;
 
+	private final JPanel eastSpacer;
 	private final InfoVisRangeSliderPanel rangeSliderPanel;
 	private final InfoVisRangeSlider rangeSlider;
 	private static final int INTEGER_MULTIPLIER = 100;
@@ -121,13 +122,14 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		histogram.setDrawXAxis(false); // do not draw the histogram's x axis. it shows numbers according to the
 										// INTEGER_MULTIPLIER. show the axis of the slider instead
 		histogram.setDrawYAxis(true);
+		histogram.setYAxisOverlay(false);
 		histogram.setYAxisLegendWidth(Y_AXIS_WIDTH);
 		histogram.setXAxisLegendHeight(20);
 		Histograms.addInteraction(histogram, selectionModel, true, true);
 		addFilterStatusListener(histogram);
 
 		JPanel histogramCanvas = new JPanel(new BorderLayout());
-		JPanel eastSpacer = new JPanel();
+		eastSpacer = new JPanel();
 		eastSpacer.setPreferredSize(new Dimension((int) (InfoVisRangeSlider.SLIDER_POINTER_WIDTH * 0.5), 0));
 		histogramCanvas.add(eastSpacer, BorderLayout.EAST);
 		histogramCanvas.add(histogram, BorderLayout.CENTER);

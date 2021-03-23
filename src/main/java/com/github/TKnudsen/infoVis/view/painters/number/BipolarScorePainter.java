@@ -128,13 +128,13 @@ public class BipolarScorePainter extends ChartPainter {
 		// draw neutral mark
 		if (horizontalOrientation)
 			DisplayTools.drawLine(g2, rectangle.getCenterX(), rectangle.getMinY(), rectangle.getCenterX(),
-					rectangle.getMaxY(), DisplayTools.standardDashedStroke, neutralMarkColor);
+					rectangle.getMaxY(), DisplayTools.thickStroke, neutralMarkColor);
 		else
 			DisplayTools.drawLine(g2, rectangle.getMinX(), rectangle.getCenterY(), rectangle.getMaxX(),
-					rectangle.getCenterY(), DisplayTools.standardDashedStroke, neutralMarkColor);
+					rectangle.getCenterY(), DisplayTools.thickStroke, neutralMarkColor);
 
 		if (isDrawOutline()) {
-			g2.setColor(neutralMarkColor);
+			g2.setPaint(getBorderPaint());
 			g2.draw(chartRectangle);
 		}
 

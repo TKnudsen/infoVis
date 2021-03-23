@@ -1,9 +1,7 @@
 package com.github.TKnudsen.infoVis.view.panels.distribution1D;
 
 import java.awt.Paint;
-import java.awt.geom.RectangularShape;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
@@ -62,7 +60,7 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 
 		if (data == null)
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
-				throw new IllegalArgumentException("InfoVisBoxPlotVerticalPanel: no valid input given");
+				throw new IllegalArgumentException("Distribution1DHorizontalPanel: no valid input given");
 
 		double min = Double.POSITIVE_INFINITY;
 		if (!Double.isNaN(minGlobal))

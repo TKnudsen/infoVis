@@ -67,11 +67,11 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		this.data = Collections.unmodifiableList(data);
 		this.colorMapping = colorMapping;
 
-		if (worldPositionMappingsY.size() == 0)
+		if (worldPositionMappingsY.isEmpty())
 			throw new IllegalArgumentException("ParallelCoordinates: at least one worldPositionMappingsY is needed");
 		this.worldPositionMappingsY = worldPositionMappingsY;
 
-		// add spacing to chartlayout to acchieve a better chart alignment
+		// add spacing to chart layout to achieve a better chart alignment
 		YYYAxisChartRectangleLayout layout = (YYYAxisChartRectangleLayout) getChartRectangleLayout();
 		layout.setRelativeSpaceBetweenAxes(relativeSpacing(this.worldPositionMappingsY.size()));
 

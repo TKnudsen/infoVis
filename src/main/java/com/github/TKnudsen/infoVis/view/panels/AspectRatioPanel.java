@@ -63,7 +63,7 @@ public class AspectRatioPanel extends JPanel {
 			if (yQ > xQ) {
 				// all x space will be used, y reduced
 				h = (int) (xQ * yDim);
-				y0 = (int) ((height - h) * 0.5);
+				y0 += (int) ((height - h) * 0.5);
 			}
 		}
 
