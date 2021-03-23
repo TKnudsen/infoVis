@@ -1,7 +1,6 @@
 package com.github.TKnudsen.infoVis.view.interaction.handlers;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 

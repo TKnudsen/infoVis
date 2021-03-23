@@ -15,11 +15,11 @@ import java.util.Objects;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2018 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2021 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.04
+ * @version 1.05
  */
 public class ColorTools {
 

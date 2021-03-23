@@ -1,0 +1,203 @@
+package com.github.TKnudsen.infoVis.view.table.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.DoubleParser;
+import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
+import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
+import com.github.TKnudsen.infoVis.view.table.RelativeCellValueProvider;
+
+public abstract class ItemTableModel extends AbstractTableModel implements RelativeCellValueProvider {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1914350444679891919L;
+
+	protected static boolean DEBUG = true;
+
+	private int itemFilterCount;
+	private String comparableAttribute;
+
+	protected String[] columnNames;
+	protected Object[][] data;
+
+	private DoubleParser doubleParser = new DoubleParser(true);
+	
+	private int detaultSortColumn;
+
+	public ItemTableModel(int itemFilterCount, String comparableAttribute) {
+		this.setItemFilterCount(itemFilterCount);
+		this.setComparableAttribute(comparableAttribute);
+	}
+
+	public abstract void initialize();
+
+	public Object getValueAt(int row, int col) {
+		return getData()[row][col];
+	}
+
+	@Override
+	/**
+	 * RelativeCellValueProvider
+	 * 
+	 * @param row
+	 * @param col
+	 * @param rowWise
+	 * @return
+	 */
+	public double getRelativeValueAt(int row, int col, boolean rowWise) {
+		Object value = getValueAt(row, col);
+		List<Object> values;
+
+		if (rowWise)
+			values = getRowValues(row);
+		else
+			values = getColumnValues(col);
+
+		// test for numerical values
+		if (value instanceof Number) {
+			List<Double> doubleValues = new ArrayList<>();
+			for (Object o : values)
+				if (o != null)
+					if (o instanceof Number)
+						if (!Double.isNaN(((Number) o).doubleValue()))
+							doubleValues.add(((Number) o).doubleValue());
+			StatisticsSupport statistics = new StatisticsSupport(doubleValues);
+
+			return MathFunctions.linearScale(statistics.getMin(), statistics.getMax(), ((Number) value).doubleValue());
+		}
+
+		return 0.0;
+	}
+
+	public Object getRowMin(int row) {
+		double min = 0.0;
+		for (int y = 0; y < getData()[row].length; y++)
+			if (getData()[row][y] instanceof Number) {
+				Number n = (Number) getData()[row][y];
+				if (!Double.isNaN(n.doubleValue()))
+					min = Math.min(min, n.doubleValue());
+			}
+
+		return min;
+	}
+
+	public Object getRowMax(int row) {
+		double max = 0.0;
+		for (int y = 0; y < getData()[row].length; y++)
+			if (getData()[row][y] instanceof Number) {
+				Number n = (Number) getData()[row][y];
+				if (!Double.isNaN(n.doubleValue()))
+					max = Math.max(max, n.doubleValue());
+			}
+
+		return max;
+	}
+
+	public List<Object> getRowValues(int row) {
+		List<Object> objects = new ArrayList<>();
+
+		for (int y = 0; y < getData()[row].length; y++)
+			objects.add(getData()[row][y]);
+
+		return objects;
+	}
+
+	public List<Object> getColumnValues(int column) {
+		List<Object> objects = new ArrayList<>();
+
+		for (int row = 0; row < getData().length; row++)
+			objects.add(getData()[row][column]);
+
+		return objects;
+	}
+
+	/*
+	 * JTable uses this method to determine the default renderer/ editor for each
+	 * cell. If we didn't implement this method, then the last column would contain
+	 * text ("true"/"false"), rather than a check box.
+	 */
+	public Class<?> getColumnClass(int c) {
+		Object object = getValueAt(0, c);
+		if (object == null)
+			return Double.class;
+
+		return object.getClass();
+	}
+
+	/*
+	 * Don't need to implement this method unless your table's editable.
+	 */
+	public boolean isCellEditable(int row, int col) {
+		// Note that the data/cell address is constant,
+		// no matter where the cell appears on-screen.
+		if (col < 2) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public int getColumnCount() {
+		return getColumnNames().length;
+	}
+
+	public int getRowCount() {
+		return getData().length;
+	}
+
+	public String getColumnName(int col) {
+		return getColumnNames()[col];
+	}
+
+	public String[] getColumnNames() {
+		if (columnNames == null)
+			initialize();
+
+		return columnNames;
+	}
+
+	public Object[][] getData() {
+		if (data == null)
+			initialize();
+
+		return data;
+	}
+
+	public DoubleParser getDoubleParser() {
+		return doubleParser;
+	}
+
+	public void setDoubleParser(DoubleParser doubleParser) {
+		this.doubleParser = doubleParser;
+	}
+
+	public String getComparableAttribute() {
+		return comparableAttribute;
+	}
+
+	public void setComparableAttribute(String comparableAttribute) {
+		this.comparableAttribute = comparableAttribute;
+	}
+
+	public int getItemFilterCount() {
+		return itemFilterCount;
+	}
+
+	public void setItemFilterCount(int itemFilterCount) {
+		this.itemFilterCount = itemFilterCount;
+	}
+
+	public int getDetaultSortColumn() {
+		return detaultSortColumn;
+	}
+
+	public void setDetaultSortColumn(int detaultSortColumn) {
+		this.detaultSortColumn = detaultSortColumn;
+	}
+
+}

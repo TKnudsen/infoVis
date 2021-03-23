@@ -11,6 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.Objects;
@@ -413,6 +414,25 @@ public class DisplayTools {
 		g2.transform(rotate);
 		g2.drawString(text, x, y);
 		g2.setTransform(old);
+	}
+
+	/**
+	 * creates a diamond shape
+	 * 
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public static Path2D.Double createDiamond(double centerX, double centerY, double width, double height) {
+		Path2D.Double diamond = new Path2D.Double();
+
+		diamond.moveTo(centerX - width * 0.5, centerY - height * 0.5 + height / 2);
+		diamond.lineTo(centerX - width * 0.5 + width / 2, centerY - height * 0.5);
+		diamond.lineTo(centerX - width * 0.5 + width, centerY - height * 0.5 + height / 2);
+		diamond.lineTo(centerX - width * 0.5 + width / 2, centerY - height * 0.5 + height);
+		diamond.closePath();
+
+		return diamond;
 	}
 
 }

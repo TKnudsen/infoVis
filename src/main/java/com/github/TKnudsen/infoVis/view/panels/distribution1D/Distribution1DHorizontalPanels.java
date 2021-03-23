@@ -88,12 +88,12 @@ public class Distribution1DHorizontalPanels {
 		return null;
 	}
 
+	@Deprecated // use VisualMappings.sanityCheckFilter
 	/**
 	 * applies a filter operation using a list of data. Returns a new list, only
 	 * containing those elements which can be applied by the position mapping
 	 * function.
 	 * 
-	 * @Deprecated //use Distribution1DPanels
 	 * @param data
 	 * @param worldPositionMapping
 	 * @param warnForQualityLeaks

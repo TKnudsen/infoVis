@@ -70,7 +70,7 @@ public class ScatterPlots {
 			Function<? super T, Double> worldPositionMappingY, Function<? super T, ? extends Paint> colorMapping,
 			boolean alarmWhenDataSanitiCheckFails, SelectionModel<T> selectionModel) {
 
-		List<T> filteredData = ScatterPlots.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
+		List<T> filteredData = VisualMappings.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
 				alarmWhenDataSanitiCheckFails);
 
 		ScatterPlot<T> scatterPlot = new ScatterPlot<T>(filteredData, colorMapping, worldPositionMappingX,
@@ -154,6 +154,7 @@ public class ScatterPlots {
 		});
 	}
 
+	@Deprecated // use VisualMappings.sanityCheckFilter
 	/**
 	 * applies a filter operation using a given data set. and returns a new list,
 	 * only containing those elements which can be applied by both given position

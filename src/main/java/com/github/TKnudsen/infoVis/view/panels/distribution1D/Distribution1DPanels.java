@@ -21,6 +21,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorE
 import de.javagl.selection.SelectionEvent;
 import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
+import de.javagl.selection.SelectionModels;
 
 public class Distribution1DPanels {
 
@@ -126,8 +127,10 @@ public class Distribution1DPanels {
 
 		Objects.requireNonNull(stroke);
 
+		SelectionModel<T> sm = (selectionModel != null) ? selectionModel : SelectionModels.create();
+
 		// SELECTION HANDLER
-		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(selectionModel);
+		SelectionHandler<T> selectionHandler = new SelectionHandler<T>(sm);
 
 		if (distributionPanel instanceof Component)
 			selectionHandler.attachTo((Component) distributionPanel);
@@ -145,7 +148,7 @@ public class Distribution1DPanels {
 
 		// set current selection
 		distributionPanel.clearSpecialValues();
-		for (T t : selectionModel.getSelection())
+		for (T t : sm.getSelection())
 			distributionPanel.addSpecialValue(t, new ShapeAttributes(colorEncodingFunction.apply(t), stroke));
 		if (distributionPanel instanceof Component)
 			((Component) distributionPanel).repaint();
@@ -161,10 +164,11 @@ public class Distribution1DPanels {
 					((Component) distributionPanel).repaint();
 			}
 		};
-		selectionModel.addSelectionListener(selectionListener);
+		sm.addSelectionListener(selectionListener);
 		return selectionListener;
 	}
 
+	@Deprecated // use VisualMappings.sanityCheckFilter
 	/**
 	 * applies a filter operation using a list of data. Returns a new list, only
 	 * containing those elements which can be applied by the position mapping

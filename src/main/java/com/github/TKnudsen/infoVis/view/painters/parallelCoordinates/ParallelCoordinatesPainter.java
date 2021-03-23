@@ -103,8 +103,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		this.worldPositionMappingsY = worldPositionMappingsY;
 
 		// data sanity check
-		this.data = Collections
-				.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingsY, true));
+		this.data = Collections.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingsY, true));
 
 		initializePositionEncodingFunctions();
 
