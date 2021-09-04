@@ -267,6 +267,10 @@ public abstract class BarChartPainter extends ChartPainter
 
 	public void setDrawBarOutlines(boolean drawBarOutlines) {
 		this.drawBarOutlines = drawBarOutlines;
+
+		if (barPainters != null)
+			for (BarPainter barPainter : barPainters)
+				barPainter.setDrawBarOutlines(drawBarOutlines);
 	}
 
 	public boolean isFillBars() {
