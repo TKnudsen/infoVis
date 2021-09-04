@@ -34,9 +34,9 @@ public class AxisCartTools {
 		if (value < 1000)
 			return String.valueOf((int) MathFunctions.round(value, 0));
 		if (value < 2000)
-			return String.valueOf(MathFunctions.round(value / 1000.0, 1)) + "k";
-		if (value < 1000000)
 			return String.valueOf(MathFunctions.round(value / 1000.0, 2)) + "k";
+		if (value < 1000000)
+			return String.valueOf(MathFunctions.round(value / 1000.0, 1)) + "k";
 		if (value < 1000000000)
 			return String.valueOf((int) MathFunctions.round(value / 1000000.0, 3)) + "m";
 		if (value < 1000000000000L)
