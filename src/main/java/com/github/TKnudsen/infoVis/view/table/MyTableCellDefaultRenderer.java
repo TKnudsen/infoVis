@@ -25,8 +25,7 @@ import com.github.TKnudsen.infoVis.view.painters.primitives.RectanglePainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.ui.NimbusUITools;
-
-import javafx.geometry.Orientation;
+import com.github.TKnudsen.infoVis.view.ui.Orientation;
 
 public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
