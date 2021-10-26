@@ -6,8 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
-
-import javafx.geometry.Orientation;
+import com.github.TKnudsen.infoVis.view.ui.Orientation;
 
 /**
  * Paints a score between 0 and 1 as bar.
