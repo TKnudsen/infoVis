@@ -11,8 +11,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
-import sun.swing.DefaultLookup;
-
 public class TableCellCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
 	/**
@@ -47,20 +45,6 @@ public class TableCellCheckBoxRenderer extends JCheckBox implements TableCellRen
 		setOpaque(true);
 
 		return this;
-	}
-
-	private Border getNoFocusBorder() {
-		Border border = DefaultLookup.getBorder(this, ui, "Table.cellNoFocusBorder");
-		if (System.getSecurityManager() != null) {
-			if (border != null)
-				return border;
-			return SAFE_NO_FOCUS_BORDER;
-		} else if (border != null) {
-			if (noFocusBorder == null || noFocusBorder == DEFAULT_NO_FOCUS_BORDER) {
-				return border;
-			}
-		}
-		return noFocusBorder;
 	}
 
 }
