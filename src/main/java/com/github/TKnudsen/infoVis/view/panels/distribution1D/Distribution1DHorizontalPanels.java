@@ -16,7 +16,7 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 /**
- * @Deprecated use Distribution1DPanels
+ * Deprecated use Distribution1DPanels
  *
  */
 public class Distribution1DHorizontalPanels {
@@ -38,7 +38,7 @@ public class Distribution1DHorizontalPanels {
 	}
 
 	/**
-	 * @Deprecated //use Distribution1DPanels
+	 * Deprecated //use Distribution1DPanels
 	 * @param <T>
 	 * @param distributionPanel
 	 * @param selectionModel

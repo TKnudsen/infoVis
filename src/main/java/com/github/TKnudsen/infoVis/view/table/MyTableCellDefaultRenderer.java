@@ -108,7 +108,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 	 * @param component
 	 * @param row
 	 * @param column
-	 * @param extendComponent whether or not the component receives an additional
+	 * @param glyphPlacement whether or not the component receives an additional
 	 *                        size encoding. otherwise it is replaced.
 	 * @return
 	 */

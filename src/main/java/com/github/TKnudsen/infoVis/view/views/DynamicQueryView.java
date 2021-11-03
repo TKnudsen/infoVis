@@ -182,8 +182,6 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	 * Adds a ChangeListener to the slider of the view.
 	 *
 	 * @param l the ChangeListener to add
-	 * @see #fireStateChanged
-	 * @see #removeChangeListener
 	 */
 	public void addChangeListener(ChangeListener l) {
 		this.rangeSlider.addChangeListener(l);

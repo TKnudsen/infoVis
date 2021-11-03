@@ -72,7 +72,7 @@ public class BarCharts {
 	/**
 	 * 
 	 * @param data   list of bar chart data
-	 * @param colors one color for each bar chart layer
+	 * @param barchartColors one color for each bar chart layer
 	 * @return
 	 */
 	public static BarChart createLayeredBarChart(List<List<Double>> data, List<Color> barchartColors) {

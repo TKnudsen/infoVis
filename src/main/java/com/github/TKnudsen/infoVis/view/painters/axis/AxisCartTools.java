@@ -220,7 +220,8 @@ public class AxisCartTools {
 	 * 
 	 * @param markerPositionsWithLabels
 	 * @param pow2
-	 * @param chartRectangle
+	 * @param lowerBound
+	 * @param upperBound
 	 * @return
 	 */
 	public static SortedSet<Double> refineMarkerPositionResolution(
