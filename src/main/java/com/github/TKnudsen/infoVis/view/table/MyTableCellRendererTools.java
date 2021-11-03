@@ -9,8 +9,6 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 
-import sun.swing.DefaultLookup;
-
 public class MyTableCellRendererTools {
 
 	private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
@@ -32,8 +30,13 @@ public class MyTableCellRendererTools {
 		if (dropLocation != null && !dropLocation.isInsertRow() && !dropLocation.isInsertColumn()
 				&& dropLocation.getRow() == row && dropLocation.getColumn() == column) {
 
-			fg = DefaultLookup.getColor(targetComponent, ui, "Table.dropCellForeground");
-			bg = DefaultLookup.getColor(targetComponent, ui, "Table.dropCellBackground");
+			// fg = DefaultLookup.getColor(targetComponent, ui, "Table.dropCellForeground");
+			// TODO needs testing
+			fg = UIManager.getColor("Table.dropCellForeground");
+
+			// bg = DefaultLookup.getColor(targetComponent, ui, "Table.dropCellBackground");
+			// TODO needs testing
+			bg = UIManager.getColor("Table.dropCellBackground");
 
 			isSelected = true;
 		}
@@ -55,20 +58,33 @@ public class MyTableCellRendererTools {
 		if (hasFocus) {
 			Border border = null;
 			if (isSelected) {
-				border = DefaultLookup.getBorder(targetComponent, ui, "Table.focusSelectedCellHighlightBorder");
+				// border = DefaultLookup.getBorder(targetComponent, ui,
+				// "Table.focusSelectedCellHighlightBorder");
+				// TODO needs testing
+				border = UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
 			}
 			if (border == null) {
-				border = DefaultLookup.getBorder(targetComponent, ui, "Table.focusCellHighlightBorder");
+				// border = DefaultLookup.getBorder(targetComponent, ui,
+				// "Table.focusCellHighlightBorder");
+				// TODO needs testing
+				border = UIManager.getBorder("Table.focusCellHighlightBorder");
 			}
 			targetComponent.setBorder(border);
 
 			if (!isSelected && table.isCellEditable(row, column)) {
 				Color col;
-				col = DefaultLookup.getColor(targetComponent, ui, "Table.focusCellForeground");
+				// col = DefaultLookup.getColor(targetComponent, ui,
+				// "Table.focusCellForeground");
+				// TODO needs testing
+				col = UIManager.getColor("Table.focusCellForeground");
 				if (col != null) {
 					targetComponent.setForeground(col);
 				}
-				col = DefaultLookup.getColor(targetComponent, ui, "Table.focusCellBackground");
+
+				// col = DefaultLookup.getColor(targetComponent, ui,
+				// "Table.focusCellBackground");
+				// TODO needs testing
+				col = UIManager.getColor("Table.focusCellBackground");
 				if (col != null) {
 					targetComponent.setBackground(col);
 				}
@@ -79,7 +95,10 @@ public class MyTableCellRendererTools {
 	}
 
 	private static Border getNoFocusBorder(JComponent targetComponent, ComponentUI ui) {
-		Border border = DefaultLookup.getBorder(targetComponent, ui, "Table.cellNoFocusBorder");
+		// Border border = DefaultLookup.getBorder(targetComponent, ui,
+		// "Table.cellNoFocusBorder");
+		// TODO needs testing
+		Border border = UIManager.getBorder("Table.cellNoFocusBorder");
 		if (System.getSecurityManager() != null) {
 			if (border != null)
 				return border;
