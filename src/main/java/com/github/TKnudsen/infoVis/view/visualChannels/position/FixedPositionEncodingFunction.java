@@ -51,10 +51,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 	/**
 	 * classical constructor for a non-inverted axis
 	 * 
-	 * @param minValue
-	 * @param maxValue
-	 * @param minPixel
-	 * @param maxPixel
+	 * @param mapping
 	 */
 	public FixedPositionEncodingFunction(Map<Number, Double> mapping) {
 		this.mapping = new TreeMap<>(new NumberComparator());

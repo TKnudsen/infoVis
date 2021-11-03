@@ -36,7 +36,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
  * @author Juergen Bernard
  * @version 2.07 TODO the individual scatterplots are not yet connected with the
  *          interaction design which is triggered from outside. To do so, create
- *          ScatterPlotMatrix class that accepts <T>
+ *          ScatterPlotMatrix class that accepts T
  */
 public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IRectangleSelection<Double[]>,
 		IClickSelection<Double[]>, ISelectionVisualizer<Double[]>, ISizeEncoding<Double[]> {

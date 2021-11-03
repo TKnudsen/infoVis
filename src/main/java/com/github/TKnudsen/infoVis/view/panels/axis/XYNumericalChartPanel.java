@@ -239,7 +239,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	}
 
 	/**
-	 * lets the chart painter(s) begin on top of the < axis, not (only) in the east.
+	 * lets the chart painter(s) begin on top of the less than axis, not (only) in the east.
 	 * Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
 	 * Automatically removes background paint of axisPainter.
 	 * 

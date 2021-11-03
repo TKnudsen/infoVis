@@ -47,7 +47,8 @@ public class ToolTipTools {
 	 * its world value. (inverse).
 	 * 
 	 * @param p
-	 * @param positionMapping
+	 * @param screenValue
+	 * @param inverseMapping
 	 * @param chartRectangle
 	 * @return
 	 */
