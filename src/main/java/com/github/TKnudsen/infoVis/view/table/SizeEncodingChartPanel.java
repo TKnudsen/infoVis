@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
 
-class SizeEncodingChartPanel extends TableCellChartPanel {
+public class SizeEncodingChartPanel extends TableCellChartPanel {
 
 	/**
 	 * 
@@ -18,7 +18,7 @@ class SizeEncodingChartPanel extends TableCellChartPanel {
 	private double relativeSize;
 	private ChartPainter painter;
 
-	SizeEncodingChartPanel(ChartPainter r, double relativeSize) {
+	public SizeEncodingChartPanel(ChartPainter r, double relativeSize) {
 		super(r);
 
 		this.painter = r;

@@ -75,6 +75,18 @@ public class ColorTools {
 	 * @return
 	 */
 	public static Color mergeColors(Color color1, Color color2) {
+		return mergeColors(color1, color2, 0.5);
+	}
+
+	/**
+	 * merges two colors to a new color using RGB arithmetics.
+	 * 
+	 * @param color1
+	 * @param color2
+	 * @param weight 0 means 100% first where as 1 means 100% second
+	 * @return
+	 */
+	public static Color mergeColors(Color color1, Color color2, double weight) {
 		if (color1 == null && color2 == null)
 			return null;
 		if (color1 == null)
@@ -82,11 +94,13 @@ public class ColorTools {
 		if (color2 == null)
 			return new Color(color1.getRed(), color1.getGreen(), color1.getBlue());
 
-		int r = color1.getRed() + color2.getRed();
-		int g = color1.getGreen() + color2.getGreen();
-		int b = color1.getBlue() + color2.getBlue();
+		double w = Double.isNaN(weight) ? 0.5 : Math.max(0.0, Math.min(1.0, weight));
 
-		return new Color(r / 2, g / 2, b / 2);
+		double r = color1.getRed() * (1 - w) + color2.getRed() * w;
+		double g = color1.getGreen() * (1 - w) + color2.getGreen() * w;
+		double b = color1.getBlue() * (1 - w) + color2.getBlue() * w;
+
+		return new Color((int) r, (int) g, (int) b);
 	}
 
 	/**

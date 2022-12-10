@@ -69,13 +69,13 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	/**
 	 * world coordinates/position/values of the x dimension
 	 */
-	private final Function<? super T, Double> worldToDoubleMapping;
+	private final Function<? super T, ? extends Number> worldToDoubleMapping;
 	private IPositionEncodingFunction positionEncodingFunction;
 	protected boolean externalPositionEncodingFunction = false;
 
 	private Function<? super T, ? extends Paint> colorEncodingFunction;
 
-	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping,
+	public Distribution1DPainter(Collection<T> values, Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 		this(values, worldToDoubleMapping);
 
@@ -83,7 +83,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 			this.colorEncodingFunction = colorEncodingFunction;
 	}
 
-	public Distribution1DPainter(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
+	public Distribution1DPainter(Collection<T> values, Function<? super T, ? extends Number> worldToDoubleMapping) {
 		if (values != null)
 			this.data = Collections
 					.unmodifiableCollection(VisualMappings.sanityCheckFilter(values, worldToDoubleMapping, true));
@@ -245,7 +245,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		// PositionEncodingFunctionListener to the PositionEncodingFunction
 	}
 
-	public Function<? super T, Double> getWorldToDoubleMapping() {
+	public Function<? super T, ? extends Number> getWorldToDoubleMapping() {
 		return worldToDoubleMapping;
 	}
 

@@ -68,18 +68,20 @@ public class Distribution1DPanels {
 		return create(data, p -> p, new ColorEncodingFunction<Double>(data, colors), minGlobal, maxGlobal, vertical);
 	}
 
-	public static <T> Distribution1DPanel<T> create(List<T> data, Function<? super T, Double> worldToDoubleMapping,
-			boolean vertical) {
+	public static <T> Distribution1DPanel<T> create(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping, boolean vertical) {
 		return create(data, worldToDoubleMapping, null, Double.NaN, Double.NaN, vertical);
 	}
 
-	public static <T> Distribution1DPanel<T> create(List<T> data, Function<? super T, Double> worldToDoubleMapping,
-			Double minGlobal, Double maxGlobal, boolean vertical) {
+	public static <T> Distribution1DPanel<T> create(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping, double minGlobal, double maxGlobal,
+			boolean vertical) {
 		return create(data, worldToDoubleMapping, null, minGlobal, maxGlobal, vertical);
 	}
 
-	public static <T> Distribution1DPanel<T> create(List<T> data, Function<? super T, Double> worldToDoubleMapping,
-			Function<? super T, ? extends Paint> colorEncodingFunction, Double minGlobal, Double maxGlobal,
+	public static <T> Distribution1DPanel<T> create(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction, double minGlobal, double maxGlobal,
 			boolean vertical) {
 
 		return (vertical)
@@ -179,7 +181,7 @@ public class Distribution1DPanels {
 	 * @param warnForQualityLeaks
 	 * @return
 	 */
-	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
+	public static <T> List<T> sanityCheckFilter(Collection<T> data, Function<? super T, Double> worldPositionMapping,
 			boolean warnForQualityLeaks) {
 		return VisualMappings.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
 	}

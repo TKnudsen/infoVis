@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -17,6 +18,7 @@ import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DPane
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
+import com.jidesoft.plaf.LookAndFeelFactory;
 
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
@@ -36,11 +38,14 @@ public class RangeSliderValueDistributionTest {
 		values.add(100.0);
 
 		// range slider
+		LookAndFeelFactory.setDefaultStyle(1);
 		InfoVisRangeSlider rangeSlider = new InfoVisRangeSlider(min, max, 25, 75);
+		rangeSlider.setOrientation(JSlider.HORIZONTAL);
+		rangeSlider.setFlipThumb(true);
 
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());
-		contentPane.add(rangeSlider, BorderLayout.SOUTH);
+		contentPane.add(rangeSlider, BorderLayout.NORTH);
 
 		SelectionModel<Double> selectionModel = SelectionModels.create();
 		rangeSlider.addChangeListener(new ChangeListener() {

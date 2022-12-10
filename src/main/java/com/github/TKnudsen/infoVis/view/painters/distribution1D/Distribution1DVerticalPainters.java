@@ -18,18 +18,18 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorE
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-202s Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class Distribution1DVerticalPainters {
 
 	public static Distribution1DVerticalPainter<Double> createVerticalForDoubles(List<Double> data) {
 		Function<Double, Double> worldToDoubleMapping = p -> p;
 
-		return new Distribution1DVerticalPainter<>(data, worldToDoubleMapping, null);
+		return new Distribution1DVerticalPainter<Double>(data, worldToDoubleMapping, null);
 	}
 
 	public static Distribution1DVerticalPainter<Double> createVerticalForDoubles(List<Double> data, Color color) {

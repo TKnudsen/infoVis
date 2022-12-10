@@ -171,4 +171,45 @@ public class VisualMappings {
 
 		return returnList;
 	}
+
+	/**
+	 * Maps world data to Numbers
+	 * 
+	 * @param <D>
+	 * @param data
+	 * @param worldToNumberMapping
+	 * @param warnForQualityLeaks
+	 * @return
+	 */
+	public static <D> List<Number> map(Iterable<D> data, Function<? super D, ? extends Number> worldToNumberMapping,
+			boolean warnForQualityLeaks) {
+		List<Number> values = new ArrayList<>();
+
+		if (data == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.sanityCheckFilter: given data was null");
+			return values;
+		}
+
+		if (worldToNumberMapping == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.sanityCheckFilter: given worldToDoubleMapping was null");
+			return values;
+		}
+
+		try {
+			for (D t : data) {
+				Number d = worldToNumberMapping.apply(t);
+				if (d != null && !Double.isNaN(d.doubleValue()))
+					values.add(d);
+				else if (warnForQualityLeaks)
+					System.err.println("VisualMappings.sanityCheckFilter: object " + t
+							+ " did not pass the sanity check and was ignored");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return values;
+	}
 }

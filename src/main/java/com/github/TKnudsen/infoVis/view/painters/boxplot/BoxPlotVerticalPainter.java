@@ -29,11 +29,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.02
+ * @version 2.03
  */
 public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPositionEncoding {
 
@@ -41,7 +41,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		super(data);
 	}
 
-	public BoxPlotVerticalPainter(Collection<Double> data) {
+	public BoxPlotVerticalPainter(Collection<? extends Number> data) {
 		super(data);
 	}
 

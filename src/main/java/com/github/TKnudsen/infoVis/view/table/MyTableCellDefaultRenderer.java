@@ -38,6 +38,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	private Color myDataEncodingColor = new Color(51, 98, 140);
 	private Function<Integer, Color> colorFunctionFromRow;
+	private Function<Double, Color> valueToColorEncodingFunction;
 
 	private Color darkBackgroundColor = NimbusUITools.standardBackgroundColor;
 
@@ -50,7 +51,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 	protected List<String> ignoreRectangleEncodigForAttributes = new ArrayList<>();
 
 	public enum Glyph {
-		Rectangle, Dot, Donut, HorizontalBar, VerticalBar
+		Rectangle, HeatMap, Dot, Donut, HorizontalBar, VerticalBar, Bipolar
 	}
 
 	public enum GlyphPlacement {
@@ -109,7 +110,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 	 * @param row
 	 * @param column
 	 * @param glyphPlacement whether or not the component receives an additional
-	 *                        size encoding. otherwise it is replaced.
+	 *                       size encoding. otherwise it is replaced.
 	 * @return
 	 */
 	protected Component setRectangleSizeEncoding(JTable table, Component component, int row, int column,
@@ -130,6 +131,12 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 		Color dataColor = myDataEncodingColor;
 		if (colorFunctionFromRow != null)
 			dataColor = colorFunctionFromRow.apply(row);
+		else if (valueToColorEncodingFunction != null)
+			try {
+				dataColor = valueToColorEncodingFunction.apply(relativeSize);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 		JPanel cell = new JPanel(new BorderLayout());
 		cell.setBackground(component.getBackground());
@@ -179,10 +186,19 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 			case Rectangle:
 				RectanglePainter rectanglePainter = new RectanglePainter();
 				rectanglePainter.setDrawOutline(true);
-				rectanglePainter.setBackgroundPaint(null);
+				rectanglePainter.setBackgroundPaint(Color.MAGENTA);
 				rectanglePainter.setPaint(dataColor);
 
 				chartPanel = new SizeEncodingChartPanel(rectanglePainter, relativeSize);
+
+				panel.setPreferredSize(new Dimension(16, 16));
+				break;
+			case HeatMap:
+				RectanglePainter heatMapCellPainter = new RectanglePainter();
+				heatMapCellPainter.setDrawOutline(true);
+				heatMapCellPainter.setPaint(dataColor);
+
+				chartPanel = new TableCellChartPanel(heatMapCellPainter);
 
 				panel.setPreferredSize(new Dimension(16, 16));
 				break;
@@ -238,6 +254,24 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 				panel.setPreferredSize(new Dimension(16, 16));
 
 				break;
+			case Bipolar:
+				RectanglePainter bipolarRectangle = new RectanglePainter();
+				bipolarRectangle.setDrawOutline(true);
+				bipolarRectangle.setBackgroundPaint(null);
+				bipolarRectangle.setPaint(new Color(59, 197, 85));
+
+				if (relativeSize >= 0.8)
+					chartPanel = new SizeEncodingChartPanel(bipolarRectangle, relativeSize);
+				else if (relativeSize <= 0.2) {
+					chartPanel = new SizeEncodingChartPanel(bipolarRectangle, 1 - relativeSize);
+					bipolarRectangle.setPaint(new Color(181, 75, 160));
+				} else {
+					chartPanel = new SizeEncodingChartPanel(bipolarRectangle, 0.1);
+					bipolarRectangle.setPaint(Color.GRAY);
+				}
+				panel.setPreferredSize(new Dimension(16, 16));
+				break;
+
 			default:
 				chartPanel = new TableCellChartPanel(new StringPainter(" "));
 				break;
@@ -249,6 +283,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 		panel.add(chartPanel);
 
 		return panel;
+
 	}
 
 	protected void attachToolTip(Component component, Object toolTipValue) {
@@ -333,6 +368,14 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 	public void setSizeEncodingChartPanelFunction(
 			BiFunction<Double, Color, ChartPainter> sizeEncodingChartPanelFunction) {
 		this.sizeEncodingChartPanelFunction = sizeEncodingChartPanelFunction;
+	}
+
+	public Function<Double, Color> getValueToColorEncodingFunction() {
+		return valueToColorEncodingFunction;
+	}
+
+	public void setValueToColorEncodingFunction(Function<Double, Color> valueToColorEncodingFunction) {
+		this.valueToColorEncodingFunction = valueToColorEncodingFunction;
 	}
 
 }

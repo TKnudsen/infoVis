@@ -22,11 +22,11 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.14
+ * @version 1.15
  */
 public class StringPainter extends ChartPainter implements ITooltip {
 
@@ -136,8 +136,8 @@ public class StringPainter extends ChartPainter implements ITooltip {
 				break;
 			}
 
-			DisplayTools.drawRotatedString(g2, s, (int) (rectangle.getX() + xo * 0.5 + getFontSize()), (float) yo,
-					-Math.PI / 2);
+			DisplayTools.drawRotatedString(g2, s, (float) (rectangle.getX() + xo * 0.5 + getFontSize()),
+					(float) (rectangle.getY() + yo), -Math.PI / 2);
 		}
 
 		if (drawOutline)

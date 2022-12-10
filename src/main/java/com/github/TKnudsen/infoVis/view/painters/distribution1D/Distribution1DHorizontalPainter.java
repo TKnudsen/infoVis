@@ -26,19 +26,21 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.05
+ * @version 2.06
  */
 public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T> implements IXPositionEncoding {
 
-	public Distribution1DHorizontalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping) {
+	public Distribution1DHorizontalPainter(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping) {
 		super(data, worldToDoubleMapping);
 	}
 
-	public Distribution1DHorizontalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+	public Distribution1DHorizontalPainter(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
@@ -77,7 +79,7 @@ public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T>
 
 		List<T> elements = new ArrayList<>();
 		for (T t : data) {
-			Double d = getWorldToDoubleMapping().apply(t);
+			double d = getWorldToDoubleMapping().apply(t).doubleValue();
 			if (d >= v1.doubleValue() && d <= v2.doubleValue())
 				elements.add(t);
 		}

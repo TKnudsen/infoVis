@@ -6,6 +6,8 @@ import java.awt.Font;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.jidesoft.plaf.LookAndFeelFactory;
+
 /**
  * <p>
  * InfoVis

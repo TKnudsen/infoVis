@@ -30,11 +30,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public abstract class BoxPlotPainter extends ChartPainter implements IRectangleSelection<Double>, ITooltip {
 
@@ -76,7 +76,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 		initializePositionEncodingFunction();
 	}
 
-	public BoxPlotPainter(Collection<Double> data) {
+	public BoxPlotPainter(Collection<? extends Number> data) {
 		double[] primitives = DataConversion.toPrimitives(data);
 		Arrays.sort(primitives);
 		this.dataStatistics = new StatisticsSupport(primitives);
@@ -155,14 +155,14 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 			}
 		} else
 			this.outlierScreenCoordinates = null;
-		
+
 		quartilesRectangle = calculateQuartilesRectangle();
 	}
 
 	private void calculateOutlierValues() {
 		this.outlierValues = dataStatistics.getOutliers(outlierPercentile);
 	}
-	
+
 	abstract Rectangle2D calculateQuartilesRectangle();
 
 	@Override
