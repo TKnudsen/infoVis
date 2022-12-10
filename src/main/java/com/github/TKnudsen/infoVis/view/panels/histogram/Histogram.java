@@ -56,46 +56,39 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	 * vertical or horizontal orientation?
 	 */
 	private final boolean vertical;
-	private final BarChartPainter globalDistributionBarchartPainter;
+	private BarChartPainter globalDistributionBarchartPainter;
 	private BarChartPainter filterDistributionBarchartPainter;
 	private BarChartPainter selectionDistributionBarchartPainter;
 
-	protected final Function<Collection<? extends T>, List<? extends Number>> valuesToCounts;
-	private final Function<List<Integer>, List<T>> binsToValues;
+	protected Function<Collection<? extends T>, List<? extends Number>> valuesToCounts;
+	private Function<List<Integer>, List<T>> binsToValues;
 
 	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping, boolean vertical) {
-		this(data, worldToNumberMapping, null, null, vertical, null, null);
-	}
-
-	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
-			Function<Number, Integer> aggregationFunction, boolean vertical, Color defaultColor, Color filterColor) {
-		this(data, worldToNumberMapping, aggregationFunction, null, vertical, defaultColor, filterColor);
+		this(data, worldToNumberMapping, null, null, DEFAULT_BIN_COUNT, vertical, null, null);
 	}
 
 	/**
+	 * No external aggregation functions any more. it interacts with the global
+	 * minimum and maximum and thus can only be controlled safely in here.
 	 * 
-	 * @param data                 numerical values which will be aggregated
-	 *                             (binned), value count per bin will define the
-	 *                             height of bars
-	 * @param worldToNumberMapping mapping from a real-world object to the number
-	 *                             that shall be used in the histogram.
-	 * @param aggregationFunction  an external binning function. must work for the
-	 *                             given data, but should also work of other values
-	 *                             than given
-	 * @param maxGlobal            optional global maximum number
-	 * @param vertical             vertical or horizontal orientation?
+	 * @param data
+	 * @param worldToNumberMapping
+	 * @param minGlobal
+	 * @param maxGlobal
+	 * @param binCount             null if internal default value shall be taken
+	 * @param vertical
 	 * @param defaultColor
 	 * @param filterColor
 	 */
-	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping,
-			Function<Number, Integer> aggregationFunction, Number maxGlobal, boolean vertical, Color defaultColor,
-			Color filterColor) {
+	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping, Number minGlobal,
+			Number maxGlobal, Integer binCount, boolean vertical, Color defaultColor, Color filterColor) {
 
 		Objects.requireNonNull(data);
 		Objects.requireNonNull(worldToNumberMapping);
 
 		this.data = Collections.unmodifiableCollection(data);
 		this.filterStatusData = Collections.unmodifiableCollection(data);
+
 		this.vertical = vertical;
 		this.filterColor = filterColor;
 
@@ -106,16 +99,17 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 			min = Math.min(min.doubleValue(), d.doubleValue());
 			max = Math.max(max.doubleValue(), d.doubleValue());
 		}
-		if (maxGlobal != null && !Double.isNaN(maxGlobal.doubleValue()))
+
+		if (minGlobal != null && !Double.isNaN(minGlobal.doubleValue()) && minGlobal.doubleValue() < min.doubleValue())
+			min = minGlobal;
+		if (maxGlobal != null && !Double.isNaN(maxGlobal.doubleValue()) && maxGlobal.doubleValue() > max.doubleValue())
 			max = maxGlobal;
 
-		Function<Number, Integer> aggregation = aggregationFunction != null ? aggregationFunction
-				: Histograms.defaultAggregationFunction(min, max, DEFAULT_BIN_COUNT);
+		Function<Number, Integer> aggregation = Histograms.defaultAggregationFunction(min, max,
+				binCount != null ? binCount : DEFAULT_BIN_COUNT);
 
-		final Number m = max;
 		this.valuesToCounts = values -> {
-			int largestBinIndex = aggregation.apply(m);
-			double[] counts = new double[largestBinIndex + 1];
+			double[] counts = new double[binCount != null ? binCount : DEFAULT_BIN_COUNT];
 
 			for (T t : values) {
 				Number d = worldToNumberMapping.apply(t);
@@ -137,8 +131,6 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		// For both cases this is due to the fact that bar charts do not have a
 		// numerical axis, still it would be nice here to see the value distribution
 		initializeAxisPainters(min, max, counts);
-//		initializeXAxisPainter(min, max);
-//		initializeYAxisPainter(0.0, MathFunctions.getMax(counts));
 
 		// initialize and register painters
 		globalDistributionBarchartPainter = createAllDataDistributionBarchart(counts,
@@ -235,6 +227,30 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		yAxisNumericalPainter.setFlipAxisValues(true);
 
 		setYAxisPainter(yAxisNumericalPainter);
+	}
+
+	@Override
+	public void setXAxisMinValue(Number minValue) {
+		throw new UnsupportedOperationException(
+				"Histogram: method call not supported - histograms axes min max shall not be parameterized, it interacts with the aggregation function defined a-priori. To keep the Histogram state model compact, the strategy is to create a new instance for axis (min/max) changes.");
+	}
+
+	@Override
+	public void setXAxisMaxValue(Number maxValue) {
+		throw new UnsupportedOperationException(
+				"Histogram: method call not supported - histograms axes min max shall not be parameterized, it interacts with the aggregation function defined a-priori. To keep the Histogram state model compact, the strategy is to create a new instance for axis (min/max) changes.");
+	}
+
+	@Override
+	public void setYAxisMinValue(Number minValue) {
+		throw new UnsupportedOperationException(
+				"Histogram: method call not supported - histograms axes min max shall not be parameterized, it interacts with the aggregation function defined a-priori. To keep the Histogram state model compact, the strategy is to create a new instance for axis (min/max) changes.");
+	}
+
+	@Override
+	public void setYAxisMaxValue(Number maxValue) {
+		throw new UnsupportedOperationException(
+				"Histogram: method call not supported - histograms axes min max shall not be parameterized, it interacts with the aggregation function defined a-priori. To keep the Histogram state model compact, the strategy is to create a new instance for axis (min/max) changes.");
 	}
 
 	@Override

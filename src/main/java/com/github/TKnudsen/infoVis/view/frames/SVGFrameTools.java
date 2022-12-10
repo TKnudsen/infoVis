@@ -1,6 +1,7 @@
 package com.github.TKnudsen.infoVis.view.frames;
 
 import java.awt.GridLayout;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -19,11 +20,11 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.07
+ * @version 1.08
  */
 public class SVGFrameTools {
 
@@ -35,6 +36,20 @@ public class SVGFrameTools {
 
 	public static SVGFrame dropSVGFrame(JPanel panel, String title, int x, int y) {
 		return dropSVGFrame(panel, title, x, y, 50, 50);
+	}
+
+	/**
+	 * 
+	 * @param panels
+	 * @param headline
+	 * @return
+	 */
+	public static SVGFrame dropSVGFrame(List<JPanel> panels, String headline) {
+		JPanel panel = new JPanel(new GridLayout(0, panels.size()));
+		for (JPanel p : panels)
+			panel.add(p);
+
+		return SVGFrameTools.dropSVGFrame(panel, headline, 1200, 600);
 	}
 
 	public static SVGFrame dropSVGFrame(JPanel panel, String title, int x, int y, int posX, int posY) {

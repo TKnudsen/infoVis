@@ -4,23 +4,26 @@ import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.RangeSlider;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoder;
-import com.jidesoft.swing.RangeSlider;
 
 /**
  * <p>
  * InfoVis
  * </p>
  * 
+ * Orientation and Flip of the Slider Thumb can be adjusted through
+ * JSliders.HORIZONTAL/VERTICAL orientation and by setting setFlipThumb(true)
+ * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.01
+ * @version 1.03
  *
  */
 public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder {
@@ -28,7 +31,7 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -3952780438465441561L;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * slider has a width of 16 pixels, 8 of these pixels lead to a margin on both
@@ -45,6 +48,11 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 	 * Creates a horizontal slider using the specified min and max with an initial
 	 * value equal to the average of the min plus max. and initial low and high
 	 * values both at 50.
+	 * 
+	 * Attention: the com.jidesoft.swing.RangeSlider basic class produced an
+	 * IllegalAccessError in the constructor for some configurations. The following
+	 * line executed beforehand helps in some cases
+	 * LookAndFeelFactory.setDefaultStyle(1);
 	 *
 	 * @param min the minimum value of the slider.
 	 * @param max the maximum value of the slider.
@@ -61,6 +69,11 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 	/**
 	 * Creates a horizontal slider using the specified min, max, low and high value.
+	 * 
+	 * Attention: the com.jidesoft.swing.RangeSlider basic class produced an
+	 * IllegalAccessError in the constructor for some configurations. The following
+	 * line executed beforehand helps in some cases
+	 * LookAndFeelFactory.setDefaultStyle(1);
 	 *
 	 * @param min  the minimum value of the slider.
 	 * @param max  the maximum value of the slider.
@@ -85,23 +98,19 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-//				System.out.println("InfoVisRangeSlider: componentShown");
 			}
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-//				System.out.println("InfoVisRangeSlider: componentResized");
 				refreshPositionMapping();
 			}
 
 			@Override
 			public void componentMoved(ComponentEvent e) {
-//				System.out.println("InfoVisRangeSlider: componentMoved");
 			}
 
 			@Override
 			public void componentHidden(ComponentEvent e) {
-//				System.out.println("InfoVisRangeSlider: componentHidden");
 			}
 		});
 
@@ -130,5 +139,13 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 	@Override
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
 		return positionEncodingFunction;
+	}
+
+	public boolean isFlipThumb() {
+		return getRangeSliderUI().isFlipThumb();
+	}
+
+	public void setFlipThumb(boolean invertThumb) {
+		this.getRangeSliderUI().setFlipThumb(invertThumb);
 	}
 }

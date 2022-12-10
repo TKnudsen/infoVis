@@ -23,11 +23,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.07
+ * @version 2.08
  */
 public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVerticalPainter<T> {
 
@@ -45,11 +45,12 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 	private boolean fillHighlights = true;
 
 	public Distribution1DVerticalHighlightPainter(Collection<T> data,
-			Function<? super T, Double> worldToDoubleMapping) {
+			Function<? super T, ? extends Number> worldToDoubleMapping) {
 		super(data, worldToDoubleMapping);
 	}
 
-	public Distribution1DVerticalHighlightPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+	public Distribution1DVerticalHighlightPainter(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
@@ -91,7 +92,7 @@ public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVer
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 
-		Double d = getWorldToDoubleMapping().apply(worldData);
+		Number d = getWorldToDoubleMapping().apply(worldData);
 		double yCord = getPositionEncodingFunction().apply(d);
 
 		double length = (Double.isNaN(getSizeOfTriangle())) ? chartRectangle.getWidth() * getRelativeHighlightLength()

@@ -23,11 +23,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.05
+ * @version 1.06
  */
 public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DHorizontalPainter<T> {
 
@@ -45,12 +45,12 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 	private boolean fillHighlights = true;
 
 	public Distribution1DHorizontalHighlightPainter(Collection<T> data,
-			Function<? super T, Double> worldToDoubleMapping) {
+			Function<? super T, ? extends Number> worldToDoubleMapping) {
 		super(data, worldToDoubleMapping);
 	}
 
 	public Distribution1DHorizontalHighlightPainter(Collection<T> data,
-			Function<? super T, Double> worldToDoubleMapping,
+			Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
@@ -92,7 +92,7 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 
-		Double worldValue = getWorldToDoubleMapping().apply(worldData);
+		Number worldValue = getWorldToDoubleMapping().apply(worldData);
 		double xCord = getPositionEncodingFunction().apply(worldValue);
 
 		double height = (Double.isNaN(getSizeOfTriangle())) ? chartRectangle.getHeight() * getRelativeHighlightHeight()

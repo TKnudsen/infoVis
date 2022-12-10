@@ -21,8 +21,8 @@ import de.javagl.selection.SelectionModel;
 public class Distribution1DVerticalPanels {
 
 	@Deprecated // use Distribution1DPanels
-	public static Distribution1DVerticalPanel<Double> createForDoubles(List<Double> data, Color color, Double minGlobal,
-			Double maxGlobal) {
+	public static Distribution1DVerticalPanel<Double> createForDoubles(List<Double> data, Color color, double minGlobal,
+			double maxGlobal) {
 		Function<Double, Double> worldToDoubleMapping = p -> p;
 
 		return new Distribution1DVerticalPanel<Double>(data, worldToDoubleMapping,
@@ -38,6 +38,7 @@ public class Distribution1DVerticalPanels {
 
 	/**
 	 * Deprecated //use Distribution1DPanels
+	 * 
 	 * @param <T>
 	 * @param distributionPanel
 	 * @param selectionModel

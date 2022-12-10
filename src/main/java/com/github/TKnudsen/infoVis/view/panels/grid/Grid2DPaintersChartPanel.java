@@ -2,6 +2,8 @@ package com.github.TKnudsen.infoVis.view.panels.grid;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
+import java.util.List;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
@@ -56,6 +58,17 @@ public class Grid2DPaintersChartPanel<P extends ChartPainter> extends InfoVisCha
 
 		if (painterGrid != null)
 			painterGrid.draw(g2);
+	}
+
+	public void setToolTipStringGrid(String[][] stringGrid) {
+		if (painterGrid != null)
+			painterGrid.setToolTipStringGrid(stringGrid);
+		else
+			System.err.println("Grid2DPaintersChartPanel.setToolTipStringGrid: painterGrid is null");
+	}
+
+	public List<ChartPainter> getChartPainters() {
+		return Collections.singletonList(painterGrid);
 	}
 
 }

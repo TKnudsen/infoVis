@@ -30,7 +30,7 @@ public class Distribution1DHorizontalPanels {
 
 	@Deprecated // use Distribution1DPanels
 	public static Distribution1DHorizontalPanel<Double> createForDoubles(List<Double> data, Color color,
-			Double minGlobal, Double maxGlobal) {
+			double minGlobal, double maxGlobal) {
 		Function<Double, Double> worldToDoubleMapping = p -> p;
 
 		return new Distribution1DHorizontalPanel<Double>(data, worldToDoubleMapping,

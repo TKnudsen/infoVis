@@ -16,6 +16,7 @@ import javax.swing.event.ChangeListener;
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSlider;
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanel;
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanels;
+import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliders;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
@@ -24,6 +25,7 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanels;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histogram;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histograms;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
+import com.jidesoft.plaf.LookAndFeelFactory;
 
 import de.javagl.selection.SelectionModel;
 
@@ -36,13 +38,14 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	private final Function<T, Number> scaledToNumberFunction;
 
-	private static final int Y_AXIS_WIDTH = 22;
+//	public static final int Y_AXIS_WIDTH = 22;
+	public static final int Y_AXIS_WIDTH = 28;
 	private final Histogram<T> histogram;
 
 	private final JPanel eastSpacer;
 	private final InfoVisRangeSliderPanel rangeSliderPanel;
 	private final InfoVisRangeSlider rangeSlider;
-	private static final int INTEGER_MULTIPLIER = 100;
+	private static final int INTEGER_MULTIPLIER = 1000;
 
 	private final Collection<FilterStatusListener<T>> filterStatusListeners = new ArrayList<FilterStatusListener<T>>();
 
@@ -147,6 +150,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 			max = Math.max(max, d);
 		}
 
+		LookAndFeelFactory.setDefaultStyle(1);
 		return new InfoVisRangeSliderPanel((int) Math.floor(min * INTEGER_MULTIPLIER),
 				(int) Math.ceil(max * INTEGER_MULTIPLIER), (int) Math.floor(min * INTEGER_MULTIPLIER),
 				(int) Math.ceil(max * INTEGER_MULTIPLIER), min, max);
@@ -193,11 +197,14 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	}
 
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
+		System.err.println(
+				"DynamicQueryView:getXPositionEncodingFunction returns the range slider position encoding function which has "
+						+ INTEGER_MULTIPLIER + "times too big values");
 		return rangeSlider.getXPositionEncodingFunction();
 	}
 
 	/**
-	 * the slider is in integers, the value domain is in doubles. to compensate this
+	 * the slider is in integers, the value domain is in doubles. To compensate this
 	 * all real world doubles are multiplied by the INTEGER_MULTIPLIER;
 	 * 
 	 * @param toNumberFunction
@@ -220,4 +227,19 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		InfoVisRangeSliderPanels.setShowingTooltips(rangeSliderPanel, showingTooltips);
 	}
 
+	public Number getMinimumRangeBound() {
+		return InfoVisRangeSliders.getMinRangeBound(rangeSlider).doubleValue() / (double) INTEGER_MULTIPLIER;
+	}
+
+	public void setMinimumRangeBound(Number value) {
+		rangeSlider.setLowValue((int) (value.doubleValue() * INTEGER_MULTIPLIER));
+	}
+
+	public Number getMaximumRangeBound() {
+		return InfoVisRangeSliders.getMaxRangeBound(rangeSlider).doubleValue() / (double) INTEGER_MULTIPLIER;
+	}
+
+	public void setMaximumRangeBound(Number value) {
+		rangeSlider.setHighValue((int) (value.doubleValue() * INTEGER_MULTIPLIER));
+	}
 }

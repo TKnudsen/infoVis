@@ -62,31 +62,48 @@ public class Histograms {
 		return selectionModel;
 	}
 
-	public static Histogram<Number> create(Collection<? extends Number> data, int binCount, boolean vertical) {
-		return create(data, n -> ((Number) n).doubleValue(), defaultAggregationFunction(data, binCount), null, vertical,
-				null, null);
-	}
-
-	public static <T> Histogram<T> create(Collection<T> data, Function<? super T, Number> worldToNumberMapping,
-			int binCount, boolean vertical) {
-
-		return create(data, worldToNumberMapping, defaultAggregationFunction(data, worldToNumberMapping, binCount),
-				null, vertical, null, null);
+	public static Histogram<Number> create(Collection<? extends Number> data, Integer binCount, boolean vertical) {
+		return create(data, n -> ((Number) n).doubleValue(), null, null, binCount, vertical, null, null);
 	}
 
 	public static <T> Histogram<T> create(Collection<T> data, Function<? super T, Number> worldToNumberMapping,
 			boolean vertical) {
-		return create(data, worldToNumberMapping, null, null, vertical, null, null);
+		return create(data, worldToNumberMapping, null, vertical);
 	}
 
+	public static <T> Histogram<T> create(Collection<T> data, Function<? super T, Number> worldToNumberMapping,
+			Integer binCount, boolean vertical) {
+
+		return create(data, worldToNumberMapping, null, null, binCount, vertical, null, null);
+	}
+
+	/**
+	 * here the global minimum and maximum define the aggregation function.
+	 * 
+	 * @param <T>
+	 * @param data
+	 * @param worldToNumberMapping
+	 * @param minGlobal
+	 * @param maxGlobal
+	 * @param binCount             null if internal default value shall be taken.
+	 *                             Necessary because minimum and maximum in
+	 *                             aggregation function may not be reached with the
+	 *                             global value domain. As a result it is impossible
+	 *                             to anticipate the number of bins required.
+	 * @param vertical
+	 * @param defaultColor
+	 * @param filterColor
+	 * @return
+	 */
 	public static <T> Histogram<T> create(Collection<? extends T> data,
-			Function<? super T, Number> worldToNumberMapping, Function<Number, Integer> aggregationFunction,
-			Number maxGlobal, boolean vertical, Color defaultColor, Color filterColor) {
+			Function<? super T, Number> worldToNumberMapping, Number minGlobal, Number maxGlobal, Integer binCount,
+			boolean vertical, Color defaultColor, Color filterColor) {
+
 		if (vertical)
-			return new HistogramVertical<T>(data, worldToNumberMapping, aggregationFunction, maxGlobal, defaultColor,
+			return new HistogramVertical<T>(data, worldToNumberMapping, minGlobal, maxGlobal, binCount, defaultColor,
 					filterColor);
 		else
-			return new HistogramHorizontal<T>(data, worldToNumberMapping, aggregationFunction, maxGlobal, defaultColor,
+			return new HistogramHorizontal<T>(data, worldToNumberMapping, minGlobal, maxGlobal, binCount, defaultColor,
 					filterColor);
 	}
 

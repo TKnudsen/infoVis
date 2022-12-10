@@ -26,19 +26,20 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.06
+ * @version 2.07
  */
 public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> implements IYPositionEncoding {
 
-	public Distribution1DVerticalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping) {
+	public Distribution1DVerticalPainter(Collection<T> data,
+			Function<? super T, ? extends Number> worldToDoubleMapping) {
 		super(data, worldToDoubleMapping);
 	}
 
-	public Distribution1DVerticalPainter(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+	public Distribution1DVerticalPainter(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 		super(data, worldToDoubleMapping, colorEncodingFunction);
 	}
@@ -84,7 +85,7 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 
 		List<T> elements = new ArrayList<>();
 		for (T t : data) {
-			double world = getWorldToDoubleMapping().apply(t);
+			double world = getWorldToDoubleMapping().apply(t).doubleValue();
 
 			if (world >= worldMin.doubleValue() && world <= worldMax.doubleValue())
 				elements.add(t);

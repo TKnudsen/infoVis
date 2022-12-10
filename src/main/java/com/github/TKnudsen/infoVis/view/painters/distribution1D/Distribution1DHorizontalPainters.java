@@ -18,11 +18,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorE
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.02
+ * @version 1.03
  */
 public class Distribution1DHorizontalPainters {
 

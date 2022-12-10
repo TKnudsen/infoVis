@@ -29,11 +29,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.02
+ * @version 2.03
  */
 public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositionEncoding {
 
@@ -41,7 +41,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 		super(data);
 	}
 
-	public BoxPlotHorizontalPainter(Collection<Double> data) {
+	public BoxPlotHorizontalPainter(Collection<? extends Number> data) {
 		super(data);
 	}
 

@@ -185,6 +185,7 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 
 							if (toolTipStringGrid != null) {
 								StringPainter sr = new StringPainter(toolTipStringGrid[i][j]);
+								sr.setBackgroundPaint(ColorTools.setAlpha(painters[i][j].getPaint(), 1.0f));
 								sr.setRectangle(new Rectangle2D.Double(p.getX() - ((String) sr.getData()).length() * 3,
 										p.getY() - 25, ((String) sr.getData()).length() * 6, 20));
 								return sr;

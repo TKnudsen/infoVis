@@ -19,11 +19,11 @@ import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.07
+ * @version 2.08
  */
 public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Double> implements Distribution1DPanel<T> {
 
@@ -38,24 +38,25 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
 
-	public Distribution1DVerticalPanel(Collection<T> values, Function<? super T, Double> worldToDoubleMapping) {
+	public Distribution1DVerticalPanel(Collection<T> values,
+			Function<? super T, ? extends Number> worldToDoubleMapping) {
 		this(values, worldToDoubleMapping, Double.NaN, Double.NaN);
 	}
 
-	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
-			Double minGlobal, Double maxGlobal) {
+	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
+			double minGlobal, double maxGlobal) {
 		this(data, worldToDoubleMapping, null, minGlobal, maxGlobal);
 	}
 
-	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
-			Function<? super T, ? extends Paint> colorEncodingFunction, Double minGlobal, Double maxGlobal) {
+	public Distribution1DVerticalPanel(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
+			Function<? super T, ? extends Paint> colorEncodingFunction, double minGlobal, double maxGlobal) {
 		this.minGlobal = minGlobal;
 		this.maxGlobal = maxGlobal;
 
 		initializeData(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
-	protected void initializeData(Collection<T> data, Function<? super T, Double> worldToDoubleMapping,
+	protected void initializeData(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 
 		if (data == null)
@@ -67,14 +68,14 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 			min = minGlobal;
 		else
 			for (T t : data)
-				min = Math.min(min, worldToDoubleMapping.apply(t));
+				min = Math.min(min, worldToDoubleMapping.apply(t).doubleValue());
 
 		double max = Double.NEGATIVE_INFINITY;
 		if (!Double.isNaN(maxGlobal))
 			max = maxGlobal;
 		else
 			for (T t : data)
-				max = Math.max(max, worldToDoubleMapping.apply(t));
+				max = Math.max(max, worldToDoubleMapping.apply(t).doubleValue());
 
 		initializeYAxisPainter(min, max);
 
