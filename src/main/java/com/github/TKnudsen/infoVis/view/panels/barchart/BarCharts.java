@@ -47,9 +47,9 @@ public class BarCharts {
 	/**
 	 * creates a bar chart with all bars having the same color
 	 * 
-	 * @param bars
-	 * @param color
-	 * @return
+	 * @param bars  bars
+	 * @param color color
+	 * @return bar chart
 	 */
 	public static BarChart createBarChart(List<Double> bars, Color color) {
 		List<Color> colors = new ArrayList<Color>();
@@ -71,9 +71,9 @@ public class BarCharts {
 
 	/**
 	 * 
-	 * @param data   list of bar chart data
+	 * @param data           list of bar chart data
 	 * @param barchartColors one color for each bar chart layer
-	 * @return
+	 * @return bar chart
 	 */
 	public static BarChart createLayeredBarChart(List<List<Double>> data, List<Color> barchartColors) {
 		Objects.requireNonNull(data);
@@ -108,10 +108,10 @@ public class BarCharts {
 	 * values is the collection of numbers (not bins) which will be binned here. The
 	 * result is represented with a bar chart.
 	 * 
-	 * @param values
-	 * @param bins
-	 * @param barColor
-	 * @return
+	 * @param values   values
+	 * @param bins     bins
+	 * @param barColor colors
+	 * @return bar chart
 	 */
 	public static BarChart createHistogramBarchart(Collection<Number> values, int bins, Color barColor) {
 

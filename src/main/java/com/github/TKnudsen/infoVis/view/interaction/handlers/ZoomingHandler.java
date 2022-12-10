@@ -43,9 +43,9 @@ public class ZoomingHandler extends InteractionHandler {
 
 	/**
 	 * 
-	 * @param worldGlobalMin
-	 * @param worldGlobalMax
-	 * @param positionEncodingFunction
+	 * @param worldGlobalMin           min
+	 * @param worldGlobalMax           max
+	 * @param positionEncodingFunction function
 	 */
 	public ZoomingHandler(Number worldGlobalMin, Number worldGlobalMax,
 			IPositionEncodingFunction positionEncodingFunction) {
@@ -100,7 +100,7 @@ public class ZoomingHandler extends InteractionHandler {
 	 * modifies the {@link IPositionEncodingFunction} and fires a
 	 * {@link NumberIntervalChangedEvent} afterwards
 	 * 
-	 * @param e
+	 * @param e mouse event
 	 */
 	public void handleZoom(MouseWheelEvent e) {
 		NumberInterval oldNumberInterval = getCurrentXAxisMinMaxValues();

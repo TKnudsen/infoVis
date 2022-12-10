@@ -99,12 +99,13 @@ public class Distribution1DPanels {
 
 	/**
 	 * 
-	 * @param <T>
-	 * @param distributionPanel
-	 * @param selectionModel
+	 * @param <T>                     t
+	 * @param distributionPanel       the panel
+	 * @param selectionModel          selection model
 	 * @param selectionShapeAttribtes adds visual encodings to selected objects.
 	 *                                ShapeAttributes include a selection color and
 	 *                                a stroke.
+	 * @return the selection listener
 	 */
 	public static <T> SelectionListener<T> addInteraction(Distribution1DPanel<T> distributionPanel,
 			SelectionModel<T> selectionModel, ShapeAttributes selectionShapeAttribtes) {
@@ -116,12 +117,12 @@ public class Distribution1DPanels {
 
 	/**
 	 * 
-	 * @param <T>
-	 * @param distributionPanel
-	 * @param selectionModel
+	 * @param <T>                   t
+	 * @param distributionPanel     panel
+	 * @param selectionModel        selection model
 	 * @param colorEncodingFunction used to encode selected objects
 	 * @param stroke                used to highlight selected objects
-	 * @return
+	 * @return the selection listener
 	 */
 	public static <T> SelectionListener<T> addInteraction(Distribution1DPanel<T> distributionPanel,
 			SelectionModel<T> selectionModel, Function<? super T, ? extends Paint> colorEncodingFunction,

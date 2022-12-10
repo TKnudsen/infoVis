@@ -10,7 +10,6 @@ import javax.swing.JSlider;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
-import com.jidesoft.plaf.LookAndFeelFactory;
 
 public class RangeSliderBoxplotTest {
 
@@ -19,7 +18,8 @@ public class RangeSliderBoxplotTest {
 		int min = 0;
 		int max = 100;
 
-		LookAndFeelFactory.setDefaultStyle(1);
+		// no need any more: range slider was replaced
+		// LookAndFeelFactory.setDefaultStyle(1);
 		InfoVisRangeSlider rangeSlider = new InfoVisRangeSlider(min, max, 25, 75);
 		rangeSlider.setOrientation(JSlider.HORIZONTAL);
 		rangeSlider.setFlipThumb(false);

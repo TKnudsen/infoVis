@@ -162,7 +162,7 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return data
 	 */
 	protected List<T> getData() {
 		return data;
@@ -171,7 +171,7 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return function
 	 */
 	protected Function<? super T, ? extends Paint> getColorMapping() {
 		return colorMapping;
@@ -180,7 +180,7 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return function
 	 */
 	protected Function<? super T, Double> getWorldPositionMappingX() {
 		return worldPositionMappingX;
@@ -189,7 +189,7 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return function
 	 */
 	protected Function<? super T, Double> getWorldPositionMappingY() {
 		return worldPositionMappingY;

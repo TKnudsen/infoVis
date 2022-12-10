@@ -27,9 +27,9 @@ public class ColorTools {
 	 * accepts Paint objects even if only Color objects can be processed at the
 	 * moment. Still, the more general modeling helps for Paint-oriented classes.
 	 * 
-	 * @param color
-	 * @param alpha
-	 * @return
+	 * @param color color
+	 * @param alpha alpha
+	 * @return color
 	 */
 	public static Color setAlpha(Paint color, float alpha) {
 		Objects.requireNonNull(color);
@@ -56,10 +56,10 @@ public class ColorTools {
 	/**
 	 * TODO needs testing. appears to produce reddish colors
 	 * 
-	 * @param c
-	 * @param brightness
-	 * @param saturation
-	 * @return
+	 * @param c          color
+	 * @param brightness brightness
+	 * @param saturation saturation
+	 * @return color
 	 */
 	public static Color setBrightnessAndSaturation(Color c, int brightness, int saturation) {
 		float[] hsv = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
@@ -70,9 +70,9 @@ public class ColorTools {
 	/**
 	 * merges two colors to a new color using RGB arithmetics.
 	 * 
-	 * @param color1
-	 * @param color2
-	 * @return
+	 * @param color1 color
+	 * @param color2 color
+	 * @return color
 	 */
 	public static Color mergeColors(Color color1, Color color2) {
 		return mergeColors(color1, color2, 0.5);
@@ -81,10 +81,10 @@ public class ColorTools {
 	/**
 	 * merges two colors to a new color using RGB arithmetics.
 	 * 
-	 * @param color1
-	 * @param color2
+	 * @param color1 first color
+	 * @param color2 second color
 	 * @param weight 0 means 100% first where as 1 means 100% second
-	 * @return
+	 * @return merged color
 	 */
 	public static Color mergeColors(Color color1, Color color2, double weight) {
 		if (color1 == null && color2 == null)
@@ -105,9 +105,9 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param color1
-	 * @param color2
-	 * @return
+	 * @param color1 color
+	 * @param color2 color
+	 * @return color
 	 */
 	public static Color mergeColors(Paint color1, Paint color2) {
 		if (color1 == null || color2 == null)
@@ -123,8 +123,8 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param colors
-	 * @return
+	 * @param colors the colors
+	 * @return the color
 	 */
 	public static Color mergeColors(Collection<Color> colors) {
 		double r = 0;
@@ -145,7 +145,7 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @return
+	 * @return color
 	 */
 	public static Color randomColor() {
 		return new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
@@ -153,8 +153,8 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param color
-	 * @return
+	 * @param color color
+	 * @return rgb
 	 */
 	public static int getRGB(Color color) {
 		if (color == null)
@@ -165,8 +165,8 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param rgb
-	 * @return
+	 * @param rgb rgb
+	 * @return color
 	 */
 	public static Color getColor(int rgb) {
 		return new Color(rgb);
@@ -174,8 +174,8 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param paint
-	 * @return
+	 * @param paint color
+	 * @return color
 	 */
 	public static Color brighter(Paint paint) {
 		if (paint == null)
@@ -190,8 +190,8 @@ public class ColorTools {
 
 	/**
 	 * 
-	 * @param paint
-	 * @return
+	 * @param paint color
+	 * @return color
 	 */
 	public static Color darker(Paint paint) {
 		if (paint == null)

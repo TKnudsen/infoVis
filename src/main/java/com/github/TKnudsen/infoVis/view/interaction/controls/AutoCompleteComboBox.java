@@ -22,7 +22,7 @@ import javax.swing.text.JTextComponent;
  * 
  * Supports action events by using the enter key.
  *
- * @param <E>
+ * @param <E> e
  */
 public class AutoCompleteComboBox<E> extends JComboBox<E> {
 

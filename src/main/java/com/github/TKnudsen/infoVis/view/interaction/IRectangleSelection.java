@@ -24,8 +24,8 @@ public interface IRectangleSelection<T> {
 	/**
 	 * functionality that provides elements within a rectangle
 	 * 
-	 * @param rectangle
-	 * @return
+	 * @param rectangle rectangular shape
+	 * @return a list of elements
 	 */
 	public List<T> getElementsInRectangle(RectangularShape rectangle);
 }

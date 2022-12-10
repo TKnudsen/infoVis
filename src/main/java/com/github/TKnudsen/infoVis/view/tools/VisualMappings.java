@@ -15,9 +15,10 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping function.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMapping
-	 * @return
+	 * @param <D>                  d
+	 * @param data                 the data collection
+	 * @param worldToDoubleMapping mapping
+	 * @return checked data
 	 */
 	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
 			Function<? super D, ? extends Number> worldToDoubleMapping) {
@@ -29,11 +30,12 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping function.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMapping
+	 * @param <D>                  d
+	 * @param data                 the data collection
+	 * @param worldToDoubleMapping mapping
 	 * @param warnForQualityLeaks  if warnings shall not be printed out
 	 *                             (functionality remains the same)
-	 * @return
+	 * @return the checked data
 	 */
 	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
 			Function<? super D, ? extends Number> worldToDoubleMapping, boolean warnForQualityLeaks) {
@@ -72,10 +74,12 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping functions.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMappingX
-	 * @param worldToDoubleMappingY
-	 * @return
+	 * @param <D>                   d
+	 * @param <V>                   v
+	 * @param data                  the data collection
+	 * @param worldToDoubleMappingX mapping
+	 * @param worldToDoubleMappingY mapping
+	 * @return checked data
 	 */
 	public static <D, V> List<D> sanityCheckFilter(Iterable<D> data,
 			Function<? super D, ? extends Number> worldToDoubleMappingX,
@@ -88,12 +92,13 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping functions.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMappingX
-	 * @param worldToDoubleMappingY
+	 * @param <D>                   d
+	 * @param data                  the data collection
+	 * @param worldToDoubleMappingX mapping
+	 * @param worldToDoubleMappingY mapping
 	 * @param warnForQualityLeaks   if warnings shall not be printed out
 	 *                              (functionality remains the same)
-	 * @return
+	 * @return checked data
 	 */
 	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
 			Function<? super D, ? extends Number> worldToDoubleMappingX,
@@ -122,10 +127,11 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping functions.
 	 * 
-	 * @param data
+	 * @param <D>                   d
+	 * @param data                  the data
 	 * @param worldToDoubleMappings list of mappings, as, e.g., available for
 	 *                              parallel coordinates plots
-	 * @return
+	 * @return the checked data
 	 */
 	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
 			Iterable<Function<? super D, Double>> worldToDoubleMappings) {
@@ -137,12 +143,13 @@ public class VisualMappings {
 	 * null nor NaN. Returns a new list, only containing those elements which can be
 	 * applied by the given position mapping functions.
 	 * 
-	 * @param data
+	 * @param <D>                   d
+	 * @param data                  the data collection
 	 * @param worldToDoubleMappings list of mappings, as, e.g., available for
 	 *                              parallel coordinates plots
 	 * @param warnForQualityLeaks   if warnings shall not be printed out
 	 *                              (functionality remains the same)
-	 * @return
+	 * @return checked data
 	 */
 	public static <D> List<D> sanityCheckFilter(Iterable<D> data,
 			Iterable<Function<? super D, Double>> worldToDoubleMappings, boolean warnForQualityLeaks) {
@@ -175,11 +182,11 @@ public class VisualMappings {
 	/**
 	 * Maps world data to Numbers
 	 * 
-	 * @param <D>
-	 * @param data
-	 * @param worldToNumberMapping
-	 * @param warnForQualityLeaks
-	 * @return
+	 * @param <D>                  d
+	 * @param data                 the data collection
+	 * @param worldToNumberMapping mapping
+	 * @param warnForQualityLeaks  warning
+	 * @return mapped data
 	 */
 	public static <D> List<Number> map(Iterable<D> data, Function<? super D, ? extends Number> worldToNumberMapping,
 			boolean warnForQualityLeaks) {

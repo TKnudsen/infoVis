@@ -180,26 +180,26 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		updateBounds();
 	}
 
-	/**
-	 * 
-	 * @return
-	 * @deprecated naming convention. method now called isXAxisOverlay
-	 */
-	public boolean isOverlayOfXAxis() {
-		return isXAxisOverlay();
-	}
+//	/**
+//	 * 
+//	 * @return
+//	 * @deprecated naming convention. method now called isXAxisOverlay
+//	 */
+//	public boolean isOverlayOfXAxis() {
+//		return isXAxisOverlay();
+//	}
 
-	/**
-	 * lets the chart painter(s) begin on top of the x axis, not (only) in the
-	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
-	 * Automatically removes background paint of axisPainter.
-	 * 
-	 * @param overlayOfXAxis
-	 * @deprecated naming convention. method now called setXAxisOverlay
-	 */
-	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-		this.setXAxisOverlay(overlayOfXAxis);
-	}
+//	/**
+//	 * lets the chart painter(s) begin on top of the x axis, not (only) in the
+//	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
+//	 * Automatically removes background paint of axisPainter.
+//	 * 
+//	 * @param overlayOfXAxis
+//	 * @deprecated naming convention. method now called setXAxisOverlay
+//	 */
+//	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
+//		this.setXAxisOverlay(overlayOfXAxis);
+//	}
 
 	public boolean isXAxisOverlay() {
 		return xyAxisChartRectangleLayout.isXAxisOverlay();
@@ -210,7 +210,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param overlayOfXAxis
+	 * @param overlayOfXAxis if overlay
 	 */
 	public void setXAxisOverlay(boolean overlayOfXAxis) {
 		this.xyAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
@@ -224,26 +224,26 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		updateBounds();
 	}
 
-	@Deprecated
-	public boolean isOverlayOfYAxis() {
-		return this.isYAxisOverlay();
-	}
+//	@Deprecated
+//	public boolean isOverlayOfYAxis() {
+//		return this.isYAxisOverlay();
+//	}
 
-	@Deprecated
-	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
-		this.setYAxisOverlay(overlayOfYAxis);
-	}
+//	@Deprecated
+//	public void setOverlayOfYAxis(boolean overlayOfYAxis) {
+//		this.setYAxisOverlay(overlayOfYAxis);
+//	}
 
 	public boolean isYAxisOverlay() {
 		return xyAxisChartRectangleLayout.isYAxisOverlay();
 	}
 
 	/**
-	 * lets the chart painter(s) begin on top of the less than axis, not (only) in the east.
-	 * Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
+	 * lets the chart painter(s) begin on top of the less than axis, not (only) in
+	 * the east. Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param yAxisOverlay
+	 * @param yAxisOverlay is overlay
 	 */
 	public void setYAxisOverlay(boolean yAxisOverlay) {
 		this.xyAxisChartRectangleLayout.setYAxisOverlay(yAxisOverlay);

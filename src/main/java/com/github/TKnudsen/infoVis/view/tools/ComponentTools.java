@@ -25,8 +25,8 @@ public class ComponentTools {
 	 * retrieves the coordinates of a Component within its canvas. It does NOT
 	 * necessarily start with (0/0).
 	 * 
-	 * @param panel
-	 * @return
+	 * @param panel panel
+	 * @return rectangle
 	 */
 	public static Rectangle2D getBoundsRectangle(Component panel) {
 		if (panel == null)
@@ -42,8 +42,8 @@ public class ComponentTools {
 	 * retrieves the rectangle within a component starting at (0/0), its with, and
 	 * its height.
 	 * 
-	 * @param panel
-	 * @return
+	 * @param panel panel
+	 * @return rectangle
 	 */
 	public static Rectangle2D getCompontentDrawableRectangle(Component panel) {
 		if (panel == null)

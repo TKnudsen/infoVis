@@ -147,7 +147,7 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return data
 	 */
 	protected List<T> getData() {
 		return data;
@@ -156,7 +156,7 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 	/**
 	 * use for inheriting classes only
 	 * 
-	 * @return
+	 * @return function
 	 */
 	protected Function<? super T, ? extends Paint> getColorMapping() {
 		return colorMapping;

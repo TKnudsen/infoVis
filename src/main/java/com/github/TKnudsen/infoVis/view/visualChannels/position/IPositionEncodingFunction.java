@@ -21,8 +21,8 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * the inverse mapping has several advantages whenever a screen position shall
 	 * be linked to the original input data. User interaction is a common example.
 	 * 
-	 * @param visual
-	 * @return
+	 * @param visual double
+	 * @return number
 	 */
 	public Number inverseMapping(Double visual);
 
@@ -34,7 +34,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * value domain to avoid side effects if an instance is used in several
 	 * contexts.
 	 * 
-	 * @param minValue
+	 * @param minValue number
 	 */
 	public void setMinWorldValue(Number minValue);
 
@@ -46,7 +46,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * value domain to avoid side effects if an instance is used in several
 	 * contexts.
 	 * 
-	 * @param maxValue
+	 * @param maxValue number
 	 */
 	public void setMaxWorldValue(Number maxValue);
 
@@ -58,7 +58,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * value domain to avoid side effects if an instance is used in several
 	 * contexts.
 	 * 
-	 * @param minPixel
+	 * @param minPixel double
 	 */
 	public void setMinPixel(Double minPixel);
 
@@ -70,7 +70,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * value domain to avoid side effects if an instance is used in several
 	 * contexts.
 	 * 
-	 * @param maxPixel
+	 * @param maxPixel double
 	 */
 	public void setMaxPixel(Double maxPixel);
 
@@ -78,7 +78,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * needs to be discussed whether this behavior should be included in the
 	 * interface or not.
 	 * 
-	 * @param logarithmicScale
+	 * @param logarithmicScale boolean
 	 */
 	public void setLogarithmicScale(boolean logarithmicScale);
 
@@ -89,7 +89,7 @@ public interface IPositionEncodingFunction extends Function<Number, Double> {
 	 * sense if a y-axis has its origin in (0,0) at the upper left of the canvas
 	 * rather than at the lower left.
 	 * 
-	 * @param flipAxisValues
+	 * @param flipAxisValues is flip
 	 */
 	public void setFlipAxisValues(boolean flipAxisValues);
 

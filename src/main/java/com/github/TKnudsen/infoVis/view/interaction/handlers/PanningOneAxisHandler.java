@@ -45,9 +45,9 @@ public class PanningOneAxisHandler extends InteractionHandler {
 
 	/**
 	 * 
-	 * @param worldGlobalMin
-	 * @param worldGlobalMax
-	 * @param positionEncodingFunction
+	 * @param worldGlobalMin           min
+	 * @param worldGlobalMax           max
+	 * @param positionEncodingFunction function
 	 */
 	public PanningOneAxisHandler(Number worldGlobalMin, Number worldGlobalMax,
 			IPositionEncodingFunction positionEncodingFunction) {
@@ -61,10 +61,10 @@ public class PanningOneAxisHandler extends InteractionHandler {
 
 	/**
 	 * 
-	 * @param worldGlobalMin
-	 * @param worldGlobalMax
-	 * @param positionEncodingFunction
-	 * @param mouseButton
+	 * @param worldGlobalMin           min
+	 * @param worldGlobalMax           max
+	 * @param positionEncodingFunction function
+	 * @param mouseButton              button
 	 */
 	public PanningOneAxisHandler(Number worldGlobalMin, Number worldGlobalMax,
 			IPositionEncodingFunction positionEncodingFunction, MouseButton mouseButton) {

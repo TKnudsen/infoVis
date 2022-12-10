@@ -20,10 +20,10 @@ public class FilterStatusHanders {
 	 * returns a new collection of elements which are true according to the
 	 * predicate. Other elements are filtered out.
 	 * 
-	 * @param <T>
-	 * @param elements
-	 * @param filterStatus
-	 * @return
+	 * @param <T>          t
+	 * @param elements     elements
+	 * @param filterStatus filter
+	 * @return collection
 	 */
 	public static <T> Collection<T> filter(Collection<T> elements, Predicate<T> filterStatus) {
 		Collection<T> returnElements = new ArrayList<>();
@@ -37,11 +37,11 @@ public class FilterStatusHanders {
 	}
 
 	/**
-	 * @param <T>
-	 * @param elements
-	 * @param identifyer
-	 * @param fileName
-	 * @return
+	 * @param <T>        t
+	 * @param elements   elements
+	 * @param identifyer identifier
+	 * @param fileName   file
+	 * @return predicate
 	 */
 	public static <T> Predicate<T> loadFilterStatus(Collection<T> elements, Function<T, String> identifyer,
 			String fileName) {
@@ -55,11 +55,11 @@ public class FilterStatusHanders {
 	}
 
 	/**
-	 * @param <T>
-	 * @param elements
-	 * @param identifyer
-	 * @param filterStatus
-	 * @param fileName
+	 * @param <T>          t
+	 * @param elements     elements
+	 * @param identifyer   identifier
+	 * @param filterStatus filter status
+	 * @param fileName     name
 	 */
 	public static <T> void saveFilterStatus(Collection<T> elements, Function<T, String> identifyer,
 			Predicate<T> filterStatus, String fileName) {

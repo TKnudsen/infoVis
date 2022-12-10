@@ -375,23 +375,23 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		refreshDataPoints();
 	}
 
-	/**
-	 * @deprecated renamed. use isAlphaAdjustment instead
-	 * @return
-	 */
-	public boolean isDynamicAlphaAdjustment() {
-		return overplottingMitigation;
-	}
+//	/**
+//	 * @deprecated renamed. use isAlphaAdjustment instead
+//	 * @return boolean
+//	 */
+//	public boolean isDynamicAlphaAdjustment() {
+//		return overplottingMitigation;
+//	}
 
-	/**
-	 * @deprecated renamed. use setAlphaAdjustment instead
-	 * @param dynamicAlphaAdjustment
-	 */
-	public void setDynamicAlphaAdjustment(boolean dynamicAlphaAdjustment) {
-		this.overplottingMitigation = dynamicAlphaAdjustment;
-
-		refreshDataPoints();
-	}
+//	/**
+//	 * @deprecated renamed. use setAlphaAdjustment instead
+//	 * @param dynamicAlphaAdjustment
+//	 */
+//	public void setDynamicAlphaAdjustment(boolean dynamicAlphaAdjustment) {
+//		this.overplottingMitigation = dynamicAlphaAdjustment;
+//
+//		refreshDataPoints();
+//	}
 
 	public double getPointSize() {
 		return pointSize;

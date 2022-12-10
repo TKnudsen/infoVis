@@ -15,7 +15,7 @@ import java.util.Map;
  * @author Juergen Bernard
  * @version 1.03
  *
- * @param <T>
+ * @param <T>t 
  */
 public class SizeEncodingWithVariationFunction<T> extends SizeEncodingFunction<T> {
 

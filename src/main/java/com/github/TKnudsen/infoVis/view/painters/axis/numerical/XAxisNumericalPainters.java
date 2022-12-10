@@ -18,9 +18,10 @@ public class XAxisNumericalPainters {
 
 	/**
 	 * 
-	 * @param data
-	 * @param worldPositionMappingX
-	 * @return
+	 * @param <T>                   t
+	 * @param data                  the data collection
+	 * @param worldPositionMappingX mapping
+	 * @return the painter
 	 */
 	public static <T> XAxisNumericalPainter<Double> create(Iterable<T> data,
 			Function<? super T, Double> worldPositionMappingX) {

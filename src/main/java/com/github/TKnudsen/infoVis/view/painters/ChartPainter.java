@@ -95,7 +95,7 @@ public abstract class ChartPainter {
 	/**
 	 * Paints the rendering information
 	 * 
-	 * @param g2
+	 * @param g2 g2
 	 */
 	public void draw(Graphics2D g2) {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -163,7 +163,7 @@ public abstract class ChartPainter {
 
 	/**
 	 * @deprecated use getPaint
-	 * @return
+	 * @return color
 	 */
 	public Color getColor() {
 		return color;
@@ -171,7 +171,7 @@ public abstract class ChartPainter {
 
 	/**
 	 * @deprecated uses setPaint
-	 * @param color
+	 * @param color color
 	 */
 	public void setColor(Color color) {
 		this.color = color;

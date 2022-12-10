@@ -14,7 +14,7 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncodingFunctio
  * @author Juergen Bernard
  * @version 1.03
  *
- * @param <T>
+ * @param <T> t
  */
 public class ConstantSizeEncodingFunction<T> implements ISizeEncodingFunction<T> {
 

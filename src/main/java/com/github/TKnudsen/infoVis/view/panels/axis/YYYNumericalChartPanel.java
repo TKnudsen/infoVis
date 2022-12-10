@@ -189,7 +189,7 @@ public abstract class YYYNumericalChartPanel<Y extends Number> extends InfoVisCh
 	/**
 	 * sets axis painters. axis alignment will be set to CENTER
 	 * 
-	 * @param yAxisPainters
+	 * @param yAxisPainters painters
 	 */
 	public void setyAxisPainters(List<YAxisNumericalPainter<Y>> yAxisPainters) {
 		for (YAxisNumericalPainter<Y> a : yAxisPainters)

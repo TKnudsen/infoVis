@@ -40,9 +40,9 @@ public class SVGFrameTools {
 
 	/**
 	 * 
-	 * @param panels
-	 * @param headline
-	 * @return
+	 * @param panels   the panels
+	 * @param headline the title
+	 * @return the frame
 	 */
 	public static SVGFrame dropSVGFrame(List<JPanel> panels, String headline) {
 		JPanel panel = new JPanel(new GridLayout(0, panels.size()));

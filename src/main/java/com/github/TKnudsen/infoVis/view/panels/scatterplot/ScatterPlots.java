@@ -57,14 +57,14 @@ public class ScatterPlots {
 	/**
 	 * most general form for creating a scatter plot.
 	 * 
-	 * @param <T>
-	 * @param data
-	 * @param worldPositionMappingX
-	 * @param worldPositionMappingY
-	 * @param colorMapping
-	 * @param alarmWhenDataSanitiCheckFails
-	 * @param selectionModel
-	 * @return
+	 * @param <T>                           t
+	 * @param data                          the data
+	 * @param worldPositionMappingX         x
+	 * @param worldPositionMappingY         y
+	 * @param colorMapping                  color mapping
+	 * @param alarmWhenDataSanitiCheckFails boolean
+	 * @param selectionModel                selection model
+	 * @return scatter plot
 	 */
 	public static <T> ScatterPlot<T> create(List<T> data, Function<? super T, Double> worldPositionMappingX,
 			Function<? super T, Double> worldPositionMappingY, Function<? super T, ? extends Paint> colorMapping,
@@ -160,10 +160,10 @@ public class ScatterPlots {
 	 * only containing those elements which can be applied by both given position
 	 * mapping functions.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMappingX
-	 * @param worldDoubleMappingY
-	 * @return
+	 * @param data                  the data
+	 * @param worldToDoubleMappingX x
+	 * @param worldDoubleMappingY   y
+	 * @return checked data
 	 */
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldToDoubleMappingX,
 			Function<? super T, Double> worldDoubleMappingY) {
@@ -175,11 +175,12 @@ public class ScatterPlots {
 	 * containing those elements which can be applied by both given position mapping
 	 * functions.
 	 * 
-	 * @param data
-	 * @param worldToDoubleMappingX
-	 * @param worldDoubleMappingY
-	 * @param warnForQualityLeaks
-	 * @return
+	 * @param <T>                   t
+	 * @param data                  the data
+	 * @param worldToDoubleMappingX x
+	 * @param worldDoubleMappingY   y
+	 * @param warnForQualityLeaks   boolean
+	 * @return the checked data
 	 */
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldToDoubleMappingX,
 			Function<? super T, Double> worldDoubleMappingY, boolean warnForQualityLeaks) {

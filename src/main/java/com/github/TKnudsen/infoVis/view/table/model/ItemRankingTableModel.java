@@ -53,13 +53,14 @@ public class ItemRankingTableModel extends ItemTableModel {
 
 	/**
 	 * 
-	 * @param primaryKeys
-	 * @param stockInformationFunction
-	 * @param rankingFunction
-	 * @param scoreFunction
-	 * @param uncertaintyFunction
-	 * @param showPrimaryKey
-	 * @param itemTableColumnData
+	 * @param primaryKeys              primary keys
+	 * @param stockInformationFunction stock information
+	 * @param rankingFunction          ranking
+	 * @param scoreFunction            score function
+	 * @param uncertaintyFunction      uncertainty
+	 * @param showPrimaryKey           is show primary key
+	 * @param itemTableColumnData      item table column data
+	 * @param primaryKeyAttribute      primaryKeyAttribute
 	 */
 	public ItemRankingTableModel(Set<String> primaryKeys, Function<String, ComplexDataObject> stockInformationFunction,
 			Function<String, Integer> rankingFunction, Function<String, Double> scoreFunction,
@@ -241,9 +242,9 @@ public class ItemRankingTableModel extends ItemTableModel {
 
 	/**
 	 * 
-	 * @param primaryKey
-	 * @param y
-	 * @param currentColumnIndex
+	 * @param primaryKey         pk
+	 * @param y                  y
+	 * @param currentColumnIndex index
 	 * @return number of columns that have been filled (i has to be incremented,
 	 *         accordingly)
 	 */

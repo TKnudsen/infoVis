@@ -249,11 +249,11 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	 * code is copied from the trajectory painter. may be externalized to a tools
 	 * class.
 	 * 
-	 * @param g2
-	 * @param pointArray
-	 * @param pointSize
-	 * @param pointPaint
-	 * @param selected
+	 * @param g2         g2
+	 * @param pointArray points
+	 * @param pointSize  point size
+	 * @param pointPaint paint
+	 * @param selected   is selected
 	 */
 	protected void drawIndividualPoint(Graphics2D g2, Point2D[] pointArray, float pointSize, Paint pointPaint,
 			boolean selected) {

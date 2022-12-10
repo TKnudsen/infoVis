@@ -54,7 +54,7 @@ public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T>
 	/**
 	 * needed for the highlight painter
 	 * 
-	 * @return
+	 * @return double
 	 */
 	protected double getValueYEndPosition() {
 		return chartRectangle.getMaxY();

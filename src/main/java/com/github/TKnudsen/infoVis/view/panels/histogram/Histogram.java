@@ -71,14 +71,14 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	 * No external aggregation functions any more. it interacts with the global
 	 * minimum and maximum and thus can only be controlled safely in here.
 	 * 
-	 * @param data
-	 * @param worldToNumberMapping
-	 * @param minGlobal
-	 * @param maxGlobal
+	 * @param data                 the data
+	 * @param worldToNumberMapping mapping
+	 * @param minGlobal            min
+	 * @param maxGlobal            max
 	 * @param binCount             null if internal default value shall be taken
-	 * @param vertical
-	 * @param defaultColor
-	 * @param filterColor
+	 * @param vertical             vertical
+	 * @param defaultColor         color
+	 * @param filterColor          color
 	 */
 	Histogram(Collection<? extends T> data, Function<? super T, Number> worldToNumberMapping, Number minGlobal,
 			Number maxGlobal, Integer binCount, boolean vertical, Color defaultColor, Color filterColor) {
@@ -174,9 +174,9 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	/**
 	 * by default a vertical bar chart is created
 	 * 
-	 * @param counts
-	 * @param defaultColor
-	 * @return
+	 * @param counts       counts
+	 * @param defaultColor color
+	 * @return bar chart
 	 */
 	protected BarChartPainter createAllDataDistributionBarchart(List<? extends Number> counts, Color defaultColor) {
 		List<Color> colors = DataConversion.constantValueList(defaultColor, counts.size());
@@ -189,7 +189,8 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	/**
 	 * by default a vertical bar chart is created
 	 * 
-	 * @return
+	 * @param filterColor filterColor
+	 * @return bar chart
 	 */
 	protected BarChartPainter createFilterStatusDistributionBarchartPainter(Color filterColor) {
 		List<? extends Number> counts = valuesToCounts.apply(filterStatusData);
@@ -204,7 +205,9 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 	/**
 	 * by default a vertical bar chart is created
 	 * 
-	 * @return
+	 * @param selection selection
+	 * @param color     color
+	 * @return bar chart
 	 */
 	protected BarChartPainter createSelectionDistributionBarchartPainter(List<T> selection, Color color) {
 		List<? extends Number> counts = valuesToCounts.apply(selection);

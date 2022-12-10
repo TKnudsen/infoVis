@@ -20,8 +20,8 @@ public interface IPanning {
 	 * apply panning/shifting a view towards deltaY and deltaY in screen/pixel
 	 * coordinates.
 	 * 
-	 * @param deltaX
-	 * @param deltaY
+	 * @param deltaX delta x
+	 * @param deltaY delty y
 	 */
 	public void pan(int deltaX, int deltaY);
 }

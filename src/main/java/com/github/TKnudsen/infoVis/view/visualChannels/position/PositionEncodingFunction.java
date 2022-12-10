@@ -43,10 +43,10 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	/**
 	 * classical constructor for a non-inverted axis
 	 * 
-	 * @param minValue
-	 * @param maxValue
-	 * @param minPixel
-	 * @param maxPixel
+	 * @param minValue min
+	 * @param maxValue max
+	 * @param minPixel min
+	 * @param maxPixel max
 	 */
 	public PositionEncodingFunction(Number minValue, Number maxValue, Double minPixel, Double maxPixel) {
 		this(minValue, maxValue, minPixel, maxPixel, false);
@@ -96,8 +96,8 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	/**
 	 * scales a relative output value to the mapping (screen space) domain.
 	 * 
-	 * @param relative
-	 * @return
+	 * @param relative relative
+	 * @return double
 	 */
 	public Double relativeValueToMapping(Number relative) {
 		if (flipAxisValues)
@@ -112,7 +112,7 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	 * input value domain.
 	 * 
 	 * @param visual
-	 * @return
+	 * @return number
 	 */
 	public Number inverseMapping(Double visual) {
 		double scale = Double.NaN;
@@ -139,7 +139,7 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	 * value domain. This, however, may cause side effects when the mapping function
 	 * is used in several contexts.
 	 * 
-	 * @param minValue
+	 * @param minValue min
 	 */
 	public void setMinWorldValue(Number minValue) {
 		this.minValue = minValue;
@@ -157,7 +157,7 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 	 * value domain. This, however, may cause side effects when the mapping function
 	 * is used in several contexts.
 	 * 
-	 * @param maxValue
+	 * @param maxValue max
 	 */
 	public void setMaxWorldValue(Number maxValue) {
 		this.maxValue = maxValue;
