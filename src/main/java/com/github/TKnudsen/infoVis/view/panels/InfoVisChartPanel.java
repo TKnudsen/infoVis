@@ -212,8 +212,8 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	 * 
 	 * Works like the add (int , E) method of the List interface.
 	 * 
-	 * @param index
-	 * @param chartPainter
+	 * @param index where the chart painter is added
+	 * @param chartPainter the chart painter
 	 */
 	public void addChartPainter(int index, ChartPainter chartPainter) {
 		Objects.requireNonNull(chartPainter, "The ChartPainter may not be null");
@@ -265,21 +265,21 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		this.showingTooltips = showingTooltips;
 	}
 
-	/**
-	 * @deprecated now called isAutoMargin
-	 * @return
-	 */
-	public boolean isAllowBorder() {
-		return isAutoMargin();
-	}
+//	/**
+//	 * @deprecated now called isAutoMargin
+//	 * @return
+//	 */
+//	public boolean isAllowBorder() {
+//		return isAutoMargin();
+//	}
 
-	/**
-	 * @deprecated now called setAutoMargin
-	 * @param allowMargin
-	 */
-	public void setAllowBorder(boolean allowMargin) {
-		this.setAutoMargin(allowMargin);
-	}
+//	/**
+//	 * @deprecated now called setAutoMargin
+//	 * @param allowMargin
+//	 */
+//	public void setAllowBorder(boolean allowMargin) {
+//		this.setAutoMargin(allowMargin);
+//	}
 
 	public boolean isAutoMargin() {
 		return autoMargin;

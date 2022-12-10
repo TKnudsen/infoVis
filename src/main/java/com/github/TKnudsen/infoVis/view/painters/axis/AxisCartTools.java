@@ -218,11 +218,11 @@ public class AxisCartTools {
 	 * can be used to re-scale the number of markers, given the marker positions
 	 * calculated be an axis painter.
 	 * 
-	 * @param markerPositionsWithLabels
-	 * @param pow2
-	 * @param lowerBound
-	 * @param upperBound
-	 * @return
+	 * @param markerPositionsWithLabels positions
+	 * @param pow2                      pow
+	 * @param lowerBound                lower
+	 * @param upperBound                higher
+	 * @return sorted set
 	 */
 	public static SortedSet<Double> refineMarkerPositionResolution(
 			List<Entry<Double, String>> markerPositionsWithLabels, double pow2, double lowerBound, double upperBound) {

@@ -46,7 +46,7 @@ public class ItemTableColumnData {
 	/**
 	 * can be null
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public Integer getMinWidth() {
 		return minSize;
@@ -55,7 +55,7 @@ public class ItemTableColumnData {
 	/**
 	 * can be null
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public Integer getPreferredWidth() {
 		return preferredSize;
@@ -64,7 +64,7 @@ public class ItemTableColumnData {
 	/**
 	 * can be null
 	 * 
-	 * @return
+	 * @return int
 	 */
 	public Integer getMaxWidth() {
 		return maxSize;

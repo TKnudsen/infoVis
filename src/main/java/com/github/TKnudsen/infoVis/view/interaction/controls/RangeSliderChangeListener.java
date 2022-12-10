@@ -8,7 +8,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputListener;
 
 import com.github.TKnudsen.ComplexDataObject.data.interfaces.ISelfDescription;
-import com.jidesoft.swing.RangeSlider;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.RangeSlider;
 
 /**
  * <p>

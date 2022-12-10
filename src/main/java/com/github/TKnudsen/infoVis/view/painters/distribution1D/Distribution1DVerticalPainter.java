@@ -53,7 +53,7 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 	/**
 	 * needed for the highlight painter
 	 * 
-	 * @return
+	 * @return double
 	 */
 	protected double getValueXEndPosition() {
 		return chartRectangle.getMaxX();

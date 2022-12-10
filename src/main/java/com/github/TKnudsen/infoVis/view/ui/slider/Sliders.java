@@ -7,6 +7,11 @@ public class Sliders {
 
 	/**
 	 * Returns a Shape representing a thumb.
+	 * 
+	 * @param width     width
+	 * @param height    height
+	 * @param flipThumb flip
+	 * @return shape
 	 */
 	public static Shape createThumbShapeHorizontal(int width, int height, boolean flipThumb) {
 		Path2D path = new Path2D.Double();
@@ -28,6 +33,11 @@ public class Sliders {
 
 	/**
 	 * Returns a Shape representing a thumb.
+	 * 
+	 * @param width     width
+	 * @param height    height
+	 * @param flipThumb flip
+	 * @return shape
 	 */
 	public static Shape createThumbShapeVertical(int width, int height, boolean flipThumb) {
 		Path2D path = new Path2D.Double();

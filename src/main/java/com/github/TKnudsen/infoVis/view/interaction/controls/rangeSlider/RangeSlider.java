@@ -31,10 +31,8 @@ public class RangeSlider extends JSlider {
 
 	/**
 	 * 
-	 * @param min
-	 * @param max
-	 * @param lowerValue
-	 * @param upperValue
+	 * @param min min
+	 * @param max max
 	 */
 	public RangeSlider(int min, int max) {
 		this(JSlider.HORIZONTAL, min, max, min, max);
@@ -42,10 +40,10 @@ public class RangeSlider extends JSlider {
 
 	/**
 	 * 
-	 * @param min
-	 * @param max
-	 * @param lowerValue
-	 * @param upperValue
+	 * @param min        min
+	 * @param max        max
+	 * @param lowerValue lower
+	 * @param upperValue upper
 	 */
 	public RangeSlider(int min, int max, int lowerValue, int upperValue) {
 		this(JSlider.HORIZONTAL, min, max, lowerValue, upperValue);
@@ -53,11 +51,11 @@ public class RangeSlider extends JSlider {
 
 	/**
 	 * 
-	 * @param orientation JSlider.HORIZONTAL
-	 * @param min
-	 * @param max
-	 * @param lowerValue
-	 * @param upperValue
+	 * @param orientation JSlider.HORIZONTAL orientation
+	 * @param min         min
+	 * @param max         max
+	 * @param lowerValue  lower
+	 * @param upperValue  upper
 	 */
 	public RangeSlider(int orientation, int min, int max, int lowerValue, int upperValue) {
 		super(orientation, min, max, lowerValue);
@@ -112,6 +110,8 @@ public class RangeSlider extends JSlider {
 
 	/**
 	 * Returns the upper value in the range.
+	 * 
+	 * @return int
 	 */
 	public int getHighValue() {
 		return getValue() + getExtent();
@@ -119,6 +119,8 @@ public class RangeSlider extends JSlider {
 
 	/**
 	 * Sets the upper value in the range.
+	 * 
+	 * @param value int
 	 */
 	public void setHighValue(int value) {
 		// Compute new extent.

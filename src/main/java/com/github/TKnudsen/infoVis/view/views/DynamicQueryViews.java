@@ -16,16 +16,16 @@ public class DynamicQueryViews {
 
 	/**
 	 * 
-	 * @param <T>
-	 * @param data
-	 * @param toNumberFunction
+	 * @param <T>              t
+	 * @param data             data
+	 * @param toNumberFunction function
 	 * @param selectionModel   the selection model is NOT meant to represent the
 	 *                         internal (or external) filter status of the dynamic
 	 *                         query (queries). It can be used to synchronize data
 	 *                         selections within the data distribution chart.
-	 * @param title
+	 * @param title            title
 	 * @param binCount         number of bins. default is 25.
-	 * @return
+	 * @return dynamic query view
 	 */
 	public static <T> DynamicQueryView<T> createDynamicQuery(Collection<T> data, Function<T, Number> toNumberFunction,
 			SelectionModel<T> selectionModel, String title, int binCount) {

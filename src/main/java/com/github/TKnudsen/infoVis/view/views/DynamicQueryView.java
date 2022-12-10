@@ -25,7 +25,6 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanels;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histogram;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histograms;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
-import com.jidesoft.plaf.LookAndFeelFactory;
 
 import de.javagl.selection.SelectionModel;
 
@@ -51,8 +50,8 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	/**
 	 * 
-	 * @param data
-	 * @param toNumberFunction
+	 * @param data             the data distribution
+	 * @param toNumberFunction the function that maps the data to numbers
 	 * @param selectionModel   the selection model is NOT meant to represent the
 	 *                         internal (or external) filter status of the dynamic
 	 *                         query (queries). It can be used to synchronize data
@@ -65,8 +64,8 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	/**
 	 * 
-	 * @param data
-	 * @param toNumberFunction
+	 * @param data             the data distribution
+	 * @param toNumberFunction the function that maps the data to numbers
 	 * @param selectionModel   the selection model is NOT meant to represent the
 	 *                         internal (or external) filter status of the dynamic
 	 *                         query (queries). It can be used to synchronize data
@@ -150,7 +149,8 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 			max = Math.max(max, d);
 		}
 
-		LookAndFeelFactory.setDefaultStyle(1);
+		// no need any more: range slider was replaced
+		// LookAndFeelFactory.setDefaultStyle(1);
 		return new InfoVisRangeSliderPanel((int) Math.floor(min * INTEGER_MULTIPLIER),
 				(int) Math.ceil(max * INTEGER_MULTIPLIER), (int) Math.floor(min * INTEGER_MULTIPLIER),
 				(int) Math.ceil(max * INTEGER_MULTIPLIER), min, max);

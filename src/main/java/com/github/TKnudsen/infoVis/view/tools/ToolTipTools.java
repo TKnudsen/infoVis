@@ -46,11 +46,11 @@ public class ToolTipTools {
 	 * creates a tool-tip for a numerical value defined by its screen coordinate and
 	 * its world value. (inverse).
 	 * 
-	 * @param p
-	 * @param screenValue
-	 * @param inverseMapping
-	 * @param chartRectangle
-	 * @return
+	 * @param p              point
+	 * @param screenValue    screen value
+	 * @param inverseMapping inverse mapping
+	 * @param chartRectangle chart rectangle
+	 * @return chart painter
 	 */
 	public static ChartPainter getTooltipForPositionMapping1D(Point p, Double screenValue, Number inverseMapping,
 			Rectangle2D chartRectangle) {

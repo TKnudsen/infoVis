@@ -104,7 +104,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	 * general routine to draw labels and markers for every marker position (was
 	 * calculated with every setRectangle()-event).
 	 * 
-	 * @param g2
+	 * @param g2 g2
 	 */
 	protected void drawAxisLabelsAndMarkers(Graphics2D g2) {
 		Color c = g2.getColor();

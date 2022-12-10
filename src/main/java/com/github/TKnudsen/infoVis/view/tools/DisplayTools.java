@@ -55,12 +55,12 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param x
-	 * @param y
-	 * @param r
-	 * @param paint
-	 * @param fill
+	 * @param g2    g2
+	 * @param x     x
+	 * @param y     y
+	 * @param r     r
+	 * @param paint paint
+	 * @param fill  if fill
 	 */
 	public static void drawPoint(Graphics2D g2, int x, int y, int r, Paint paint, boolean fill) {
 		Objects.requireNonNull(g2);
@@ -78,11 +78,11 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param centerX
-	 * @param centerY
-	 * @param radius
-	 * @param fill
+	 * @param g2      g2
+	 * @param centerX x
+	 * @param centerY y
+	 * @param radius  r
+	 * @param fill    if fill
 	 */
 	public static void drawPoint(Graphics2D g2, double centerX, double centerY, double radius, boolean fill) {
 		Objects.requireNonNull(g2);
@@ -114,12 +114,12 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param centerX
-	 * @param centerY
-	 * @param radius
-	 * @param paint
-	 * @param fill
+	 * @param g2      g2
+	 * @param centerX x
+	 * @param centerY y
+	 * @param radius  r
+	 * @param paint   paint
+	 * @param fill    fill
 	 */
 	public static void drawPoint(Graphics2D g2, double centerX, double centerY, double radius, Paint paint,
 			boolean fill) {
@@ -135,9 +135,9 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param rect
-	 * @param paint
+	 * @param g2    g2
+	 * @param rect  rectangle
+	 * @param paint color
 	 */
 	public static void drawRectangle(Graphics2D g2, Rectangle2D rect, Paint paint) {
 		Objects.requireNonNull(g2);
@@ -153,9 +153,9 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param rect
-	 * @param paint
+	 * @param g2    g2
+	 * @param rect  rectangle
+	 * @param paint color
 	 */
 	public static void fillRectangle(Graphics2D g2, Rectangle2D rect, Paint paint) {
 		Objects.requireNonNull(g2);
@@ -197,10 +197,10 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param midX
-	 * @param midY
-	 * @param size
+	 * @param g2   g2
+	 * @param midX X
+	 * @param midY Y
+	 * @param size size
 	 */
 	public static void drawCross(Graphics2D g2, double midX, double midY, double size) {
 		Objects.requireNonNull(g2);
@@ -211,11 +211,11 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
+	 * @param g2 g2
+	 * @param x1 x1
+	 * @param y1 y1
+	 * @param x2 x2
+	 * @param y2 y2
 	 */
 	public static void drawLine(Graphics2D g2, Number x1, Number y1, Number x2, Number y2) {
 		Objects.requireNonNull(g2);
@@ -230,13 +230,13 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 * @param strokeWidth
-	 * @param color
+	 * @param g2          g2
+	 * @param x1          x1
+	 * @param y1          y1
+	 * @param x2          x2
+	 * @param y2          y2
+	 * @param strokeWidth width
+	 * @param color       color
 	 */
 	public static void drawLine(Graphics2D g2, Number x1, Number y1, Number x2, Number y2, float strokeWidth,
 			Paint color) {
@@ -256,13 +256,13 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param x1
-	 * @param y1
-	 * @param x2
-	 * @param y2
-	 * @param stroke
-	 * @param color
+	 * @param g2     g2
+	 * @param x1     x1
+	 * @param y1     y1
+	 * @param x2     x2
+	 * @param y2     y2
+	 * @param stroke stroke
+	 * @param color  color
 	 */
 	public static void drawLine(Graphics2D g2, Number x1, Number y1, Number x2, Number y2, Stroke stroke, Paint color) {
 		Objects.requireNonNull(g2);
@@ -281,11 +281,11 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param xPoints
-	 * @param yPoints
-	 * @param closed
-	 * @param fill
+	 * @param g2      g2
+	 * @param xPoints x
+	 * @param yPoints y
+	 * @param closed  if closed
+	 * @param fill    if fill
 	 */
 	public static void drawPath(Graphics2D g2, double[] xPoints, double[] yPoints, boolean closed, boolean fill) {
 		Objects.requireNonNull(g2);
@@ -310,13 +310,13 @@ public class DisplayTools {
 	 * object consists of 7 single shapes, so you better don`t use semi-transparent
 	 * colors to omit pixel artifacts.
 	 * 
-	 * @param g2
-	 * @param rect
-	 * @param xArc
-	 * @param yArc
-	 * @param background
-	 * @param surroundStroke
-	 * @param surroundColor
+	 * @param g2             g2
+	 * @param rect           rectangle
+	 * @param xArc           x
+	 * @param yArc           y
+	 * @param background     background color
+	 * @param surroundStroke stroke
+	 * @param surroundColor  color
 	 */
 	public static void drawCube(Graphics2D g2, Rectangle2D rect, double xArc, double yArc, Paint background,
 			BasicStroke surroundStroke, Paint surroundColor) {
@@ -347,14 +347,14 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
-	 * @param arcWidth
-	 * @param arcHeight
-	 * @param color
+	 * @param g2        g2
+	 * @param x         x
+	 * @param y         y
+	 * @param width     width
+	 * @param height    height
+	 * @param arcWidth  arc width
+	 * @param arcHeight arc height
+	 * @param color     color
 	 */
 	public static void drawRoundRect(Graphics2D g2, int x, int y, int width, int height, int arcWidth, int arcHeight,
 			Paint color) {
@@ -376,10 +376,10 @@ public class DisplayTools {
 	/**
 	 * paints a button-like primitive.
 	 * 
-	 * @param g2
-	 * @param centerX
-	 * @param centerY
-	 * @param radius
+	 * @param g2      g2
+	 * @param centerX x
+	 * @param centerY y
+	 * @param radius  r
 	 */
 	public static void drawButton(Graphics2D g2, int centerX, int centerY, int radius) {
 		Objects.requireNonNull(g2);
@@ -400,11 +400,11 @@ public class DisplayTools {
 
 	/**
 	 * 
-	 * @param g2
-	 * @param text
-	 * @param x
-	 * @param y
-	 * @param angle
+	 * @param g2    g2
+	 * @param text  text
+	 * @param x     x
+	 * @param y     y
+	 * @param angle angle
 	 */
 	public static void drawRotatedString(Graphics2D g2, String text, float x, float y, double angle) {
 		Objects.requireNonNull(g2);
@@ -419,9 +419,11 @@ public class DisplayTools {
 	/**
 	 * creates a diamond shape
 	 * 
-	 * @param width
-	 * @param height
-	 * @return
+	 * @param centerX x
+	 * @param centerY y
+	 * @param width   width
+	 * @param height  height
+	 * @return the path 2d
 	 */
 	public static Path2D.Double createDiamond(double centerX, double centerY, double width, double height) {
 		Path2D.Double diamond = new Path2D.Double();

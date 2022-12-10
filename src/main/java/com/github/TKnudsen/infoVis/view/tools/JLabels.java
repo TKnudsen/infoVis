@@ -10,7 +10,7 @@ public class JLabels {
 	/**
 	 * turns the text to bold font
 	 * 
-	 * @param label
+	 * @param label label
 	 */
 	public static void boldify(JLabel label) {
 		label.setFont(label.getFont().deriveFont(label.getFont().getStyle() | Font.BOLD));
@@ -24,7 +24,7 @@ public class JLabels {
 	 * @param preferredY set height or leave null
 	 * @param xAlignment use SwingConstants or leave null
 	 * @param yAlignment use SwingConstants or leave null
-	 * @return
+	 * @return label
 	 */
 	public static JLabel create(String text, boolean boldify, Integer preferredX, Integer preferredY,
 			Integer xAlignment, Integer yAlignment) {

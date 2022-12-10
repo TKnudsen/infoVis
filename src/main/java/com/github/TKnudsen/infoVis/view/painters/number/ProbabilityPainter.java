@@ -142,7 +142,7 @@ public class ProbabilityPainter extends ChartPainter {
 	/**
 	 * set number of marks in x direction. Must be 1, 2, 4, 5, 10, 25, 50, or 100
 	 * 
-	 * @param gridX
+	 * @param gridX x
 	 */
 	public void setGridX(int gridX) {
 		// validate input

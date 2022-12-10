@@ -170,7 +170,7 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param overlayOfXAxis
+	 * @param overlayOfXAxis is overlay
 	 */
 	public void setXAxisOverlay(boolean overlayOfXAxis) {
 		this.xyAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
@@ -195,11 +195,11 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	}
 
 	/**
-	 * lets the chart painter(s) begin on top of the less than axis, not (only) in the east.
-	 * Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
+	 * lets the chart painter(s) begin on top of the less than axis, not (only) in
+	 * the east. Automatically sets the AxisAlignment of the yAxisPainter to LEFT.
 	 * Automatically removes background paint of axisPainter.
 	 * 
-	 * @param yAxisOverlay
+	 * @param yAxisOverlay is overlay
 	 */
 	public void setYAxisOverlay(boolean yAxisOverlay) {
 		this.xyAxisChartRectangleLayout.setYAxisOverlay(yAxisOverlay);

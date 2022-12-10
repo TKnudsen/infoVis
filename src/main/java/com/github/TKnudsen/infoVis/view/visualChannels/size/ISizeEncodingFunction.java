@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @author Juergen Bernard
  * @version 1.03
  *
- * @param <T>
+ * @param <T> t
  */
 public interface ISizeEncodingFunction<T> extends Function<T, Double> {
 

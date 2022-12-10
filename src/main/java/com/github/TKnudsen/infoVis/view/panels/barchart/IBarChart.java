@@ -33,7 +33,7 @@ public interface IBarChart
 	/**
 	 * use direct access to BarChart with care
 	 * 
-	 * @return
+	 * @return bar chart painter
 	 */
 	public BarChartPainter getBarChartPainter();
 

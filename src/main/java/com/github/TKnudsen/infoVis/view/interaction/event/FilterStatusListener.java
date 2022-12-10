@@ -7,7 +7,7 @@ public interface FilterStatusListener<T> extends EventListener {
 	/**
 	 * Invoked when the filter status has changed
 	 * 
-	 * @param filterChangedEvent
+	 * @param filterChangedEvent the event
 	 */
 	public void filterStatusChanged(FilterChangedEvent<T> filterChangedEvent);
 }

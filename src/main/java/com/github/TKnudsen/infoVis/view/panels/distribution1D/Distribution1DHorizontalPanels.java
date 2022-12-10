@@ -39,12 +39,14 @@ public class Distribution1DHorizontalPanels {
 
 	/**
 	 * Deprecated //use Distribution1DPanels
-	 * @param <T>
-	 * @param distributionPanel
-	 * @param selectionModel
+	 * 
+	 * @param <T>                     t
+	 * @param distributionPanel       the panel
+	 * @param selectionModel          the selection model
 	 * @param selectionShapeAttribtes adds visual encodings to selected objects.
 	 *                                ShapeAttributes include a selection color and
 	 *                                a stroke.
+	 * @return the listener
 	 */
 	public static <T> SelectionListener<T> addInteraction(Distribution1DHorizontalPanel<T> distributionPanel,
 			SelectionModel<T> selectionModel, ShapeAttributes selectionShapeAttribtes) {

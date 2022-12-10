@@ -51,7 +51,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 	/**
 	 * classical constructor for a non-inverted axis
 	 * 
-	 * @param mapping
+	 * @param mapping mapping
 	 */
 	public FixedPositionEncodingFunction(Map<Number, Double> mapping) {
 		this.mapping = new TreeMap<>(new NumberComparator());
@@ -117,8 +117,8 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 	/**
 	 * scales a relative output value to the mapping (screen space) domain.
 	 * 
-	 * @param relative
-	 * @return
+	 * @param relative number
+	 * @return double
 	 */
 	public Double relativeValueToMapping(Number relative) {
 		if (flipAxisValues)
@@ -246,8 +246,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 	}
 
 	@Override
-	public void addPositionEncodingFunctionListener(
-			PositionEncodingFunctionListener positionEncodingFunctionListener) {
+	public void addPositionEncodingFunctionListener(PositionEncodingFunctionListener positionEncodingFunctionListener) {
 		Objects.requireNonNull(positionEncodingFunctionListener,
 				"The positionEncodingFunctionListener may not be null");
 

@@ -26,9 +26,9 @@ public class PieCharts {
 
 	/**
 	 * 
-	 * @param percentage between [0... and 1]
-	 * @param color
-	 * @return
+	 * @param percentage between [0... and 1] percentage
+	 * @param color      color
+	 * @return pie
 	 */
 	public static PieChart createPieChartBipartite(double percentage, Color color) {
 		if (percentage < 0 || percentage > 1.0)

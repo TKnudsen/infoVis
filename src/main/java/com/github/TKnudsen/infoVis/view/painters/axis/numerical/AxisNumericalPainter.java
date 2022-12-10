@@ -64,8 +64,8 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	/**
 	 * classical constructor for a non-flipped axis
 	 * 
-	 * @param start
-	 * @param end
+	 * @param start start
+	 * @param end   end
 	 */
 	public AxisNumericalPainter(T start, T end) {
 		this(start, end, false);
@@ -96,8 +96,8 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	/**
 	 * accepts new screen coordinates for the axis and the value mapping
 	 * 
-	 * @param minPixel
-	 * @param maxPixel
+	 * @param minPixel min pix
+	 * @param maxPixel max pix
 	 */
 	protected final void setAxisWorldCoordinates(double minPixel, double maxPixel) {
 		setAxisWorldCoordinatesAndCalculateMarkers(minPixel, maxPixel,
@@ -108,9 +108,9 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	 * accepts new screen coordinates for the axis. Sets the position mapping and
 	 * adds markers to the axis
 	 * 
-	 * @param minPixel
-	 * @param maxPixel
-	 * @param markerCount
+	 * @param minPixel    min pix
+	 * @param maxPixel    max pix
+	 * @param markerCount markers
 	 */
 	protected final void setAxisWorldCoordinatesAndCalculateMarkers(double minPixel, double maxPixel,
 			double markerCount) {

@@ -21,8 +21,8 @@ public class AffineTransformTools {
 	/**
 	 * mirrors a given shape along the X axis. The object stays at the same center.
 	 * 
-	 * @param shape
-	 * @return
+	 * @param shape shape
+	 * @return shape
 	 */
 	public static Shape mirrorAlongX(Shape shape) {
 		if (shape == null)
@@ -40,8 +40,8 @@ public class AffineTransformTools {
 	/**
 	 * mirrors a given shape along the Y axis. The object stays at the same center.
 	 * 
-	 * @param shape
-	 * @return
+	 * @param shape shape
+	 * @return shape
 	 */
 	public static Shape mirrorAlongY(Shape shape) {
 		if (shape == null)

@@ -105,13 +105,13 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	/**
 	 * 
-	 * @param table
-	 * @param component
-	 * @param row
-	 * @param column
+	 * @param table          table
+	 * @param component      component
+	 * @param row            row
+	 * @param column         column
 	 * @param glyphPlacement whether or not the component receives an additional
 	 *                       size encoding. otherwise it is replaced.
-	 * @return
+	 * @return the component
 	 */
 	protected Component setRectangleSizeEncoding(JTable table, Component component, int row, int column,
 			GlyphPlacement glyphPlacement) {
@@ -165,8 +165,9 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	/**
 	 * 
-	 * @param relativeSize
-	 * @return
+	 * @param relativeSize relative size
+	 * @param dataColor    the color
+	 * @return the panel
 	 */
 	protected JPanel createRectangleSizeEncodingJPanel(double relativeSize, Color dataColor) {
 

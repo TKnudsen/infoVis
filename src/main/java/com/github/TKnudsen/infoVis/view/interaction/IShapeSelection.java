@@ -24,8 +24,8 @@ public interface IShapeSelection<T> {
 	/**
 	 * functionality that provides elements within a rectangle
 	 * 
-	 * @param shape
-	 * @return
+	 * @param shape shape
+	 * @return list
 	 */
 	public List<T> getElementsInShape(Shape shape);
 }

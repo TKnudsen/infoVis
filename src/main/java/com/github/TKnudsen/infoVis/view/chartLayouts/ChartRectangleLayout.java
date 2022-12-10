@@ -59,21 +59,21 @@ public class ChartRectangleLayout {
 		return chartRectangle;
 	}
 
-	/**
-	 * @deprecated use getMargin
-	 * @return
-	 */
-	public double getBorder() {
-		return getMargin();
-	}
+//	/**
+//	 * @deprecated use getMargin
+//	 * @return double
+//	 */
+//	public double getBorder() {
+//		return getMargin();
+//	}
 
-	/**
-	 * @deprecated use setMargin
-	 * @param margin
-	 */
-	public void setBorder(double margin) {
-		this.setMargin(margin);
-	}
+//	/**
+//	 * @deprecated use setMargin
+//	 * @param margin
+//	 */
+//	public void setBorder(double margin) {
+//		this.setMargin(margin);
+//	}
 
 	public double getMargin() {
 		return margin;

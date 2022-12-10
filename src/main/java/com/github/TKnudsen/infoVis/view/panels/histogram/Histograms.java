@@ -18,14 +18,15 @@ public class Histograms {
 
 	/**
 	 * 
-	 * @param histogram
+	 * @param <T>                t
+	 * @param histogram          the histogram
 	 * @param selectionModel     note that the histogram will be added to the
 	 *                           selection model as a selection listener. otherwise
 	 *                           the histogram would not be able to re-create a
 	 *                           selection bar chart every time when the selection
 	 *                           has changed.
-	 * @param clickSelection
-	 * @param rectangleSelection
+	 * @param clickSelection     if click selection
+	 * @param rectangleSelection if rectangle selection
 	 */
 	public static <T> void addInteraction(Histogram<T> histogram, SelectionModel<T> selectionModel,
 			boolean clickSelection, boolean rectangleSelection) {
@@ -80,20 +81,20 @@ public class Histograms {
 	/**
 	 * here the global minimum and maximum define the aggregation function.
 	 * 
-	 * @param <T>
-	 * @param data
-	 * @param worldToNumberMapping
-	 * @param minGlobal
-	 * @param maxGlobal
+	 * @param <T>                  t
+	 * @param data                 the data
+	 * @param worldToNumberMapping the mapping
+	 * @param minGlobal            min
+	 * @param maxGlobal            max
 	 * @param binCount             null if internal default value shall be taken.
 	 *                             Necessary because minimum and maximum in
 	 *                             aggregation function may not be reached with the
 	 *                             global value domain. As a result it is impossible
 	 *                             to anticipate the number of bins required.
-	 * @param vertical
-	 * @param defaultColor
-	 * @param filterColor
-	 * @return
+	 * @param vertical             if vertical
+	 * @param defaultColor         default color
+	 * @param filterColor          filter color
+	 * @return histogram
 	 */
 	public static <T> Histogram<T> create(Collection<? extends T> data,
 			Function<? super T, Number> worldToNumberMapping, Number minGlobal, Number maxGlobal, Integer binCount,
@@ -127,7 +128,7 @@ public class Histograms {
 	 * @param minValue min value of the target value domain
 	 * @param maxValue max value of the target value domain
 	 * @param binCount number of bins (e.g., bars in the Histogram)
-	 * @return
+	 * @return the function
 	 */
 	public static Function<Number, Integer> defaultAggregationFunction(Number minValue, Number maxValue, int binCount) {
 		Objects.requireNonNull(minValue);

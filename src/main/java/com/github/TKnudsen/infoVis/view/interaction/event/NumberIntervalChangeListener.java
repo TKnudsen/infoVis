@@ -21,7 +21,7 @@ public interface NumberIntervalChangeListener extends EventListener {
 	/**
 	 * Invoked when the number interval has changed
 	 * 
-	 * @param event
+	 * @param event the event
 	 */
 	public void numberIntervalChanged(NumberIntervalChangedEvent event);
 }

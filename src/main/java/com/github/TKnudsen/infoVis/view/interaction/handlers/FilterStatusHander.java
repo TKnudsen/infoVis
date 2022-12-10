@@ -29,7 +29,7 @@ public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate
 	/**
 	 * predicates are filter
 	 * 
-	 * @param predicate
+	 * @param predicate predicate
 	 */
 	public void addFilter(Predicate<T> predicate) {
 		this.filters.remove(predicate);

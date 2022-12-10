@@ -32,8 +32,9 @@ public class ScorePainter extends ChartPainter {
 
 	/**
 	 * 
-	 * @param score the score to be paint in a range of [0,1]
-	 * @param color the color of the bar
+	 * @param score       the score to be paint in a range of [0,1]
+	 * @param color       the color of the bar
+	 * @param orientation orientation
 	 */
 	public ScorePainter(double score, Color color, Orientation orientation) {
 		this.score = score;

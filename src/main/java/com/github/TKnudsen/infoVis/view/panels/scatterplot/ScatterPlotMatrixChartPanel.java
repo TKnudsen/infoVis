@@ -65,7 +65,7 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 	/**
 	 * 
 	 * @param data   multi-dimensional data
-	 * @param colors
+	 * @param colors colors
 	 */
 	public ScatterPlotMatrixChartPanel(List<Double[]> data, List<Color> colors) {
 		this(data, colors, null);
@@ -74,8 +74,8 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 	/**
 	 * 
 	 * @param data           multi-dimensional data
-	 * @param colors
-	 * @param attributeNames
+	 * @param colors         colors
+	 * @param attributeNames attribute nameso
 	 */
 	public ScatterPlotMatrixChartPanel(List<Double[]> data, List<Color> colors, List<String> attributeNames) {
 
