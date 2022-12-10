@@ -3,7 +3,7 @@
 
 	<groupId>com.github.tknudsen</groupId>
 	<artifactId>info-vis</artifactId>
-	<version>0.0.4</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>infoVis</name>
