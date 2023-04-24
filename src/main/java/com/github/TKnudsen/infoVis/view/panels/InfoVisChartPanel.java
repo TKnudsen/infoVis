@@ -8,6 +8,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -212,7 +213,7 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	 * 
 	 * Works like the add (int , E) method of the List interface.
 	 * 
-	 * @param index where the chart painter is added
+	 * @param index        where the chart painter is added
 	 * @param chartPainter the chart painter
 	 */
 	public void addChartPainter(int index, ChartPainter chartPainter) {
@@ -303,6 +304,15 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 	public List<ChartPainter> getChartPainters() {
 		return Collections.unmodifiableList(chartPainters);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <P extends ChartPainter> List<P> getChartPainters(Class<P> painterClass) {
+		List<P> painters = new ArrayList<>();
+		for (ChartPainter p : chartPainters)
+			if (p.getClass().equals(painterClass))
+				painters.add((P) p);
+		return painters;
 	}
 
 	public boolean isQuadraticBounds() {

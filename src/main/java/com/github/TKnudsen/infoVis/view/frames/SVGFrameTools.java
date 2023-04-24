@@ -52,6 +52,22 @@ public class SVGFrameTools {
 		return SVGFrameTools.dropSVGFrame(panel, headline, 1200, 600);
 	}
 
+	/**
+	 * 
+	 * @param panels   the panels
+	 * @param headline the title
+	 * @return the frame
+	 */
+	public static SVGFrame dropSVGFramePanelMatrix(List<JPanel> panels, String headline) {
+		int sqrt = (int) Math.ceil(Math.sqrt(panels.size()));
+
+		JPanel panel = new JPanel(panels.size() < 4 ? new GridLayout(1, 0) : new GridLayout(sqrt + -1, sqrt + 2));
+		for (JPanel p : panels)
+			panel.add(p);
+
+		return SVGFrameTools.dropSVGFrame(panel, headline, 1200, 600);
+	}
+
 	public static SVGFrame dropSVGFrame(JPanel panel, String title, int x, int y, int posX, int posY) {
 		SVGFrame frame = new SVGFrame();
 

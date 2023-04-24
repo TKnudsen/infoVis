@@ -261,9 +261,9 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 				bipolarRectangle.setBackgroundPaint(null);
 				bipolarRectangle.setPaint(new Color(59, 197, 85));
 
-				if (relativeSize >= 0.8)
+				if (relativeSize >= 0.7)
 					chartPanel = new SizeEncodingChartPanel(bipolarRectangle, relativeSize);
-				else if (relativeSize <= 0.2) {
+				else if (relativeSize <= 0.3) {
 					chartPanel = new SizeEncodingChartPanel(bipolarRectangle, 1 - relativeSize);
 					bipolarRectangle.setPaint(new Color(181, 75, 160));
 				} else {
