@@ -11,6 +11,8 @@ import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
 import com.github.TKnudsen.infoVis.view.views.DynamicQueryView;
 import com.github.TKnudsen.infoVis.view.views.DynamicQueryViews;
 
+import de.javagl.selection.SelectionEvent;
+import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
@@ -34,6 +36,15 @@ public class DynamicQueryViewTest {
 				"Dynamic Query View, Test with the Fares Attribute of the Titanic Dataset", 25);
 
 		SVGFrameTools.dropSVGFrame(dynamicQuery, "", 400, 200);
+		
+		selectionModel.addSelectionListener(new SelectionListener<ComplexDataObject>() {
+			
+			@Override
+			public void selectionChanged(SelectionEvent<ComplexDataObject> selectionEvent) {
+				System.out.println(selectionEvent.getSelectionModel().getSelection().size());
+				
+			}
+		});
 	}
 
 }

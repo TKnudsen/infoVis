@@ -1,7 +1,9 @@
 package com.github.TKnudsen.infoVis.view.table.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -24,9 +26,13 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 
 	protected String[] columnNames;
 	protected Object[][] data;
+	private Map<Integer, List<Object>> rowValues = new HashMap<>();
+	private Map<Integer, List<Object>> columnValues = new HashMap<>();
+	private Map<Integer, StatisticsSupport> rowValueStatistics = new HashMap<>();
+	private Map<Integer, StatisticsSupport> columnValueStatistics = new HashMap<>();
 
 	private DoubleParser doubleParser = new DoubleParser(true);
-	
+
 	private int detaultSortColumn;
 
 	public ItemTableModel(int itemFilterCount, String comparableAttribute) {
@@ -51,22 +57,28 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 	 */
 	public double getRelativeValueAt(int row, int col, boolean rowWise) {
 		Object value = getValueAt(row, col);
-		List<Object> values;
+//		List<Object> values;
 
+		StatisticsSupport statistics = null;
 		if (rowWise)
-			values = getRowValues(row);
+			statistics = getRowStatistics(row);
 		else
-			values = getColumnValues(col);
+			statistics = getColumnStatistics(col);
+
+//		if (rowWise)
+//			values = getRowValues(row);
+//		else
+//			values = getColumnValues(col);
 
 		// test for numerical values
 		if (value instanceof Number) {
-			List<Double> doubleValues = new ArrayList<>();
-			for (Object o : values)
-				if (o != null)
-					if (o instanceof Number)
-						if (!Double.isNaN(((Number) o).doubleValue()))
-							doubleValues.add(((Number) o).doubleValue());
-			StatisticsSupport statistics = new StatisticsSupport(doubleValues);
+//			List<Double> doubleValues = new ArrayList<>();
+//			for (Object o : values)
+//				if (o != null)
+//					if (o instanceof Number)
+//						if (!Double.isNaN(((Number) o).doubleValue()))
+//							doubleValues.add(((Number) o).doubleValue());
+//			StatisticsSupport statistics = new StatisticsSupport(doubleValues);
 
 			return MathFunctions.linearScale(statistics.getMin(), statistics.getMax(), ((Number) value).doubleValue());
 		}
@@ -75,6 +87,8 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 	}
 
 	public Object getRowMin(int row) {
+		StatisticsSupport statistics = getRowStatistics(row);
+//		return statistics != null ? statistics.getMin() : Double.NaN;
 		double min = 0.0;
 		for (int y = 0; y < getData()[row].length; y++)
 			if (getData()[row][y] instanceof Number) {
@@ -87,6 +101,8 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 	}
 
 	public Object getRowMax(int row) {
+		StatisticsSupport statistics = getRowStatistics(row);
+//		return statistics != null ? statistics.getMax() : Double.NaN;
 		double max = 0.0;
 		for (int y = 0; y < getData()[row].length; y++)
 			if (getData()[row][y] instanceof Number) {
@@ -98,22 +114,89 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 		return max;
 	}
 
+	/**
+	 * iterates over the second dimension
+	 * 
+	 * @param row
+	 * @return
+	 */
 	public List<Object> getRowValues(int row) {
-		List<Object> objects = new ArrayList<>();
+		if (!rowValues.containsKey(row)) {
+			List<Object> objects = new ArrayList<>();
 
-		for (int y = 0; y < getData()[row].length; y++)
-			objects.add(getData()[row][y]);
+			for (int y = 0; y < getData()[row].length; y++)
+				objects.add(getData()[row][y]);
 
-		return objects;
+			rowValues.put(row, objects);
+		}
+		return rowValues.get(row);
 	}
 
+	protected StatisticsSupport getRowStatistics(int row) {
+		if (!rowValueStatistics.containsKey(row)) {
+			List<Object> values = getRowValues(row);
+
+			List<Double> doubleValues = new ArrayList<>();
+			for (Object o : values)
+				if (o != null)
+					if (o instanceof Number)
+						if (!Double.isNaN(((Number) o).doubleValue()))
+							doubleValues.add(((Number) o).doubleValue());
+			StatisticsSupport statistics = doubleValues.size() > 0 ? new StatisticsSupport(doubleValues) : null;
+			rowValueStatistics.put(row, statistics);
+		}
+		return rowValueStatistics.get(row);
+	}
+
+	/**
+	 * iterates over the first dimension
+	 * 
+	 * @param column
+	 * @return
+	 */
 	public List<Object> getColumnValues(int column) {
-		List<Object> objects = new ArrayList<>();
+		if (!columnValues.containsKey(column)) {
+			List<Object> objects = new ArrayList<>();
 
-		for (int row = 0; row < getData().length; row++)
-			objects.add(getData()[row][column]);
+			for (int row = 0; row < getData().length; row++)
+				objects.add(getData()[row][column]);
 
-		return objects;
+			columnValues.put(column, objects);
+		}
+		return columnValues.get(column);
+	}
+
+	protected StatisticsSupport getColumnStatistics(int column) {
+		if (!columnValueStatistics.containsKey(column)) {
+			List<Object> values = getColumnValues(column);
+
+			List<Double> doubleValues = new ArrayList<>();
+			for (Object o : values)
+				if (o != null)
+					if (o instanceof Number)
+						if (!Double.isNaN(((Number) o).doubleValue()))
+							doubleValues.add(((Number) o).doubleValue());
+			StatisticsSupport statistics = doubleValues.size() > 0 ? new StatisticsSupport(doubleValues) : null;
+			columnValueStatistics.put(column, statistics);
+		}
+		return columnValueStatistics.get(column);
+	}
+
+	protected void resetValuesBuffer() {
+		rowValues.clear();
+		columnValues.clear();
+		rowValueStatistics.clear();
+		columnValueStatistics.clear();
+	}
+
+	protected void resetRowValuesBuffer(int row) {
+		rowValues.remove(row);
+		rowValueStatistics.remove(row);
+	}
+
+	protected void resetColumnValuesBuffer(int column) {
+		columnValues.remove(column);
+		columnValueStatistics.remove(column);
 	}
 
 	/*

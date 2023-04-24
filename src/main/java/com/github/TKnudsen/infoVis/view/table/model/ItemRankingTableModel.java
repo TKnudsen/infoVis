@@ -158,11 +158,16 @@ public class ItemRankingTableModel extends ItemTableModel {
 			int i = 0;
 
 			// rank
-			Integer rank = rankingFunction.apply(primaryKey);
+			Integer rank = null;
+			try {
+				rank = rankingFunction.apply(primaryKey);
+			} catch (Exception e) {
+			}
 			data[y][i++] = (rank == null) ? "n.a." : rank;
 
 			// score
-			data[y][i++] = MathFunctions.round(scoreFunction.apply(primaryKey), 4);
+			Double sc = scoreFunction.apply(primaryKey);
+			data[y][i++] = (sc == null) ? "n.a." : MathFunctions.round(sc, 4);
 
 			// uncertainty
 			data[y][i++] = MathFunctions.round(uncertaintyFunction.apply(primaryKey), 4);
@@ -233,6 +238,9 @@ public class ItemRankingTableModel extends ItemTableModel {
 
 			y++;
 		}
+		
+		resetValuesBuffer();
+		
 		initializing = false;
 	}
 
