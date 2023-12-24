@@ -219,4 +219,104 @@ public class VisualMappings {
 
 		return values;
 	}
+
+	public static <D> Number[] minMax(Iterable<D> data, Function<? super D, ? extends Number> worldToNumberMapping) {
+		Number[] minMax = new Number[2];
+
+		minMax[0] = Double.POSITIVE_INFINITY;
+		minMax[1] = Double.NEGATIVE_INFINITY;
+
+		if (data != null)
+			for (D d : data) {
+				Number apply = worldToNumberMapping.apply(d);
+				if (apply == null || Double.isNaN(apply.doubleValue()))
+					continue;
+
+				double x = apply.doubleValue();
+				minMax[0] = Math.min(minMax[0].doubleValue(), x);
+				minMax[1] = Math.max(minMax[1].doubleValue(), x);
+			}
+
+		return minMax;
+	}
+
+	/**
+	 * 
+	 * @param <D>
+	 * @param data
+	 * @param worldToDoubleMappingX relative coordinates required
+	 * @param worldToDoubleMappingY relative coordinates required
+	 * @param x
+	 * @param y
+	 * @param warnForQualityLeaks
+	 * @return
+	 */
+	public static <D> List<D>[][] visualAggregation2D(Iterable<D> data,
+			Function<? super D, ? extends Number> worldToDoubleMappingX,
+			Function<? super D, ? extends Number> worldToDoubleMappingY, int x, int y, boolean warnForQualityLeaks) {
+
+		if (data == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.visualAggregation2D: given data was null");
+			return null;
+		}
+
+		if (worldToDoubleMappingX == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.visualAggregation2D: given worldToDoubleMappingX was null");
+			return null;
+		}
+
+		if (worldToDoubleMappingY == null) {
+			if (warnForQualityLeaks)
+				System.err.println("VisualMappings.visualAggregation2D: given worldToDoubleMappingY was null");
+			return null;
+		}
+
+		if (x < 1 || y < 1) {
+			if (warnForQualityLeaks)
+				System.err
+						.println("VisualMappings.visualAggregation2D: given aggregation count < 1: " + x + " and " + y);
+			return null;
+		}
+
+		@SuppressWarnings("unchecked")
+		List<D>[][] aggregates = new ArrayList[x][y];
+		for (int xG = 0; xG < x; xG++)
+			for (int yG = 0; yG < y; yG++)
+				aggregates[xG][yG] = new ArrayList<>();
+
+		try {
+			for (D t : data) {
+				Number xV = worldToDoubleMappingX.apply(t);
+				if (xV != null && !Double.isNaN(xV.doubleValue())) {
+					Number yV = worldToDoubleMappingY.apply(t);
+					if (yV != null && !Double.isNaN(yV.doubleValue())) {
+
+						if (xV.doubleValue() < 0.0 || xV.doubleValue() > 1.0) {
+							if (warnForQualityLeaks)
+								System.err.println("VisualMappings.visualAggregation2D: given value for " + t
+										+ " was not relative: " + xV);
+							return null;
+						}
+						if (yV.doubleValue() < 0.0 || yV.doubleValue() > 1.0) {
+							if (warnForQualityLeaks)
+								System.err.println("VisualMappings.visualAggregation2D: given value for " + t
+										+ " was not relative: " + yV);
+							return null;
+						}
+
+						int xG = xV.doubleValue() == 1.0 ? x - 1 : (int) Math.floor(xV.doubleValue() * x);
+						int yG = yV.doubleValue() == 1.0 ? y - 1 : (int) Math.floor(yV.doubleValue() * y);
+
+						aggregates[xG][yG].add(t);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return aggregates;
+	}
 }

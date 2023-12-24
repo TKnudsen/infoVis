@@ -266,22 +266,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		this.showingTooltips = showingTooltips;
 	}
 
-//	/**
-//	 * @deprecated now called isAutoMargin
-//	 * @return
-//	 */
-//	public boolean isAllowBorder() {
-//		return isAutoMargin();
-//	}
-
-//	/**
-//	 * @deprecated now called setAutoMargin
-//	 * @param allowMargin
-//	 */
-//	public void setAllowBorder(boolean allowMargin) {
-//		this.setAutoMargin(allowMargin);
-//	}
-
 	public boolean isAutoMargin() {
 		return autoMargin;
 	}

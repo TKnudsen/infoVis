@@ -88,7 +88,8 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 		double y = getAxisAlignmentCoordinate();
 
-		DisplayTools.drawLine(g2, x1, y, x2, y);
+		if (rectangle.getHeight() > 0)
+			DisplayTools.drawLine(g2, x1, y, x2, y);
 
 		drawAxisLabelsAndMarkers(g2);
 
@@ -119,26 +120,27 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		if (markerPositionsWithLabels == null)
 			setAxisWorldCoordinates(rectangle.getMinX(), rectangle.getMaxX());
 
-		for (Entry<Double, String> pair : markerPositionsWithLabels) {
-			double artificialXOffset = 0;
-			if (pair.getKey() > rectangle.getMaxX() - 15)
-				artificialXOffset = -getMarkerDistanceInPixels() * 0.28;
+		if (rectangle.getHeight() > 0)
+			for (Entry<Double, String> pair : markerPositionsWithLabels) {
+				double artificialXOffset = 0;
+				if (pair.getKey() > rectangle.getMaxX() - 15)
+					artificialXOffset = -getMarkerDistanceInPixels() * 0.28;
 
-			g2.setPaint(getPaint());
-			if (axisLineAlignment.equals(AxisLineAlignment.TOP))
-				DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMinY() + markerLineWidth, pair.getKey(),
-						rectangle.getMinY());
-			else
-				DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMaxY() - markerLineWidth, pair.getKey(),
-						rectangle.getMaxY());
-			g2.setColor(fontColor);
+				g2.setPaint(getPaint());
+				if (axisLineAlignment.equals(AxisLineAlignment.TOP))
+					DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMinY() + markerLineWidth, pair.getKey(),
+							rectangle.getMinY());
+				else
+					DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMaxY() - markerLineWidth, pair.getKey(),
+							rectangle.getMaxY());
+				g2.setColor(fontColor);
 
-			if (drawLabels)
-				g2.drawString(pair.getValue(),
-						(int) (pair.getKey().intValue() + 1 + artificialXOffset
-								- fm.stringWidth(pair.getValue()) * 0.4),
-						(int) ((rectangle.getY()) + fm.getHeight() * 1.0) + 4);
-		}
+				if (drawLabels)
+					g2.drawString(pair.getValue(),
+							(int) (pair.getKey().intValue() + 1 + artificialXOffset
+									- fm.stringWidth(pair.getValue()) * 0.4),
+							(int) ((rectangle.getY()) + fm.getHeight() * 1.0) + 4);
+			}
 
 		g2.setFont(f);
 		g2.setStroke(s);

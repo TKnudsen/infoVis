@@ -1,28 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>com.github.tknudsen</groupId>
 	<artifactId>info-vis</artifactId>
 	<version>0.0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
 	<name>infoVis</name>
 	<description>A library that provides InfoVis functionality.</description>
 	<url>https://github.com/TKnudsen/infoVis</url>
-
 	<licenses>
 		<license>
 			<name>Apache License 2.0</name>
 			<url>http://www.spdx.org/licenses/Apache-2.0</url>
 		</license>
 	</licenses>
-
 	<scm>
 		<url>https://github.com/TKnudsen/infoVis</url>
 		<connection>https://github.com/TKnudsen/infoVis.git</connection>
 		<developerConnection>https://github.com/TKnudsen/infoVis.git</developerConnection>
 	</scm>
-
 	<developers>
 		<developer>
 			<id>tknudsen</id>
@@ -30,7 +25,6 @@
 			<email>mail@juergen-bernard.de</email>
 		</developer>
 	</developers>
-
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -41,13 +35,11 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-
 	<properties>
 		<project.build.sourceEncoding>cp1250</project.build.sourceEncoding>
 		<maven-compiler-plugin.source>1.8</maven-compiler-plugin.source>
 		<maven-compiler-plugin.target>1.8</maven-compiler-plugin.target>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -75,7 +67,6 @@
 			<artifactId>batik-svggen</artifactId>
 			<version>1.8</version>
 		</dependency>
-
 		<!--
 		<dependency>
 			<groupId>com.jidesoft</groupId>
@@ -83,14 +74,12 @@
 			<version>3.8.1</version>
 		</dependency>
 		-->
-
 		<dependency>
 			<groupId>com.github.tknudsen</groupId>
 			<artifactId>complex-data-object</artifactId>
 			<version>0.2.15-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -102,7 +91,6 @@
 					<target>${maven-compiler-plugin.target}</target>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -130,7 +118,7 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+				<!--<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
 				<version>3.0.1</version>
 				<executions>
@@ -140,6 +128,27 @@
 						<goals>
 							<goal>sign</goal>
 						</goals>
+					</execution>
+				</executions>	-->
+				<groupId>org.simplify4u.plugins</groupId>
+				<artifactId>sign-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<keyId>
+								<!-- key id in hex, optional -->
+							</keyId>
+							<keyPass>
+								<!-- private key passphrase, can be encrypted -->
+							</keyPass>
+							<keyFile>
+								<!-- private key file location -->
+							</keyFile>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -156,7 +165,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<profiles>
 		<profile>
 			<id>local</id>
@@ -174,7 +182,6 @@
 				</repository>
 			</repositories>
 		</profile>
-
 		<profile>
 			<id>release</id>
 			<properties>

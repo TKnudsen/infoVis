@@ -149,6 +149,10 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 			max = Math.max(max, d);
 		}
 
+		if (max > Integer.MAX_VALUE / INTEGER_MULTIPLIER)
+			throw new IllegalArgumentException("DynamicQueryView: maximum value for the dynamic query must not exceed "
+					+ Integer.MAX_VALUE / INTEGER_MULTIPLIER);
+
 		// no need any more: range slider was replaced
 		// LookAndFeelFactory.setDefaultStyle(1);
 		return new InfoVisRangeSliderPanel((int) Math.floor(min * INTEGER_MULTIPLIER),

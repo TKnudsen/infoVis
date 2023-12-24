@@ -57,7 +57,6 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 	 */
 	public double getRelativeValueAt(int row, int col, boolean rowWise) {
 		Object value = getValueAt(row, col);
-//		List<Object> values;
 
 		StatisticsSupport statistics = null;
 		if (rowWise)
@@ -65,23 +64,11 @@ public abstract class ItemTableModel extends AbstractTableModel implements Relat
 		else
 			statistics = getColumnStatistics(col);
 
-//		if (rowWise)
-//			values = getRowValues(row);
-//		else
-//			values = getColumnValues(col);
+		if (statistics == null)
+			return Double.NaN;
 
-		// test for numerical values
-		if (value instanceof Number) {
-//			List<Double> doubleValues = new ArrayList<>();
-//			for (Object o : values)
-//				if (o != null)
-//					if (o instanceof Number)
-//						if (!Double.isNaN(((Number) o).doubleValue()))
-//							doubleValues.add(((Number) o).doubleValue());
-//			StatisticsSupport statistics = new StatisticsSupport(doubleValues);
-
+		if (value instanceof Number)
 			return MathFunctions.linearScale(statistics.getMin(), statistics.getMax(), ((Number) value).doubleValue());
-		}
 
 		return 0.0;
 	}
