@@ -26,7 +26,7 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
  * @author Juergen Bernard
  * @version 2.05
  */
-public class BoxPlotHorizontalCartPanel extends XAxisNumericalChartPanel<Double>
+public class BoxPlotHorizontalChartPanel extends XAxisNumericalChartPanel<Double>
 		implements IRectangleSelection<Double> {
 
 	/**
@@ -41,19 +41,19 @@ public class BoxPlotHorizontalCartPanel extends XAxisNumericalChartPanel<Double>
 	private double minGlobal = Double.NaN;
 	private double maxGlobal = Double.NaN;
 
-	public BoxPlotHorizontalCartPanel(double[] data) {
+	public BoxPlotHorizontalChartPanel(double[] data) {
 		this.dataStatistics = new StatisticsSupport(data);
 
 		initializeData();
 	}
 
-	public BoxPlotHorizontalCartPanel(List<Double> data) {
+	public BoxPlotHorizontalChartPanel(List<Double> data) {
 		this.dataStatistics = new StatisticsSupport(data);
 
 		initializeData();
 	}
 
-	public BoxPlotHorizontalCartPanel(List<Double> data, double minGlobal, double maxGlobal) {
+	public BoxPlotHorizontalChartPanel(List<Double> data, double minGlobal, double maxGlobal) {
 		this.dataStatistics = new StatisticsSupport(data);
 		this.minGlobal = minGlobal;
 		this.maxGlobal = maxGlobal;
@@ -61,13 +61,13 @@ public class BoxPlotHorizontalCartPanel extends XAxisNumericalChartPanel<Double>
 		initializeData();
 	}
 
-	public BoxPlotHorizontalCartPanel(StatisticsSupport dataStatistics) {
+	public BoxPlotHorizontalChartPanel(StatisticsSupport dataStatistics) {
 		this.dataStatistics = dataStatistics;
 
 		initializeData();
 	}
 
-	public BoxPlotHorizontalCartPanel(StatisticsSupport dataStatistics, double minGlobal, double maxGlobal) {
+	public BoxPlotHorizontalChartPanel(StatisticsSupport dataStatistics, double minGlobal, double maxGlobal) {
 		this.dataStatistics = dataStatistics;
 		this.minGlobal = minGlobal;
 		this.maxGlobal = maxGlobal;

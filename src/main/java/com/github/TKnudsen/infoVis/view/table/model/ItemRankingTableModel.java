@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataObject;
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.data.table.ItemTableColumnData;
@@ -20,7 +19,6 @@ public class ItemRankingTableModel extends ItemTableModel {
 
 	private final Set<String> primaryKeys;
 
-	private final Function<String, ComplexDataObject> stockInformationFunction;
 	private final Function<String, Integer> rankingFunction;
 	private final Function<String, Double> scoreFunction;
 	private final Function<String, Double> uncertaintyFunction;
@@ -62,16 +60,14 @@ public class ItemRankingTableModel extends ItemTableModel {
 	 * @param itemTableColumnData      item table column data
 	 * @param primaryKeyAttribute      primaryKeyAttribute
 	 */
-	public ItemRankingTableModel(Set<String> primaryKeys, Function<String, ComplexDataObject> stockInformationFunction,
-			Function<String, Integer> rankingFunction, Function<String, Double> scoreFunction,
-			Function<String, Double> uncertaintyFunction, boolean showPrimaryKey,
-			List<ItemTableColumnData> itemTableColumnData, String primaryKeyAttribute) {
+	public ItemRankingTableModel(Set<String> primaryKeys, Function<String, Integer> rankingFunction,
+			Function<String, Double> scoreFunction, Function<String, Double> uncertaintyFunction,
+			boolean showPrimaryKey, List<ItemTableColumnData> itemTableColumnData, String primaryKeyAttribute) {
 
 		super(Integer.MAX_VALUE, "SUM");
 
 		this.primaryKeys = primaryKeys;
 
-		this.stockInformationFunction = stockInformationFunction;
 		this.rankingFunction = rankingFunction;
 		this.scoreFunction = scoreFunction;
 		this.uncertaintyFunction = uncertaintyFunction;
@@ -172,50 +168,18 @@ public class ItemRankingTableModel extends ItemTableModel {
 			// uncertainty
 			data[y][i++] = MathFunctions.round(uncertaintyFunction.apply(primaryKey), 4);
 
-			/**
-			 * TODO try to get rid of this! use the itemTableColumnData solution!
-			 */
-			ComplexDataObject stockInformation = stockInformationFunction.apply(primaryKey);
-
-//			// name
-//			if (stockInformation != null) {
-//				data[y][i++] = stockInformation.getName();
-////				itemLookup.put(stockInformation.getName(), primaryKey);
-//			} else
-//				i += 1;
-
-			// additional columns
-//			if (attributesAsColumnsSelectedStatus != null)
-//				for (String column : attributesAsColumnsSelectedStatus.keySet())
-//					if (attributesAsColumnsSelectedStatus.get(column)) {
-//						if (stockInformation != null) {
-//							data[y][i++] = stockInformation.getAttribute(column);
-//						} else
-//							i++;
-//					}
 			if (itemTableColumnData != null)
 				for (ItemTableColumnData column : itemTableColumnData)
 					if (column.isShowColumn())
 						if (column.getColumnPosition().equals(ColumnPosition.WEST))
 							data[y][i++] = column.getValue(primaryKey);
 
-//			// Land
-//			if (stockInformation != null)
-//				data[y][i++] = stockInformation.getAttribute("Land");
-//			else
-//				i++;
-
-//			// Parse Date
-//			if (isShowDate()) {
-//				String dateString = "";
-//				if (stockInformation != null)
-//					if (stockInformation.getAttribute("Parse Date") != null)
-//						dateString = dateFormatFileSystem.format(stockInformation.getAttribute("Parse Date"));
-//				data[y][i++] = dateString;
-//			}
-
-			if (isShowPrimaryKeyAttribute() && primaryKeyAttribute != null)
-				data[y][i++] = stockInformation.getAttribute(primaryKeyAttribute);
+			if (isShowPrimaryKeyAttribute()) {
+				if (primaryKeyAttribute != null)
+					data[y][i++] = primaryKey;
+				else
+					data[y][i++] = "n.a.";
+			}
 
 //			// chart available?
 //			if (chartAvailableFunction != null && primaryKey != null)
@@ -238,9 +202,9 @@ public class ItemRankingTableModel extends ItemTableModel {
 
 			y++;
 		}
-		
+
 		resetValuesBuffer();
-		
+
 		initializing = false;
 	}
 

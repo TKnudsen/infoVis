@@ -167,7 +167,10 @@ public class Histograms {
 				// avoid exceptions due to double precision
 				if (MathFunctions.round(t.doubleValue(), 7) <= MathFunctions
 						.round(minValue.doubleValue() + binCount * interval, 7))
-					return binCount;
+					return binCount - 1;
+
+				if (t.doubleValue() == maxValue.doubleValue())
+					return binCount - 1;
 
 				throw new IllegalArgumentException(
 						"Histograms.defaultAggregationFunction: value " + t + " could not be binned");

@@ -54,10 +54,10 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
- * @version 2.09
+ * @version 2.10
  */
 public class ScatterPlotPainter<T> extends ChartPainter
 		implements IXPositionEncoding, IYPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>,
@@ -77,6 +77,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	private double pointSize = Double.NaN;
 
 	private boolean tooltipping = true;
+	private int toolTipWidth = 150;
 
 	// position mapping of data
 	private IPositionEncodingFunction xPositionEncodingFunction;
@@ -355,7 +356,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 		StringPainter stringPainter = new StringPainter(toolTipString);
 
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 150, 32);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, toolTipWidth, 32);
 		stringPainter.setRectangle(rect);
 
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
@@ -374,24 +375,6 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 		refreshDataPoints();
 	}
-
-//	/**
-//	 * @deprecated renamed. use isAlphaAdjustment instead
-//	 * @return boolean
-//	 */
-//	public boolean isDynamicAlphaAdjustment() {
-//		return overplottingMitigation;
-//	}
-
-//	/**
-//	 * @deprecated renamed. use setAlphaAdjustment instead
-//	 * @param dynamicAlphaAdjustment
-//	 */
-//	public void setDynamicAlphaAdjustment(boolean dynamicAlphaAdjustment) {
-//		this.overplottingMitigation = dynamicAlphaAdjustment;
-//
-//		refreshDataPoints();
-//	}
 
 	public double getPointSize() {
 		return pointSize;
@@ -528,6 +511,14 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	public void setSelectionPaint(Paint selectionPaint) {
 		this.selectionPaint = selectionPaint;
+	}
+
+	public int getToolTipWidth() {
+		return toolTipWidth;
+	}
+
+	public void setToolTipWidth(int toolTipWidth) {
+		this.toolTipWidth = toolTipWidth;
 	}
 
 }

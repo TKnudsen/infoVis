@@ -8,7 +8,7 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.panels.boxplot.BoxPlotHorizontalCartPanel;
+import com.github.TKnudsen.infoVis.view.panels.boxplot.BoxPlotHorizontalChartPanel;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
@@ -40,7 +40,7 @@ public class BoxPlotHorizontalChartPanelTester {
 
 		StatisticsSupport dataStatistics = new StatisticsSupport(points);
 
-		BoxPlotHorizontalCartPanel panel = new BoxPlotHorizontalCartPanel(dataStatistics);
+		BoxPlotHorizontalChartPanel panel = new BoxPlotHorizontalChartPanel(dataStatistics);
 
 		// SELECTION MODEL
 		SelectionModel<Double> selectionModel = SelectionModels.create();

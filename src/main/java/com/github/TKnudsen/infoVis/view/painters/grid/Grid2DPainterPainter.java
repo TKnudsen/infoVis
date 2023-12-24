@@ -28,11 +28,11 @@ import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.01
+ * @version 2.03
  */
 public class Grid2DPainterPainter<T extends ChartPainter>
 		extends XYAxisCategoricalChartPainter<List<String>, List<String>> implements ITooltip, Iterable<T> {
@@ -211,12 +211,12 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 
 	@Override
 	public void setColor(Color borderColor) {
-		super.setColor(borderColor);
+		super.setPaint(borderColor);
 		if (painters != null)
 			for (int i = 0; i < painters.length; i++)
 				for (int j = 0; j < painters[i].length; j++)
 					if (painters[i][j] != null)
-						painters[i][j].setColor(borderColor);
+						painters[i][j].setPaint(borderColor);
 	}
 
 	@Override

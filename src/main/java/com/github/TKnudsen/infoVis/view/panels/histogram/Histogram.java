@@ -115,8 +115,11 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 				Number d = worldToNumberMapping.apply(t);
 				Integer index = aggregation.apply(d);
 				// necessary because the maxGlobal may not be the max value
-				if (index < counts.length)
-					counts[index]++;
+				if (index != null)
+					if (index < counts.length)
+						counts[index]++;
+					else
+						System.err.println("Histogram: aggregation index was null");
 			}
 
 			return DataConversion.doublePrimitivesToList(counts);

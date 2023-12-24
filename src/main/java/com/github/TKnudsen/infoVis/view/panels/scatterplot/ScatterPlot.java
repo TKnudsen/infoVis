@@ -216,4 +216,11 @@ public class ScatterPlot<T> extends XYNumericalChartPanel<Double, Double> implem
 		this.scatterPlotPainter.setSelectionPaint(selectionPaint);
 	}
 
+	public int getToolTipWidth() {
+		return this.scatterPlotPainter.getToolTipWidth();
+	}
+
+	public void setToolTipWidth(int toolTipWidth) {
+		this.scatterPlotPainter.setToolTipWidth(toolTipWidth);
+	}
 }
