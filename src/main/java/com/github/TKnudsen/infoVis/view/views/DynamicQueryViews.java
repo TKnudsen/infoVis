@@ -35,7 +35,7 @@ public class DynamicQueryViews {
 
 		if (title != null)
 			dynamicQueryView.setTitle(title);
-
+		
 		return dynamicQueryView;
 	}
 
@@ -61,6 +61,17 @@ public class DynamicQueryViews {
 
 	public static <T> void setSelectionColor(DynamicQueryView<T> view, Color selectionColor) {
 		view.getHistogram().setSelectionColor(selectionColor);
+	}
+
+	/**
+	 * decides whether Double.NaN values are considered in or out
+	 * 
+	 * @param <T>
+	 * @param view
+	 * @param keep
+	 */
+	public static <T> void setMissingValuePolicy(DynamicQueryView<T> view, boolean keep) {
+		view.setMissingValuesAreIn(keep);
 	}
 
 	private DynamicQueryViews() {

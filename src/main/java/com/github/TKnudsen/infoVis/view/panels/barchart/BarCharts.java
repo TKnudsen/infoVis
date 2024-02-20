@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
@@ -51,22 +53,56 @@ public class BarCharts {
 	 * @param color color
 	 * @return bar chart
 	 */
-	public static BarChart createBarChart(List<Double> bars, Color color) {
+	public static BarChart createBarChart(List<? extends Number> bars, Color color) {
 		List<Color> colors = new ArrayList<Color>();
 
 		for (@SuppressWarnings("unused")
-		Double d : bars)
+		Number d : bars)
 			colors.add(color);
 
 		return new BarChart(bars, colors);
 	}
 
-	public static BarChart createBarChart(List<Double> bars, List<Color> colors) {
+	public static BarChart createBarChart(List<? extends Number> bars, List<Color> colors) {
 		return new BarChart(bars, colors);
 	}
 
-	public static BarChartHorizontal createBarChartHorizontal(List<Double> bars, List<Color> colors) {
+	public static BarChartHorizontal createBarChartHorizontal(List<? extends Number> bars, Color color) {
+		List<Color> colors = new ArrayList<Color>();
+
+		for (@SuppressWarnings("unused")
+		Number d : bars)
+			colors.add(color);
+
+		return createBarChartHorizontal(bars, colors);
+	}
+
+	public static BarChartHorizontal createBarChartHorizontal(List<? extends Number> bars, List<Color> colors) {
 		return new BarChartHorizontal(bars, colors);
+	}
+
+	public static <T> SortedMap<String, Integer> createData(Collection<? extends T> data,
+			Function<? super T, String> worldToCategoryMapping) {
+
+		if (data.isEmpty())
+			return null;
+
+		SortedMap<String, Integer> counts = new TreeMap<>();
+		for (T t : data) {
+			if (t == null)
+				continue;
+
+			String s = worldToCategoryMapping.apply(t);
+			if (s == null)
+				continue;
+
+			if (!counts.containsKey(s))
+				counts.put(s, 0);
+
+			counts.put(s, counts.get(s) + 1);
+		}
+
+		return counts;
 	}
 
 	/**
@@ -75,7 +111,7 @@ public class BarCharts {
 	 * @param barchartColors one color for each bar chart layer
 	 * @return bar chart
 	 */
-	public static BarChart createLayeredBarChart(List<List<Double>> data, List<Color> barchartColors) {
+	public static BarChart createLayeredBarChart(List<List<? extends Number>> data, List<Color> barchartColors) {
 		Objects.requireNonNull(data);
 
 		if (data.isEmpty())
@@ -89,12 +125,12 @@ public class BarCharts {
 
 		// add additional bar chart layers
 		for (int i = 1; i < data.size(); i++) {
-			List<Double> bars = data.get(i);
+			List<? extends Number> bars = data.get(i);
 
 			List<Color> colors = new ArrayList<Color>();
 			Color c = barchartColors.size() > i ? barchartColors.get(i) : Color.BLACK;
 			for (@SuppressWarnings("unused")
-			Double d : bars)
+			Number d : bars)
 				colors.add(c);
 
 			BarChartVerticalPainter barChartVerticalPainter = new BarChartVerticalPainter(bars, colors);
@@ -113,7 +149,7 @@ public class BarCharts {
 	 * @param barColor colors
 	 * @return bar chart
 	 */
-	public static BarChart createHistogramBarchart(Collection<Number> values, int bins, Color barColor) {
+	public static BarChart createHistogramBarchart(Collection<? extends Number> values, int bins, Color barColor) {
 
 		NormalizationFunction normalization = new LinearNormalizationFunction(values);
 
@@ -157,6 +193,11 @@ public class BarCharts {
 	}
 
 	public static void addLegend(BarChartHorizontal barChart, List<String> labels) {
+		addLegend(barChart, labels, HorizontalStringAlignment.RIGHT);
+	}
+
+	public static void addLegend(BarChartHorizontal barChart, List<String> labels,
+			HorizontalStringAlignment alignment) {
 
 		StringPainter[][] painters = new StringPainter[1][labels.size()];
 
@@ -164,7 +205,7 @@ public class BarCharts {
 			StringPainter stringPainter = new StringPainter(labels.get(i));
 			stringPainter.setBackgroundPaint(null);
 
-			stringPainter.setHorizontalStringAlignment(HorizontalStringAlignment.RIGHT);
+			stringPainter.setHorizontalStringAlignment(alignment);
 			painters[0][i] = stringPainter;
 		}
 

@@ -5,6 +5,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.RangeSlider;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.TooltipHandler;
+import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
@@ -19,11 +21,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
  * JSliders.HORIZONTAL/VERTICAL orientation and by setting setFlipThumb(true)
  * 
  * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  *
  */
 public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder {
@@ -43,6 +45,13 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 
 	// listening to the positionEncodingFunction
 	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::refreshPositionMapping;
+
+	/**
+	 * tool tip
+	 */
+	private ChartPainter toolTipPainter = null;
+	private boolean toolTipping = true;
+	private TooltipHandler tooltipHandler;
 
 	/**
 	 * Creates a horizontal slider using the specified min and max with an initial
@@ -113,7 +122,6 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 			public void componentHidden(ComponentEvent e) {
 			}
 		});
-
 	}
 
 	public boolean inRange(double worldValue) {
@@ -148,4 +156,5 @@ public class InfoVisRangeSlider extends RangeSlider implements IXPositionEncoder
 	public void setFlipThumb(boolean invertThumb) {
 		this.getRangeSliderUI().setFlipThumb(invertThumb);
 	}
+
 }

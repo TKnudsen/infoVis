@@ -602,4 +602,12 @@ public class RangeSliderUI extends BasicSliderUI {
 		this.flipThumb = flipThumb;
 	}
 
+	public Color getRangeColor() {
+		return rangeColor;
+	}
+
+	public void setRangeColor(Color rangeColor) {
+		this.rangeColor = rangeColor;
+	}
+
 }

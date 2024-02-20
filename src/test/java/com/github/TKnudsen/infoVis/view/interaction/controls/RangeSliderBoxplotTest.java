@@ -23,6 +23,7 @@ public class RangeSliderBoxplotTest {
 		InfoVisRangeSlider rangeSlider = new InfoVisRangeSlider(min, max, 25, 75);
 		rangeSlider.setOrientation(JSlider.HORIZONTAL);
 		rangeSlider.setFlipThumb(false);
+		// rangeSlider.setToolTipText(true);
 
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BorderLayout());

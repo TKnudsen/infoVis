@@ -36,11 +36,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.08
+ * @version 2.09
  */
 public abstract class BarChartPainter extends ChartPainter
 		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer>, ITooltip {
@@ -56,6 +56,7 @@ public abstract class BarChartPainter extends ChartPainter
 	private boolean toolTipping = true;
 	private double gridSpacing = Double.NaN;
 	private BasicStroke lineStroke = DisplayTools.standardStroke;
+	private Paint selectionPaint = null;
 
 	// bar painters
 	List<BarPainter> barPainters;
@@ -154,8 +155,11 @@ public abstract class BarChartPainter extends ChartPainter
 					selected = true;
 
 				if (selected) {
-					g2.setStroke(DisplayTools.thickStroke);
-					g2.setPaint(getBorderPaint());
+					if (selectionPaint == null) {
+						g2.setStroke(DisplayTools.thickStroke);
+						g2.setPaint(getBorderPaint());
+					} else
+						g2.setPaint(getSelectionPaint());
 					g2.draw(barPainter.getBarRectangle());
 				}
 			}
@@ -302,6 +306,15 @@ public abstract class BarChartPainter extends ChartPainter
 			for (BarPainter barPainter : barPainters)
 				barPainter.setBackgroundPaint(backgroundColor);
 	}
+	
+	@Override
+	public void setBorderPaint(Paint backgroundColor) {
+		super.setBorderPaint(backgroundColor);
+
+		if (barPainters != null)
+			for (BarPainter barPainter : barPainters)
+				barPainter.setBorderPaint(backgroundColor);
+	}
 
 	public IPositionEncodingFunction getPositionEncodingFunction() {
 		return positionEncodingFunction;
@@ -328,6 +341,14 @@ public abstract class BarChartPainter extends ChartPainter
 		this.minValue = minValue;
 
 		initialize();
+	}
+
+	public Paint getSelectionPaint() {
+		return selectionPaint;
+	}
+
+	public void setSelectionPaint(Paint selectionPaint) {
+		this.selectionPaint = selectionPaint;
 	}
 
 }

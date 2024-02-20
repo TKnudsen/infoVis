@@ -15,11 +15,11 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.04
+ * @version 1.05
  */
 public interface ITooltip {
 	public ChartPainter getTooltip(Point p);
@@ -27,4 +27,8 @@ public interface ITooltip {
 	public boolean isToolTipping();
 
 	public void setToolTipping(boolean toolTipping);
+
+	default public Object getMaster() {
+		return this;
+	}
 }

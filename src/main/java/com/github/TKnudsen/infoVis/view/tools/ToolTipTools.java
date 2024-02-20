@@ -14,15 +14,15 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
  * </p>
  * 
  * <p>
- * Utilities for the creation of tool-tips
+ * Utilities for the creation of tool tips
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.03
+ * @version 1.04
  */
 public class ToolTipTools {
 	public static Rectangle2D createToolTipRectangle(Rectangle2D context, Point p, double width, double height) {
@@ -60,8 +60,10 @@ public class ToolTipTools {
 		if (Double.isNaN(screenValue))
 			return null;
 
-		StringPainter stringPainter = new StringPainter("V: " + MathFunctions.round(inverseMapping.doubleValue(), 2)
-				+ ", Pix: " + MathFunctions.round(screenValue, 2));
+//		StringPainter stringPainter = new StringPainter("V: " + MathFunctions.round(inverseMapping.doubleValue(), 2)
+//				+ ", Pix: " + MathFunctions.round(screenValue, 2));
+		StringPainter stringPainter = new StringPainter(
+				String.format("%.2f", MathFunctions.round(inverseMapping.doubleValue(), 2)));
 
 		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 140, 32);
 		stringPainter.setRectangle(rect);

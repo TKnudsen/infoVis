@@ -15,6 +15,7 @@ import com.github.TKnudsen.infoVis.data.barChart.BarChartDataForTesting;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontal;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
 
@@ -72,33 +73,13 @@ public class BarChartHorizontalPanelTester {
 		}
 
 		// BARCHART
-		BarChartHorizontal barChart = new BarChartHorizontal(points, colors);
+		BarChartHorizontal barChart = BarCharts.createBarChartHorizontal(points, colors);
 		barChart.setBackground(null);
-		BarCharts.addLegend(barChart, labels);
+		BarCharts.addLegend(barChart, labels, HorizontalStringAlignment.LEFT);
 
-		// SELECTION MODEL
+		// SELECTION MODEL, INTERACTION
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
-
-		// SELECTION HANDLER
-		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
-		selectionHandler.attachTo(barChart);
-		selectionHandler.setClickSelection(barChart);
-		selectionHandler.setRectangleSelection(barChart);
-
-		barChart.addChartPainter(new ChartPainter() {
-			@Override
-			public void draw(Graphics2D g2) {
-				selectionHandler.draw(g2);
-			}
-		});
-
-		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
-
-			@Override
-			public Boolean apply(Integer t) {
-				return selectionHandler.getSelectionModel().isSelected(t);
-			}
-		});
+		BarCharts.addInteraction(barChart, true, true, selectionModel);
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 

@@ -1,8 +1,12 @@
 package com.github.TKnudsen.infoVis.view.ui;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.LayoutManager;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -12,11 +16,11 @@ import javax.swing.UnsupportedLookAndFeelException;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.05
+ * @version 1.06
  */
 public class NimbusUITools {
 
@@ -67,4 +71,73 @@ public class NimbusUITools {
 
 		UIManager.put("nimbusFocus", focusColor);
 	}
+
+	/**
+	 * problem: UI sometimes produces an exception as follows:
+	 * 
+	 * java.lang.ClassCastException: class java.awt.Color cannot be cast to class
+	 * java.awt.Font (java.awt.Color and java.awt.Font are in module java.desktop of
+	 * loader 'bootstrap')
+	 * 
+	 * workaround: safe environment for JPanel creation
+	 * 
+	 * @param text
+	 * @return JPanel if successful, null instead
+	 */
+	public static JPanel createJPanel(LayoutManager layoutManager) {
+		try {
+			return new JPanel(layoutManager);
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			JPanel panel = new JPanel();
+			panel.setLayout(layoutManager);
+			return panel;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static JPanel createJPanel() {
+		return createJPanel(new FlowLayout());
+	}
+
+	/**
+	 * problem: UI sometimes produces an exception as follows:
+	 * 
+	 * java.lang.ClassCastException: class java.awt.Color cannot be cast to class
+	 * java.awt.Font (java.awt.Color and java.awt.Font are in module java.desktop of
+	 * loader 'bootstrap')
+	 * 
+	 * workaround: safe environment for JLabel creation
+	 * 
+	 * @param text
+	 * @return JLabel if successful, null instead
+	 */
+	public static JLabel createJLabel(String text) {
+		try {
+			return new JLabel(text);
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+
+		try {
+			JLabel label = new JLabel();
+			label.setText(text);
+			return label;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static JLabel createJLabel() {
+		return createJLabel("");
+	}
+
 }

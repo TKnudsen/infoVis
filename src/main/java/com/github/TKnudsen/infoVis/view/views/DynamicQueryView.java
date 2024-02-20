@@ -1,6 +1,7 @@
 package com.github.TKnudsen.infoVis.view.views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderP
 import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliders;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.TooltipHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.TitlePainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanels;
@@ -46,6 +48,18 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	private final InfoVisRangeSlider rangeSlider;
 	private static final int INTEGER_MULTIPLIER = 1000;
 
+	private boolean missingValuesAreIn = false;
+
+	/**
+	 * tool tip
+	 */
+	private ChartPainter toolTipPainter = null;
+	private boolean toolTipping = true;
+	private TooltipHandler tooltipHandler;
+
+	/**
+	 * listeners
+	 */
 	private final Collection<FilterStatusListener<T>> filterStatusListeners = new ArrayList<FilterStatusListener<T>>();
 
 	/**
@@ -75,6 +89,24 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	 */
 	public DynamicQueryView(Collection<T> data, Function<T, Number> toNumberFunction, SelectionModel<T> selectionModel,
 			int binCount) {
+		this(data, toNumberFunction, selectionModel, binCount, null, null);
+	}
+
+	/**
+	 * 
+	 * @param data             the data distribution
+	 * @param toNumberFunction the function that maps the data to numbers
+	 * @param selectionModel   the selection model is NOT meant to represent the
+	 *                         internal (or external) filter status of the dynamic
+	 *                         query (queries). It can be used to synchronize data
+	 *                         selections within the data distribution chart.
+	 * @param binCount         the number of bins for the value histogram. Default:
+	 *                         25
+	 * @param defaultColor     color of the overall data distribution
+	 * @param filterColor      color of the data that is filtered out
+	 */
+	public DynamicQueryView(Collection<T> data, Function<T, Number> toNumberFunction, SelectionModel<T> selectionModel,
+			int binCount, Color defaultColor, Color filterColor) {
 		super(new BorderLayout());
 
 		Objects.requireNonNull(data);
@@ -89,6 +121,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		// range slider
 		rangeSliderPanel = createRangeSliderPanel(data, toNumberFunction);
 		rangeSlider = rangeSliderPanel.getRangeSlider();
+		rangeSlider.getRangeSliderUI().setRangeColor(filterColor != null ? filterColor : Color.DARK_GRAY);
 
 		JPanel southGrid = new JPanel(new GridLayout(1, 1));
 		southGrid.add(rangeSliderPanel);
@@ -115,18 +148,26 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 				for (FilterStatusListener<T> filterStatusListener : filterStatusListeners)
 					filterStatusListener.filterStatusChanged(filterChangedEvent);
 
+				if (rangeSlider.isInNeutralState())
+					rangeSlider.getRangeSliderUI().setRangeColor(filterColor != null ? filterColor : Color.DARK_GRAY);
+				else
+					rangeSlider.getRangeSliderUI()
+							.setRangeColor(filterColor != null ? filterColor : Histograms.DEFAULT_COLOR);
+
 				repaint();
 			}
 		});
 
 		// vertical histogram and spacing
-		histogram = Histograms.create(data, scaledToNumberFunction, binCount, true);
+		histogram = Histograms.create(data, scaledToNumberFunction, null, null, binCount, true, defaultColor,
+				filterColor);
 		histogram.setDrawXAxis(false); // do not draw the histogram's x axis. it shows numbers according to the
 										// INTEGER_MULTIPLIER. show the axis of the slider instead
 		histogram.setDrawYAxis(true);
 		histogram.setYAxisOverlay(false);
 		histogram.setYAxisLegendWidth(Y_AXIS_WIDTH);
 		histogram.setXAxisLegendHeight(20);
+		histogram.setShowingTooltips(true);
 		Histograms.addInteraction(histogram, selectionModel, true, true);
 		addFilterStatusListener(histogram);
 
@@ -178,6 +219,10 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		this.filterStatusListeners.add(listener);
 	}
 
+	public void removeFilterStatusListener(FilterStatusListener<T> listener) {
+		this.filterStatusListeners.remove(listener);
+	}
+
 	@Override
 	/**
 	 * changes to the global filter status will be delegated to the histogram.
@@ -197,7 +242,15 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	@Override
 	public boolean test(T t) {
-		return rangeSlider.inRange(scaledToNumberFunction.apply(t).doubleValue());
+		// this is new: a range slider is only active if the two sliders are not in
+		// minimum-maximum (default) constellation
+		if (rangeSlider.isInNeutralState())
+			return true;
+
+		double d = scaledToNumberFunction.apply(t).doubleValue();
+		if (Double.isNaN(d) && missingValuesAreIn)
+			return true;
+		return rangeSlider.inRange(d);
 	}
 
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
@@ -245,5 +298,13 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	public void setMaximumRangeBound(Number value) {
 		rangeSlider.setHighValue((int) (value.doubleValue() * INTEGER_MULTIPLIER));
+	}
+
+	public boolean isMissingValuesAreIn() {
+		return missingValuesAreIn;
+	}
+
+	public void setMissingValuesAreIn(boolean missingValuesAreIn) {
+		this.missingValuesAreIn = missingValuesAreIn;
 	}
 }
