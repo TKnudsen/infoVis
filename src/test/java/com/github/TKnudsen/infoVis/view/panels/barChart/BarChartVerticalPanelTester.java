@@ -76,29 +76,9 @@ public class BarChartVerticalPanelTester {
 		barChart.setBackground(null);
 		BarCharts.addLegend(barChart, labels);
 
-		// SELECTION MODEL
+		// SELECTION MODEL, INTERACTION
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
-
-		// SELECTION HANDLER
-		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
-		selectionHandler.attachTo(barChart);
-		selectionHandler.setClickSelection(barChart);
-		selectionHandler.setRectangleSelection(barChart);
-
-		barChart.addChartPainter(new ChartPainter() {
-			@Override
-			public void draw(Graphics2D g2) {
-				selectionHandler.draw(g2);
-			}
-		});
-
-		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
-
-			@Override
-			public Boolean apply(Integer t) {
-				return selectionHandler.getSelectionModel().isSelected(t);
-			}
-		});
+		BarCharts.addInteraction(barChart, true, true, selectionModel);
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 

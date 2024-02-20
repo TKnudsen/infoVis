@@ -52,7 +52,6 @@ public class ItemRankingTableModel extends ItemTableModel {
 	/**
 	 * 
 	 * @param primaryKeys              primary keys
-	 * @param stockInformationFunction stock information
 	 * @param rankingFunction          ranking
 	 * @param scoreFunction            score function
 	 * @param uncertaintyFunction      uncertainty

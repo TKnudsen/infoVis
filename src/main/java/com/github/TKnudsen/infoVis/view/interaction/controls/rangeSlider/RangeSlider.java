@@ -130,4 +130,16 @@ public class RangeSlider extends JSlider {
 		// Set extent to set upper value.
 		setExtent(newExtent);
 	}
+
+	/**
+	 * if the slider is in its starting position (unused), with the lower slider at
+	 * the minimum and the upper slider at the maximum
+	 * 
+	 * @return
+	 */
+	public boolean isInNeutralState() {
+		if (getValue() == getMinimum() && (getValue() + getExtent() == getMaximum()))
+			return true;
+		return false;
+	}
 }

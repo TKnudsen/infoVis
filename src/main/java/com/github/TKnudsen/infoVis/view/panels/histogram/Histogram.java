@@ -43,13 +43,10 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 	private static final int DEFAULT_BIN_COUNT = 50;
 
-	private static final Color DEFAULT_COLOR = Color.GRAY;
 	private Color allDataColor;
-
-	private static final Color DEFAULT_FILTER_COLOR = Color.DARK_GRAY;
 	private Color filterColor;
-
 	private Color selectionColor = InfoVisColors.SELECTION_COLOR;
+
 	private Function<? super T, Boolean> selectedFunction;
 
 	/**
@@ -137,11 +134,11 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		// initialize and register painters
 		globalDistributionBarchartPainter = createAllDataDistributionBarchart(counts,
-				defaultColor != null ? defaultColor : DEFAULT_COLOR);
+				defaultColor != null ? defaultColor : Histograms.DEFAULT_COLOR);
 		this.addChartPainter(globalDistributionBarchartPainter, false, true);
 
 		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter(
-				filterColor != null ? filterColor : DEFAULT_FILTER_COLOR);
+				filterColor != null ? filterColor : Histograms.DEFAULT_FILTER_COLOR);
 		this.addChartPainter(filterDistributionBarchartPainter, false, true);
 
 		this.binsToValues = bars -> {
@@ -186,6 +183,7 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
 		barChart.setBackgroundPaint(null);
+		barChart.setToolTipping(false);
 		return barChart;
 	}
 
@@ -201,6 +199,10 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
 		barChart.setBackgroundPaint(null);
+		barChart.setToolTipping(false);
+
+		barChart.getPositionEncodingFunction()
+				.setMaxWorldValue(globalDistributionBarchartPainter.getPositionEncodingFunction().getMaxWorldValue());
 
 		return barChart;
 	}
@@ -218,6 +220,7 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		BarChartVerticalPainter barChart = new BarChartVerticalPainter(counts, colors);
 		barChart.setBackgroundPaint(null);
+		barChart.setToolTipping(false);
 
 		return barChart;
 	}
@@ -300,12 +303,12 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		if (selectionDistributionBarchartPainter != null)
 			removeChartPainter(selectionDistributionBarchartPainter);
 
-		if (selectedFunction == null)
+		if (getSelectedFunction() == null)
 			return;
 
 		List<T> selection = new ArrayList<T>();
 		for (T t : this.filterStatusData)
-			if (selectedFunction.apply(t))
+			if (getSelectedFunction().apply(t))
 				selection.add(t);
 
 		selectionDistributionBarchartPainter = createSelectionDistributionBarchartPainter(selection, selectionColor);
@@ -330,7 +333,7 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 		removeChartPainter(filterDistributionBarchartPainter);
 
 		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter(
-				filterColor != null ? filterColor : DEFAULT_FILTER_COLOR);
+				filterColor != null ? filterColor : Histograms.DEFAULT_FILTER_COLOR);
 		addChartPainter(1, filterDistributionBarchartPainter, false, true);
 
 		handleSelectionChanged();
@@ -338,9 +341,7 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 	@Override
 	public void selectionChanged(SelectionEvent<T> selectionEvent) {
-		this.selectedFunction = t -> selectionEvent.getSelectionModel().isSelected(t);
-
-		handleSelectionChanged();
+		this.setSelectedFunction(t -> selectionEvent.getSelectionModel().isSelected(t));
 	}
 
 	public boolean isVertical() {
@@ -386,6 +387,16 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 			this.xAxisPainter.setToolTipping(showingTooltips);
 		if (this.yAxisPainter != null)
 			this.yAxisPainter.setToolTipping(showingTooltips);
+	}
+
+	public Function<? super T, Boolean> getSelectedFunction() {
+		return selectedFunction;
+	}
+
+	protected void setSelectedFunction(Function<? super T, Boolean> selectedFunction) {
+		this.selectedFunction = selectedFunction;
+
+		handleSelectionChanged();
 	}
 
 }

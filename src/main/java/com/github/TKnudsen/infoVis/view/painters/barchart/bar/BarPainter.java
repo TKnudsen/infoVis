@@ -65,7 +65,7 @@ public abstract class BarPainter extends ChartPainter implements ITooltip {
 			g2.fill(barRectangle);
 
 		// outline
-		if (isDrawBarOutlines()) {
+		if (isDrawBarOutlines() && getBorderPaint() != null) {
 			g2.setPaint(getBorderPaint());
 			g2.setStroke(getLineStroke());
 			g2.draw(barRectangle);

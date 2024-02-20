@@ -22,11 +22,11 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.15
+ * @version 1.16
  */
 public class StringPainter extends ChartPainter implements ITooltip {
 
@@ -44,6 +44,8 @@ public class StringPainter extends ChartPainter implements ITooltip {
 			this.string = "";
 		else
 			this.string = string;
+
+		setBackgroundPaint(null);
 	}
 
 	public enum HorizontalStringAlignment {

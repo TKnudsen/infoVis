@@ -16,6 +16,10 @@ import de.javagl.selection.SelectionModels;
 
 public class Histograms {
 
+	public static final Color DEFAULT_COLOR = Color.GRAY;
+
+	public static final Color DEFAULT_FILTER_COLOR = Color.DARK_GRAY;
+
 	/**
 	 * 
 	 * @param <T>                t
@@ -51,6 +55,8 @@ public class Histograms {
 		});
 
 		selectionModel.addSelectionListener(histogram);
+		if (selectionModel.getSelection().size() > 0)
+			histogram.setSelectedFunction(selectionModel::isSelected);
 	}
 
 	public static <T> SelectionModel<T> addInteraction(Histogram<T> histogram, boolean clickSelection,

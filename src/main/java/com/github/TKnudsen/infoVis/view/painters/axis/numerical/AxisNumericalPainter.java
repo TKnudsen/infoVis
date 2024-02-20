@@ -1,7 +1,9 @@
 package com.github.TKnudsen.infoVis.view.painters.axis.numerical;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.math.BigDecimal;
 import java.util.AbstractMap;
@@ -9,12 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisCartTools;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.tools.ColorTools;
+import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncoder;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
@@ -77,6 +82,9 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 		positionEncodingFunction = new PositionEncodingFunction(this.minValue, this.maxValue, 0.0, 0.0, flipAxisValues);
 		positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
+		// this was added, due to the many cases where it had to adapted explicitly
+		this.setBackgroundPaint(null);
 	}
 
 	@Override
@@ -185,11 +193,21 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 		Number worldX = positionEncodingFunction.inverseMapping(p.getX());
 
-		StringPainter sr = new StringPainter(String.valueOf(worldX));
-		sr.setRectangle(new Rectangle2D.Double(p.getX() - 80, p.getY() - 40, 80, 40));
-		sr.setFontSize((int) Math.max(12, this.rectangle.getHeight() * 0.66));
+		String text = String.format("%.2f", MathFunctions.round(worldX.doubleValue(), 4));
+		StringPainter stringPainter = new StringPainter(text);
+		stringPainter.setFontSize((int) Math.max(12, this.rectangle.getHeight() * 0.66));
+		stringPainter.setBackgroundPaint(null);
+		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
+		stringPainter.setFontColor(getFontColor());
 
-		return sr;
+		int width = Toolkit.getDefaultToolkit().getFontMetrics(getFont()).stringWidth(text);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, width * 2.0,
+				stringPainter.getFontSize() * 1.5);
+
+//		sr.setRectangle(new Rectangle2D.Double(p.getX() - 80, p.getY() - 40, 80, 40));
+		stringPainter.setRectangle(rect);
+
+		return stringPainter;
 	}
 
 	public abstract double getAxisAlignmentCoordinate();
