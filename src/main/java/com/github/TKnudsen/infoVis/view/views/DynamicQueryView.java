@@ -47,6 +47,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	private final InfoVisRangeSliderPanel rangeSliderPanel;
 	private final InfoVisRangeSlider rangeSlider;
 	private static final int INTEGER_MULTIPLIER = 1000;
+	private static double LARGE_VALUE_MITIGATOR = 1.0;
 
 	private boolean missingValuesAreIn = false;
 
@@ -190,15 +191,21 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 			max = Math.max(max, d);
 		}
 
-		if (max > Integer.MAX_VALUE / INTEGER_MULTIPLIER)
-			throw new IllegalArgumentException("DynamicQueryView: maximum value for the dynamic query must not exceed "
-					+ Integer.MAX_VALUE / INTEGER_MULTIPLIER);
+		if (max > Integer.MAX_VALUE / INTEGER_MULTIPLIER) {
+//			throw new IllegalArgumentException("DynamicQueryView: maximum value for the dynamic query must not exceed "
+//					+ Integer.MAX_VALUE / INTEGER_MULTIPLIER);
+
+			// change LARGE_VALUE_MITIGATOR from 1.0 to...
+			double dec = Math.ceil(Math.log10(max / (Integer.MAX_VALUE / INTEGER_MULTIPLIER)));
+			LARGE_VALUE_MITIGATOR = 1 / Math.pow(10, dec);
+		}
 
 		// no need any more: range slider was replaced
 		// LookAndFeelFactory.setDefaultStyle(1);
-		return new InfoVisRangeSliderPanel((int) Math.floor(min * INTEGER_MULTIPLIER),
-				(int) Math.ceil(max * INTEGER_MULTIPLIER), (int) Math.floor(min * INTEGER_MULTIPLIER),
-				(int) Math.ceil(max * INTEGER_MULTIPLIER), min, max);
+		return new InfoVisRangeSliderPanel((int) Math.floor(min * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(max * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
+				(int) Math.floor(min * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(max * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)), min, max);
 	}
 
 	public void setTitle(String title) {
@@ -256,19 +263,20 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
 		System.err.println(
 				"DynamicQueryView:getXPositionEncodingFunction returns the range slider position encoding function which has "
-						+ INTEGER_MULTIPLIER + "times too big values");
+						+ (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER) + "times too big values");
 		return rangeSlider.getXPositionEncodingFunction();
 	}
 
 	/**
 	 * the slider is in integers, the value domain is in doubles. To compensate this
-	 * all real world doubles are multiplied by the INTEGER_MULTIPLIER;
+	 * all real world doubles are multiplied by the
+	 * LARGE_VALUE_MITIGATOR*INTEGER_MULTIPLIER;
 	 * 
 	 * @param toNumberFunction
 	 * @return
 	 */
 	private static <T> Function<T, Number> scaledToNumberFunction(Function<T, Number> toNumberFunction) {
-		return t -> toNumberFunction.apply(t).doubleValue() * INTEGER_MULTIPLIER;
+		return t -> toNumberFunction.apply(t).doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
 	}
 
 	public Histogram<T> getHistogram() {
@@ -285,19 +293,21 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	}
 
 	public Number getMinimumRangeBound() {
-		return InfoVisRangeSliders.getMinRangeBound(rangeSlider).doubleValue() / (double) INTEGER_MULTIPLIER;
+		return InfoVisRangeSliders.getMinRangeBound(rangeSlider).doubleValue()
+				/ (double) (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
 	}
 
 	public void setMinimumRangeBound(Number value) {
-		rangeSlider.setLowValue((int) (value.doubleValue() * INTEGER_MULTIPLIER));
+		rangeSlider.setLowValue((int) (value.doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)));
 	}
 
 	public Number getMaximumRangeBound() {
-		return InfoVisRangeSliders.getMaxRangeBound(rangeSlider).doubleValue() / (double) INTEGER_MULTIPLIER;
+		return InfoVisRangeSliders.getMaxRangeBound(rangeSlider).doubleValue()
+				/ (double) (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
 	}
 
 	public void setMaximumRangeBound(Number value) {
-		rangeSlider.setHighValue((int) (value.doubleValue() * INTEGER_MULTIPLIER));
+		rangeSlider.setHighValue((int) (value.doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)));
 	}
 
 	public boolean isMissingValuesAreIn() {
