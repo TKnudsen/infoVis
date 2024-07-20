@@ -138,7 +138,8 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 		for (T t : data) {
 			Paint color = getColorEncodingFunction().apply(t);
-			color = ColorTools.setAlpha(color, alpha);
+			if (color != null)
+				color = ColorTools.setAlpha(color, alpha);
 			drawValue(g2, t, color);
 		}
 

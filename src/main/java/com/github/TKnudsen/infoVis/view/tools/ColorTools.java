@@ -15,11 +15,11 @@ import java.util.Objects;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2021 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.05
+ * @version 1.06
  */
 public class ColorTools {
 
@@ -170,6 +170,46 @@ public class ColorTools {
 	 */
 	public static Color getColor(int rgb) {
 		return new Color(rgb);
+	}
+
+	/**
+	 * Calculates the brightness of a color using the NTSC formula.
+	 *
+	 * @param color The color to calculate brightness for.
+	 * @return The brightness of the color as a float between 0.0 and 255.0.
+	 */
+	public static float calculateBrightness(Color color) {
+		int r = color.getRed();
+		int g = color.getGreen();
+		int b = color.getBlue();
+
+		return (0.299f * r + 0.587f * g + 0.114f * b);
+	}
+
+	/**
+	 * Calculates the saturation of a color.
+	 *
+	 * @param color The color to calculate saturation for.
+	 * @return The saturation of the color as a float between 0.0 and 255.0.
+	 */
+	public static float calculateSaturation(Color color) {
+		float[] hsb = new float[3];
+		Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsb);
+
+		return hsb[1] * 255;
+	}
+
+	/**
+	 * Calculates the hue of a color.
+	 *
+	 * @param color The color to calculate hue for.
+	 * @return The hue of the color as a float in the range 0.0 - 360.0.
+	 */
+	public static float calculateHue(Color color) {
+		float[] hsb = new float[3];
+		Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsb);
+
+		return hsb[0] * 360.0f;
 	}
 
 	/**

@@ -324,7 +324,6 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 			return;
 
 		List<T> filterStatusData = new ArrayList<T>();
-
 		for (T t : this.data)
 			if (filterChangedEvent.getFilterStatus().test(t))
 				filterStatusData.add(t);
@@ -334,7 +333,12 @@ public abstract class Histogram<T> extends XYNumericalChartPanel<Number, Number>
 
 		filterDistributionBarchartPainter = createFilterStatusDistributionBarchartPainter(
 				filterColor != null ? filterColor : Histograms.DEFAULT_FILTER_COLOR);
-		addChartPainter(1, filterDistributionBarchartPainter, false, true);
+		for (int i = 0; i < getChartPainters().size(); i++) {
+			if (getChartPainters().get(i).equals(globalDistributionBarchartPainter)) {
+				addChartPainter(i + 1, filterDistributionBarchartPainter, false, true);
+				break;
+			}
+		}
 
 		handleSelectionChanged();
 	}
