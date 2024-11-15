@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 
@@ -26,7 +28,7 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * @author Juergen Bernard
- * @version 1.16
+ * @version 1.17
  */
 public class StringPainter extends ChartPainter implements ITooltip {
 
@@ -58,7 +60,10 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		super.draw(g2);
+		// don't may draw the background paint across the entire canvas,
+		// not only the text region
+		// super.draw(g2);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		if (rectangle == null)
 			return;
@@ -119,8 +124,15 @@ public class StringPainter extends ChartPainter implements ITooltip {
 					break;
 				}
 
-			g2.drawString(s, (int) Math.round(rectangle.getMinX() + verticalOffset),
-					(int) (rectangle.getCenterY() + font.getSize() * 0.5 + additionalHeightOffset));
+			int x = (int) Math.round(rectangle.getMinX() + verticalOffset);
+			int y = (int) (rectangle.getCenterY() + font.getSize() * 0.5 + additionalHeightOffset);
+			if (getBackgroundPaint() != null) {
+				// fill rectangle of the text, not the entire chart area
+				Rectangle rect = new Rectangle(x - 2, y - fm.getFont().getSize(), (int) fm.stringWidth(s) + 4,
+						(int) (fm.getFont().getSize() * 1.333));
+				DisplayTools.fillRectangle(g2, rect, getBackgroundPaint());
+			}
+			g2.drawString(s, x, y);
 		} else {
 			double xo = rectangle.getWidth() - font.getSize();
 			double yo = fm.stringWidth(s);
@@ -138,6 +150,14 @@ public class StringPainter extends ChartPainter implements ITooltip {
 				break;
 			}
 
+			int x = (int) (rectangle.getX() + xo * 0.5 + getFontSize());
+			int y = (int) (rectangle.getY() + yo);
+			if (getBackgroundPaint() != null) {
+				// fill rectangle of the text, not the entire chart area
+				Rectangle rect = new Rectangle(x - fm.getFont().getSize(), y - fm.stringWidth(s) - 2,
+						(int) (fm.getFont().getSize() * 1.333), (int) (fm.stringWidth(s) + 4));
+				DisplayTools.fillRectangle(g2, rect, getBackgroundPaint());
+			}
 			DisplayTools.drawRotatedString(g2, s, (float) (rectangle.getX() + xo * 0.5 + getFontSize()),
 					(float) (rectangle.getY() + yo), -Math.PI / 2);
 		}
