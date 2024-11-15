@@ -123,6 +123,9 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		rangeSliderPanel = createRangeSliderPanel(data, toNumberFunction);
 		rangeSlider = rangeSliderPanel.getRangeSlider();
 		rangeSlider.getRangeSliderUI().setRangeColor(filterColor != null ? filterColor : Color.DARK_GRAY);
+		rangeSlider.setMinimumSize(new Dimension(0, InfoVisRangeSlider.SLIDER_POINTER_WIDTH));
+		rangeSlider.setPreferredSize(new Dimension(0, InfoVisRangeSlider.SLIDER_POINTER_WIDTH));
+		rangeSlider.setMaximumSize(new Dimension(0, InfoVisRangeSlider.SLIDER_POINTER_WIDTH));
 
 		JPanel southGrid = new JPanel(new GridLayout(1, 1));
 		southGrid.add(rangeSliderPanel);
@@ -167,7 +170,7 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		histogram.setDrawYAxis(true);
 		histogram.setYAxisOverlay(false);
 		histogram.setYAxisLegendWidth(Y_AXIS_WIDTH);
-		histogram.setXAxisLegendHeight(20);
+		histogram.setXAxisLegendHeight(20); // has no effect, looks like as for 30
 		histogram.setShowingTooltips(true);
 		Histograms.addInteraction(histogram, selectionModel, true, true);
 		addFilterStatusListener(histogram);

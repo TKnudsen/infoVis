@@ -1,5 +1,6 @@
 package com.github.TKnudsen.infoVis.view.interaction.handlers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
@@ -45,8 +46,16 @@ public class FilterStatusHanders {
 	 */
 	public static <T> Predicate<T> loadFilterStatus(Collection<T> elements, Function<T, String> identifyer,
 			String fileName) {
-		ComplexDataObject cdo = JSONLoader.loadFromFile(fileName);
 		BooleanParser booleanParser = new BooleanParser();
+
+		ComplexDataObject tmp = null;
+		try {
+			tmp = JSONLoader.loadFromFile(fileName, false);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		ComplexDataObject cdo = tmp;
 
 		return t -> {
 			Object b = cdo.getAttribute(identifyer.apply(t));

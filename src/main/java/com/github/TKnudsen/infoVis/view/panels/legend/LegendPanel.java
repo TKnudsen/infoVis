@@ -26,6 +26,10 @@ public class LegendPanel extends JPanel {
 
 	private LayoutManager layoutManager = new GridLayout(0, 1);
 	private List<LegendItemPanel> legendItemPanels;
+
+	/**
+	 * selection model that contains the scoring functions as string identifiers
+	 */
 	private SelectionModel<String> selectionModel = SelectionModels.create();
 
 	public LegendPanel() {
