@@ -1,6 +1,5 @@
 package com.github.TKnudsen.infoVis.view.ui.slider;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -21,18 +20,20 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
+
 /**
  * <p>
  * InfoVis
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018 Christian Ritter, Juergen Bernard,
+ * Copyright: (c) 2018-2024 Christian Ritter, Juergen Bernard,
  * https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class SliderUIColored extends BasicSliderUI {
 
@@ -74,7 +75,7 @@ public class SliderUIColored extends BasicSliderUI {
 		Stroke oldStroke = g2d.getStroke();
 		float f = slider.getValue() / (float) (slider.getMaximum());
 		g2d.setPaint(colorMapfunction.apply(f));
-		g2d.setStroke(new BasicStroke((float) thumbRect.getWidth() / 2));
+		g2d.setStroke(BasicStrokes.get((float) thumbRect.getWidth() / 2));
 		if (slider.getOrientation() == SwingConstants.HORIZONTAL) {
 			g2d.drawLine(trackRect.x, trackRect.y + trackRect.height / 2, trackRect.x + trackRect.width,
 					trackRect.y + trackRect.height / 2);
@@ -118,7 +119,7 @@ public class SliderUIColored extends BasicSliderUI {
 //
 //		// draw shape with the color
 //		Stroke old = g2d.getStroke();
-//		g2d.setStroke(new BasicStroke(2f));
+//		g2d.setStroke(BasicStrokes.get(2f));
 //		g2d.setPaint(colorMapfunction.apply(f).darker());
 //		g2d.draw(shape);
 //		g2d.setStroke(old);

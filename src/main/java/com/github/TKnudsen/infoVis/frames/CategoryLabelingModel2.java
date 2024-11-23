@@ -172,7 +172,7 @@ public abstract class CategoryLabelingModel2 implements Function<String, String>
 			// System.out.println(rawCategoryies);
 
 			SortedSet<String> raws = new TreeSet<>(rawCategoryies.getAttributes());
-			//raws.remove("ID");
+			// raws.remove("ID");
 			raws.remove("Description");
 			raws.remove("Name");
 
@@ -302,8 +302,8 @@ public abstract class CategoryLabelingModel2 implements Function<String, String>
 				if (!labelAlphabet.contains(mapping.get(raw)))
 					removeSet.add(raw);
 			for (String raw : removeSet) {
-				System.err.println(this.getClass().getSimpleName() + ": removing raw tag [" + raw
-						+ "] because its label [" + mapping.get(raw) + "] is not part of the fixed label alphabet");
+				System.err.println(this.getClass().getSimpleName() + "loadMapping: removing raw tag [" + raw
+						+ "] because its label [" + mapping.get(raw) + "] not part of the fixed alphabet");
 				mapping.remove(raw);
 			}
 		}

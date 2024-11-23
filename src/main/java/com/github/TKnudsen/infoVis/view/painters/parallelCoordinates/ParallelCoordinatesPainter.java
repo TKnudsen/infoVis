@@ -28,6 +28,7 @@ import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
@@ -53,10 +54,10 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
- * @version 1.03
+ * @version 1.04
  */
 public class ParallelCoordinatesPainter<T> extends ChartPainter
 		implements IXPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>, IShapeSelection<T>,
@@ -73,7 +74,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	protected float alpha = 1.0f;
 
 	// settable size of dots
-	private double pointSize = Double.NaN;
+	private float pointSize = Float.NaN;
 
 	private boolean tooltipping = true;
 
@@ -157,10 +158,10 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 				double worldX = x;
 				double worldY = worldPositionMappingY.apply(t).doubleValue();
-				double xP = xPositionEncodingFunction.apply(worldX);
-				double yP = yPositionEncodingFunctions.get(x).apply(worldY);
+				float xP = xPositionEncodingFunction.apply(worldX).floatValue();
+				float yP = yPositionEncodingFunctions.get(x).apply(worldY).floatValue();
 
-				Point2D point = new Point2D.Double(xP, yP);
+				Point2D point = new Point2D.Float(xP, yP);
 				points[x] = point;
 			}
 
@@ -183,7 +184,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		Color c = g2.getColor();
 
 		// point size
-		double pointSize = this.pointSize;
+		float pointSize = this.pointSize;
 
 		for (int i = 0; i < data.size(); i++) {
 			Point2D[] point = screenPoints.get(i);
@@ -206,7 +207,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 			// new concept with the size-encoding
 			if (Double.isNaN(pointSize))
-				pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
+				pointSize = sizeEncodingFunction.apply(data.get(i)).floatValue();
 			if (Double.isNaN(pointSize))
 				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
@@ -235,11 +236,11 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 				// new concept with the size-encoding
 				if (Double.isNaN(pointSize))
-					pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
+					pointSize = sizeEncodingFunction.apply(data.get(i)).floatValue();
 				if (Double.isNaN(pointSize))
 					pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
-				drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
+				drawIndividualPoint(g2, point, pointSize, colorToPaint, selected);
 			}
 
 		g2.setColor(c);
@@ -264,26 +265,27 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 			Point2D point = pointArray[i];
 
 			float size = pointSize * 1.33f;
-//			float sizeSelected = Math.max(size + 1, pointSize * 1.66f);
-
+			
 			if (selected) {
 				// line
 				if (lastPoint != null) {
-					DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-							new BasicStroke((float) (pointSize + 2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
+					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
+							(float) point.getY(),
+							BasicStrokes.get(pointSize + 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
 							selectionPaint);
-					DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-							new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
+					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
+							(float) point.getY(),
+							BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 				}
 
 				// point
-//				DisplayTools.drawPoint(g2, point.getX(), point.getY(), sizeSelected, selectionPaint, true);
 				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
 			} else {
 				// line
 				if (lastPoint != null)
-					DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-							new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
+					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
+							(float) point.getY(),
+							BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 
 				// point
 				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
@@ -293,8 +295,8 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		}
 	}
 
-	public static double calculatePointSize(double viewWidth, double viewHeight) {
-		return Math.max(1, Math.min(viewWidth, viewHeight) * 0.006);
+	public static float calculatePointSize(double viewWidth, double viewHeight) {
+		return (float) Math.max(1, Math.min(viewWidth, viewHeight) * 0.006);
 	}
 
 	public void setRectangle(Rectangle2D rectangle) {
@@ -313,7 +315,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		if (size % 2 == 1)
 			size -= 1;
 		size += 1;
-		this.stroke = new BasicStroke((float) size);
+		this.stroke = BasicStrokes.get((float) size);
 
 		if (!externalXPositionEncodingFunction)
 			updateXPositionEncoding(rectangle);
@@ -407,11 +409,11 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		this.overplottingMitigation = dynamicAlphaAdjustment;
 	}
 
-	public double getPointSize() {
+	public float getPointSize() {
 		return pointSize;
 	}
 
-	public void setPointSize(double pointSize) {
+	public void setPointSize(float pointSize) {
 		this.pointSize = pointSize;
 	}
 
@@ -465,7 +467,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		if (p == null)
 			return null;
 
-		double radius = this.pointSize;
+		float radius = this.pointSize;
 		if (Double.isNaN(pointSize))
 			radius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
 
