@@ -14,6 +14,7 @@ import java.util.List;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
@@ -29,11 +30,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * </p>
  * 
  * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2016-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
  * @author Juergen Bernard
- * @version 2.03
+ * @version 2.04
  */
 public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPositionEncoding {
 
@@ -65,7 +66,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		g2.setStroke(stroke);
 		if (chartRectangle != null && chartRectangle.getHeight() > 0) {
 			float stokeWidth = (float) (chartRectangle.getHeight() * 0.01);
-			g2.setStroke(new BasicStroke(stokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
+			g2.setStroke(BasicStrokes.get(stokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
 		}
 
 		drawLevel(g2, medScreen, getPaint());

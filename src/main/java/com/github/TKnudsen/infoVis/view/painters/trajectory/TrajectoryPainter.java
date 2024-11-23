@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotPainter;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
@@ -25,10 +26,10 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * </p>
  * 
  * <p>
- * Copyright: (c) 2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2019-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
- * @version 1.02
+ * @version 1.03
  */
 public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 
@@ -54,10 +55,10 @@ public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 			// line
 			if (lastPoint != null) {
 				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-						new BasicStroke((float) (pointSize + 2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
+						BasicStrokes.get((float) (pointSize + 2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
 						Color.BLACK);
 				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-						new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
+						BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 
 			}
 
@@ -68,7 +69,7 @@ public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 			// line
 			if (lastPoint != null)
 				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-						new BasicStroke(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
+						BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
 
 			// point
 			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);

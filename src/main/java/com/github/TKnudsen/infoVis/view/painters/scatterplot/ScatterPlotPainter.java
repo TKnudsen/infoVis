@@ -1,6 +1,5 @@
 package com.github.TKnudsen.infoVis.view.painters.scatterplot;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
@@ -28,6 +27,7 @@ import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
@@ -54,10 +54,10 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * </p>
  * 
  * <p>
- * Copyright: (c) 2018-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Copyright: (c) 2018-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
  * </p>
  * 
- * @version 2.10
+ * @version 2.11
  */
 public class ScatterPlotPainter<T> extends ChartPainter
 		implements IXPositionEncoding, IYPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>,
@@ -286,7 +286,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		if (size % 2 == 1)
 			size -= 1;
 		size += 1;
-		this.stroke = new BasicStroke((float) size);
+		this.stroke = BasicStrokes.get((float) size);
 
 		if (!externalXPositionEncodingFunction)
 			updateXPositionEncoding(rectangle);

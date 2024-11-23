@@ -47,11 +47,11 @@ public class DisplayTools {
 	public final static BasicStroke standardLightDashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT,
 			BasicStroke.JOIN_MITER, 10.0f, lightDashPattern, 0);
 
-	public final static BasicStroke mediumStroke = new BasicStroke(2);
-	public final static BasicStroke thickStroke = new BasicStroke(3);
-	public final static BasicStroke veryThickStroke = new BasicStroke(5);
-	public final static BasicStroke ultraThickStroke = new BasicStroke(7);
-	public final static BasicStroke megaThickStroke = new BasicStroke(9);
+	public final static BasicStroke mediumStroke = BasicStrokes.get(2);
+	public final static BasicStroke thickStroke = BasicStrokes.get(3);
+	public final static BasicStroke veryThickStroke = BasicStrokes.get(5);
+	public final static BasicStroke ultraThickStroke = BasicStrokes.get(7);
+	public final static BasicStroke megaThickStroke = BasicStrokes.get(9);
 
 	/**
 	 * 
@@ -90,8 +90,8 @@ public class DisplayTools {
 		Stroke s = g2.getStroke();
 
 		if (fill) {
-			// faster variant using lines with strokes
-			Stroke thisStroke = new BasicStroke((float) (2 * radius), BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+			// faster variant using lines with strokes, compared to ellipses
+			Stroke thisStroke = BasicStrokes.get((float) (2 * radius), BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
 			g2.setStroke(thisStroke);
 
 			if (radius < 0) {
@@ -183,7 +183,7 @@ public class DisplayTools {
 		Stroke s = g2.getStroke();
 		Paint c = g2.getPaint();
 
-		g2.setStroke(new BasicStroke(strokeWidth));
+		g2.setStroke(BasicStrokes.get(strokeWidth));
 		g2.setPaint(color);
 
 		if (fill)
@@ -210,6 +210,22 @@ public class DisplayTools {
 	}
 
 	/**
+	 * Avoid using numbers for better rendering performance.
+	 * 
+	 * @param g2 g2
+	 * @param x1 x1
+	 * @param y1 y1
+	 * @param x2 x2
+	 * @param y2 y2
+	 */
+	public static void drawLine(Graphics2D g2, float x1, float y1, float x2, float y2) {
+		Objects.requireNonNull(g2);
+
+		g2.draw(new Line2D.Float(x1, y1, x2, y2));
+	}
+
+	/**
+	 * Avoid using numbers for better rendering performance.
 	 * 
 	 * @param g2 g2
 	 * @param x1 x1
@@ -219,11 +235,6 @@ public class DisplayTools {
 	 */
 	public static void drawLine(Graphics2D g2, Number x1, Number y1, Number x2, Number y2) {
 		Objects.requireNonNull(g2);
-
-		Objects.requireNonNull(x1);
-		Objects.requireNonNull(y1);
-		Objects.requireNonNull(x2);
-		Objects.requireNonNull(y2);
 
 		g2.draw(new Line2D.Float(x1.floatValue(), y1.floatValue(), x2.floatValue(), y2.floatValue()));
 	}
@@ -245,7 +256,7 @@ public class DisplayTools {
 		Stroke s = g2.getStroke();
 		Paint c = g2.getPaint();
 
-		g2.setStroke(new BasicStroke(strokeWidth));
+		g2.setStroke(BasicStrokes.get(strokeWidth));
 		g2.setPaint(color);
 
 		drawLine(g2, x1, y1, x2, y2);
@@ -265,6 +276,31 @@ public class DisplayTools {
 	 * @param color  color
 	 */
 	public static void drawLine(Graphics2D g2, Number x1, Number y1, Number x2, Number y2, Stroke stroke, Paint color) {
+		Objects.requireNonNull(g2);
+
+		Stroke s = g2.getStroke();
+		Paint c = g2.getPaint();
+
+		g2.setStroke(stroke);
+		g2.setPaint(color);
+
+		drawLine(g2, x1, y1, x2, y2);
+
+		g2.setPaint(c);
+		g2.setStroke(s);
+	}
+	
+	/**
+	 * 
+	 * @param g2     g2
+	 * @param x1     x1
+	 * @param y1     y1
+	 * @param x2     x2
+	 * @param y2     y2
+	 * @param stroke stroke
+	 * @param color  color
+	 */
+	public static void drawLine(Graphics2D g2, float x1, float y1, float x2, float y2, Stroke stroke, Paint color) {
 		Objects.requireNonNull(g2);
 
 		Stroke s = g2.getStroke();
@@ -391,7 +427,7 @@ public class DisplayTools {
 		drawPoint(g2, centerX, centerY, radius + 1, Color.LIGHT_GRAY, false);
 		drawLine(g2, centerX - radius / 3.0, centerY, centerX + radius / 3.0, centerY);
 
-		g2.setStroke(new BasicStroke(2));
+		g2.setStroke(BasicStrokes.get(2));
 		g2.setColor(Color.LIGHT_GRAY);
 
 		g2.setPaint(c);

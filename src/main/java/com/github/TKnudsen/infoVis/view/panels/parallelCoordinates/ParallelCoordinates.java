@@ -108,7 +108,7 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		this.parallelCoordinatesPainter.setXPositionEncodingFunction(getXPositionEncodingFunction());
 		this.parallelCoordinatesPainter.setYPositionEncodingFunctions(getYPositionEncodingFunctions());
 
-		this.parallelCoordinatesPainter.setSizeEncodingFunction(new SizeEncodingFunction<>(this));
+		this.parallelCoordinatesPainter.setSizeEncodingFunction(new SizeEncodingFunction<>(this, 0.66, 1.0));
 	}
 
 	@Override
