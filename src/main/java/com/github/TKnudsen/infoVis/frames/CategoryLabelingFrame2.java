@@ -481,7 +481,7 @@ public class CategoryLabelingFrame2 extends SVGFrame {
 		if (milliseconds < 0)
 			return "---";
 		Duration duration = Duration.ofMillis(milliseconds);
-		String milli = duration.toMillisPart() + "";
+		String milli = duration.toMillis() + "";
 		while (milli.length() < 3)
 			milli = milli + "0";
 		long seconds = (long) (milliseconds / 1000.0);

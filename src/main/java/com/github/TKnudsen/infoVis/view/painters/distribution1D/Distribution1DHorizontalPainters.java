@@ -27,13 +27,13 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorE
 public class Distribution1DHorizontalPainters {
 
 	public static Distribution1DHorizontalPainter<Double> createHorizontalForDoubles(List<Double> data) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 
 		return new Distribution1DHorizontalPainter<>(data, worldToDoubleMapping, null);
 	}
 
 	public static Distribution1DHorizontalPainter<Double> createHorizontalForDoubles(List<Double> data, Color color) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 
 		return new Distribution1DHorizontalPainter<>(data, worldToDoubleMapping,
 				new ConstantColorEncodingFunction<>(color));
@@ -41,7 +41,7 @@ public class Distribution1DHorizontalPainters {
 
 	public static Distribution1DHorizontalPainter<Double> createHorizontalForDoubles(List<Double> data,
 			List<? extends Paint> colors) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 		ColorEncodingFunction<Double> colorMapping = new ColorEncodingFunction<Double>(data, colors);
 
 		return new Distribution1DHorizontalPainter<>(data, worldToDoubleMapping, colorMapping);
@@ -49,14 +49,14 @@ public class Distribution1DHorizontalPainters {
 
 	public static Distribution1DHorizontalHighlightPainter<Double> createHorizontalHighlightForDoubles(
 			List<Double> data) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 
 		return new Distribution1DHorizontalHighlightPainter<>(data, worldToDoubleMapping, null);
 	}
 
 	public static Distribution1DHorizontalHighlightPainter<Double> createHorizontalHighlightForDoubles(
 			List<Double> data, Color color) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 
 		return new Distribution1DHorizontalHighlightPainter<>(data, worldToDoubleMapping,
 				new ConstantColorEncodingFunction<>(color));
@@ -64,7 +64,7 @@ public class Distribution1DHorizontalPainters {
 
 	public static Distribution1DHorizontalHighlightPainter<Double> createHorizontalHighlightForDoubles(
 			List<Double> data, List<? extends Paint> colors) {
-		Function<Double, Double> worldToDoubleMapping = p -> p;
+		Function<Number, Double> worldToDoubleMapping = p -> p.doubleValue();
 		ColorEncodingFunction<Double> colorMapping = new ColorEncodingFunction<Double>(data, colors);
 
 		return new Distribution1DHorizontalHighlightPainter<>(data, worldToDoubleMapping, colorMapping);

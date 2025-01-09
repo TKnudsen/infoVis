@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -18,6 +19,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.bufferedImage.BufferedImagePainter;
 import com.github.TKnudsen.infoVis.view.painters.donutchart.DonutChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.number.ScorePainter;
 import com.github.TKnudsen.infoVis.view.painters.primitives.CirclePainter;
@@ -87,6 +89,7 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 		// conditional formatting
 		Object headerValue = table.getColumnModel().getColumn(column).getHeaderValue();
+
 		if (!ignoreRectangleEncodigForAttributes.contains(headerValue))
 			if (encodeNumbersWithRectangleSize && table.getModel() instanceof RelativeCellValueProvider)
 				if (value instanceof Number)
@@ -94,6 +97,26 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 						component = setRectangleSizeEncoding(table, component, row, column, GlyphPlacement.Replace);
 					else
 						component = setRectangleSizeEncoding(table, component, row, column, GlyphPlacement.Left);
+				else {
+				}
+			else {
+			}
+		else {
+			if (value != null && value instanceof BufferedImage) {
+				JPanel cell = new JPanel(new BorderLayout());
+				cell.setBackground(component.getBackground());
+
+				JPanel panel = new JPanel(new GridLayout(1, 1));
+				panel.setBackground(component.getBackground());
+
+				TableCellChartPanel tccp = new TableCellChartPanel(
+						new BufferedImagePainter((BufferedImage) value, true));
+				tccp.setBackground(null);
+				panel.add(tccp);
+
+				component = panel;
+			}
+		}
 
 		// tool tipping
 		if (enableToolTipping)
@@ -295,6 +318,9 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 				return;
 			else if (toolTipValue instanceof Number)
 				toolTipText = String.valueOf(MathFunctions.round(((Number) toolTipValue).doubleValue(), decimalPlaces));
+			else if (toolTipValue instanceof BufferedImage)
+				toolTipText = "Icon: w=" + ((BufferedImage) toolTipValue).getWidth() + ", h="
+						+ ((BufferedImage) toolTipValue).getHeight();
 			else
 				toolTipText = toolTipValue.toString();
 
