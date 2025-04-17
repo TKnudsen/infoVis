@@ -31,8 +31,10 @@ public class TableCellCheckBoxRenderer extends JCheckBox implements TableCellRen
 
 		this.setHorizontalAlignment(SwingConstants.CENTER);
 
-		if (value == null || !(value instanceof Boolean))
+		if (value == null || !(value instanceof Boolean)) {
+			System.err.println("Value: " + value);
 			throw new IllegalArgumentException();
+		}
 
 		if (table == null) {
 			return this;

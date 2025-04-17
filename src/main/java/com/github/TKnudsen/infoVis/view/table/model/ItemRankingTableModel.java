@@ -20,8 +20,8 @@ public class ItemRankingTableModel extends ItemTableModel {
 	private final Set<String> primaryKeys;
 
 	private final Function<String, Integer> rankingFunction;
-	private final Function<String, Double> scoreFunction;
-	private final Function<String, Double> uncertaintyFunction;
+	private final Function<String, Float> scoreFunction;
+	private final Function<String, Float> uncertaintyFunction;
 
 //	/**
 //	 * additional columns to be displayed
@@ -60,7 +60,7 @@ public class ItemRankingTableModel extends ItemTableModel {
 	 * @param primaryKeyAttribute      primaryKeyAttribute
 	 */
 	public ItemRankingTableModel(Set<String> primaryKeys, Function<String, Integer> rankingFunction,
-			Function<String, Double> scoreFunction, Function<String, Double> uncertaintyFunction,
+			Function<String, Float> scoreFunction, Function<String, Float> uncertaintyFunction,
 			boolean showPrimaryKey, List<ItemTableColumnData> itemTableColumnData, String primaryKeyAttribute) {
 
 		super(Integer.MAX_VALUE, "SUM");
@@ -161,7 +161,7 @@ public class ItemRankingTableModel extends ItemTableModel {
 			data[y][i++] = (rank == null) ? "n.a." : rank;
 
 			// score
-			Double sc = scoreFunction.apply(primaryKey);
+			Float sc = scoreFunction.apply(primaryKey);
 			data[y][i++] = (sc == null) ? "n.a." : MathFunctions.round(sc, 4);
 
 			// uncertainty

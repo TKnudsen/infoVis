@@ -105,7 +105,8 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		drawChart(g2);
+		// already executed by the XYAxisCategoricalChartPainter
+		// drawChart(g2);
 	}
 
 	@Override
