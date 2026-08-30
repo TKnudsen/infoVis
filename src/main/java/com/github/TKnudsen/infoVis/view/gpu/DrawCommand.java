@@ -2,7 +2,7 @@ package com.github.TKnudsen.infoVis.view.gpu;
 
 import java.util.Objects;
 
-import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLWorking.PrimitiveType;
+import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLIndexed.PrimitiveType;
 
 /**
  * <p>

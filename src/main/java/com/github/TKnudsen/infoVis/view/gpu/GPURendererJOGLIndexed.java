@@ -13,17 +13,25 @@ import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * <p>
- * InfoVis GPU Renderer
- * 
- * High-performance GPU-accelerated renderer designed for Swing integration.
- * Uses JOGL for proper AWT/Swing compatibility.
+ * Indexed multi-primitive GPU renderer: batches heterogeneous
+ * {@link DrawCommand draw commands} (points, lines, triangles) into a single
+ * fixed-size, pre-allocated vertex/index buffer pair ({@code MAX_VERTICES}
+ * capacity, allocated once) and issues them via {@code glDrawElements}.
+ * Suited to geometry whose upper bound is known ahead of time and where
+ * indexed (shared-vertex) primitives are worthwhile.
+ * </p>
+ *
+ * <p>
+ * Contrast with {@link GPURendererJOGLSprite}, which renders points only from
+ * a growable buffer via {@code glDrawArrays} -- no indexing, no fixed upper
+ * bound.
  * </p>
  *
  * @author Juergen Bernard (with AI assistance)
  * @version 1.01
  * @since 2026
  */
-public class GPURendererJOGLWorking {
+public class GPURendererJOGLIndexed {
 
 	// ==================== PRIMITIVE TYPES ====================
 
@@ -51,7 +59,7 @@ public class GPURendererJOGLWorking {
 	private int vaoId;
 	private int vboId;
 	private int iboId;
-	private ShaderProgramWorking shaderProgram;
+	private ShaderProgramIndexed shaderProgram;
 
 	private boolean initialized = false;
 	private GL3 gl; // Cached GL context
@@ -86,7 +94,7 @@ public class GPURendererJOGLWorking {
 
 	// ==================== INITIALIZATION ====================
 
-	public GPURendererJOGLWorking() {
+	public GPURendererJOGLIndexed() {
 		// Allocate CPU-side buffers
 		vertexBuffer = Buffers.newDirectFloatBuffer(MAX_VERTICES * VERTEX_SIZE);
 		indexBuffer = Buffers.newDirectIntBuffer(MAX_INDICES);
@@ -139,7 +147,7 @@ public class GPURendererJOGLWorking {
 		gl.glBindVertexArray(0);
 
 		// Create shader AFTER VAO setup
-		shaderProgram = new ShaderProgramWorking(gl);
+		shaderProgram = new ShaderProgramIndexed(gl);
 
 		// Enable blending for transparency
 		gl.glEnable(GL3.GL_BLEND);

@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLWorking;
+import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLIndexed;
 import com.github.TKnudsen.infoVis.view.gpu.RenderMode;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -18,7 +18,7 @@ import com.jogamp.opengl.GLAutoDrawable;
  * <p>
  * Paints a scatter plot using visual mapping functions to map data (represented
  * as T) into the visual space. Supports both CPU-based (Java2D) and GPU-based
- * (OpenGL, via {@link GPURendererJOGLWorking}) rendering modes for optimal
+ * (OpenGL, via {@link GPURendererJOGLIndexed}) rendering modes for optimal
  * performance.
  * </p>
  *
@@ -40,7 +40,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 
 	private static final Logger LOGGER = Logger.getLogger(ScatterPlotIndexedGPUPainter.class.getName());
 
-	private GPURendererJOGLWorking gpuRenderer;
+	private GPURendererJOGLIndexed gpuRenderer;
 
 	public ScatterPlotIndexedGPUPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {
@@ -66,7 +66,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 	public void initGL(GLAutoDrawable drawable) {
 		try {
 			if (gpuRenderer == null) {
-				gpuRenderer = new GPURendererJOGLWorking();
+				gpuRenderer = new GPURendererJOGLIndexed();
 			}
 
 			gpuRenderer.init(drawable);

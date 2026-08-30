@@ -12,17 +12,24 @@ import com.jogamp.opengl.GLAutoDrawable;
 
 /**
  * <p>
- * InfoVis GPU Renderer
+ * Points-only GPU renderer: accumulates points into {@code PointBatch}es
+ * backed by a growable vertex buffer ({@link #growBuffer(int)},
+ * {@link #setMaxPoints(int)}) and issues them via {@code glDrawArrays} -- no
+ * indexing, no fixed upper bound on point count. Suited to scatterplot-style
+ * point clouds whose size isn't known upfront.
+ * </p>
  *
- * High-performance GPU-accelerated renderer designed for Swing integration.
- * Uses JOGL for proper AWT/Swing compatibility.
+ * <p>
+ * Contrast with {@link GPURendererJOGLIndexed}, which batches heterogeneous
+ * indexed primitives (points, lines, triangles) into a single fixed-size,
+ * pre-allocated buffer via {@code glDrawElements}.
  * </p>
  *
  * @author Juergen Bernard (with AI assistance)
  * @version 1.02
  * @since 2026
  */
-public class GPURendererJOGLGLJPanel {
+public class GPURendererJOGLSprite {
 
 	private static final int FLOATS_PER_VERTEX = 6;
 	private static final int BYTES_PER_FLOAT = 4;
@@ -31,7 +38,7 @@ public class GPURendererJOGLGLJPanel {
 	private int vboId = 0;
 	private Object contextOwner = null; // Track which context owns our VAO
 
-	private ShaderProgramGLJPanel shader;
+	private ShaderProgramSprite shader;
 	private FloatBuffer vertexBuffer;
 	private int pointCount = 0;
 	private final float[] projection = new float[16];
@@ -85,7 +92,7 @@ public class GPURendererJOGLGLJPanel {
 		if (shader != null) {
 			shader.dispose();
 		}
-		shader = new ShaderProgramGLJPanel(gl);
+		shader = new ShaderProgramSprite(gl);
 
 		// Create VAO/VBO in this context
 		createOrRecreateVaoVbo(gl);

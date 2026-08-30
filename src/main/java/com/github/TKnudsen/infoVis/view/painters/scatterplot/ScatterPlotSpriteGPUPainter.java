@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLGLJPanel;
+import com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLSprite;
 import com.github.TKnudsen.infoVis.view.gpu.RenderMode;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -17,7 +17,7 @@ import com.jogamp.opengl.GLAutoDrawable;
  * <p>
  * Paints a scatter plot using visual mapping functions to map data (represented
  * as T) into the visual space. Supports both CPU-based (Java2D) and GPU-based
- * (OpenGL, via {@link GPURendererJOGLGLJPanel}) rendering modes for optimal
+ * (OpenGL, via {@link GPURendererJOGLSprite}) rendering modes for optimal
  * performance.
  * </p>
  *
@@ -36,7 +36,7 @@ public class ScatterPlotSpriteGPUPainter<T> extends AbstractGPUScatterPlotPainte
 
 	private static final Logger LOGGER = Logger.getLogger(ScatterPlotSpriteGPUPainter.class.getName());
 
-	private GPURendererJOGLGLJPanel gpuRenderer;
+	private GPURendererJOGLSprite gpuRenderer;
 
 	public ScatterPlotSpriteGPUPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {
@@ -60,7 +60,7 @@ public class ScatterPlotSpriteGPUPainter<T> extends AbstractGPUScatterPlotPainte
 			GL3 gl = drawable.getGL().getGL3();
 
 			if (gpuRenderer == null) {
-				gpuRenderer = new GPURendererJOGLGLJPanel();
+				gpuRenderer = new GPURendererJOGLSprite();
 			}
 			// Pre-size for the worst case (every point selected -> a halo + a point
 			// vertex each) so the first few frames of a large dataset don't pay for
