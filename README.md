@@ -7,7 +7,7 @@ Information Visualization library for the visual-interactive analysis of data - 
 The library is organized under `com.github.TKnudsen.infoVis`, split roughly into a rendering layer and a data/window layer:
 
 - **`view/painters/`** - stateless, `Graphics2D`-based renderers for individual chart types (scatterplot, barchart, boxplot, piechart, donutchart, parallelCoordinates, trajectory, radial, number, string, grid, axis, ...) plus shared drawing primitives.
-- **`view/panels/`** - interactive Swing `JPanel` wrappers around the painters above, adding selection, zoom/pan, tooltips and axis handling on top of the pure rendering logic. One subpackage per chart type, mirroring `view/painters/`.
+- **`view/panels/`** - interactive Swing `JPanel` wrappers around the painters above, adding selection, zoom/pan, tooltips and axis handling on top of the pure rendering logic. Mostly one subpackage per chart type, mirroring `view/painters/`; a few panel-level distinctions don't have a painter-side counterpart, e.g. `barchart` (categorical bar charts) and `histogram` (numeric distributions) are separate panel packages sharing the same `painters/barchart` rendering classes, with their common panel infrastructure factored into `bins`.
 - **`view/visualChannels/`** - encoding functions that map data to visual variables: `color/` (including the `colormaps/` collection - quantitative, qualitative and bivariate color maps), `position/` and `size/`.
 - **`view/interaction/`** - selection models, mouse/lasso selection handlers, sliders and other interactive controls used by the panels, including `labeling/` - a human-in-the-loop workflow for mapping raw category strings to a controlled alphabet (with persistence and optional ChatGPT-assisted suggestions).
 - **`view/viewTransformation/`** - dimensionality reduction and coordinate transformation pipelines feeding position-encoded views (e.g. scatterplots).
@@ -24,7 +24,7 @@ Maven:
 <dependency>
     <groupId>com.github.tknudsen</groupId>
     <artifactId>info-vis</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
