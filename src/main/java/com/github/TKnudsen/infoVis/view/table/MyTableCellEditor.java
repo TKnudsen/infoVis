@@ -8,6 +8,13 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.TableCellEditor;
 
+/**
+ * <p>
+ * Minimal borderless {@link JTextField}-based table cell editor.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class MyTableCellEditor extends AbstractCellEditor implements TableCellEditor {
 
 	/**

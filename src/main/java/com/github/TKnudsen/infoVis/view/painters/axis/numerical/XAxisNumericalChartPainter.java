@@ -10,16 +10,8 @@ import com.github.TKnudsen.infoVis.view.painters.axis.IXAxis;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
+ * @since 2016
  */
 public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisPainter implements IXAxis<X> {
 
@@ -65,8 +57,10 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 		if (xAxisChartRectangleLayout.isDrawXAxis())
 			drawXAxis(g2);
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setColor(c);
 	}
@@ -154,6 +148,12 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 		return this.xAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
+	/**
+	 * Lets the chart painter(s) begin superimposed with the x axis, not (only) in
+	 * its north.
+	 * 
+	 * @param overlayOfXAxis
+	 */
 	public void setXAxisOverlay(boolean overlayOfXAxis) {
 		this.xAxisChartRectangleLayout.setXAxisOverlay(overlayOfXAxis);
 	}

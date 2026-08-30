@@ -10,19 +10,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorE
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Creates vertical distribution 1D painters.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-202s Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.03
+ * @since 2016
  */
 public class Distribution1DVerticalPainters {
 

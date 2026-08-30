@@ -5,6 +5,14 @@ import java.awt.GridLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+/**
+ * <p>
+ * Panel that constrains its nested component to a square (1:1) aspect ratio,
+ * centering it within the available bounds.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class QuadraticPanel extends JPanel {
 
 	/**
@@ -31,7 +39,7 @@ public class QuadraticPanel extends JPanel {
 			x0 += ((width - min) * 0.5);
 
 		if (height > min)
-			y0 = (int) ((height - min) * 0.5);
+			y0 += (int) ((height - min) * 0.5);
 
 		super.setBounds(x0, y0, min, min);
 	}

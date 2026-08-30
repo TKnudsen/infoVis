@@ -7,20 +7,8 @@ import java.util.List;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 
 /**
- * 
- * <p>
- * InfoVis
- * </p>
- * 
- * Creates pie charts
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.01
- *
+ * @since 2018
  */
 public class PieCharts {
 

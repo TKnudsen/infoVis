@@ -6,6 +6,13 @@ import java.util.function.Function;
 
 import de.javagl.selection.SelectionModel;
 
+/**
+ * <p>
+ * Static factory and accessor helpers for {@link DynamicQueryView}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class DynamicQueryViews {
 
 	public static <T> DynamicQueryView<T> createDynamicQuery(Collection<T> data, Function<T, Number> toNumberFunction,
@@ -40,11 +47,11 @@ public class DynamicQueryViews {
 	}
 
 	public static <T> Color getAllDataColor(DynamicQueryView<T> view) {
-		return view.getHistogram().getAllDataColor();
+		return view.getHistogram().getGlobalColor();
 	}
 
 	public static <T> void setAllDataColor(DynamicQueryView<T> view, Color allDataColor) {
-		view.getHistogram().setAllDataColor(allDataColor);
+		view.getHistogram().setGlobalColor(allDataColor);
 	}
 
 	public static <T> Color getFilterColor(DynamicQueryView<T> view) {

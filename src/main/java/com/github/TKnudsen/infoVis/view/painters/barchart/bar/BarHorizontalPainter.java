@@ -11,19 +11,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints a single horizontal bar
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.04
+ * @since 2016
  */
 public class BarHorizontalPainter extends BarPainter implements IXPositionEncoding {
 

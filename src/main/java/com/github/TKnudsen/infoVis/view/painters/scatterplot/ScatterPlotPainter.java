@@ -9,17 +9,14 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
-import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
-import com.github.TKnudsen.ComplexDataObject.model.tools.Threads;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -27,15 +24,17 @@ import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
-import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokeTools;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.OverplottingMitigationTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
+import com.github.TKnudsen.infoVis.view.visualChannels.IOverplottingMitigation;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
-import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctions;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
@@ -43,31 +42,25 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints a scatter plot using visual mapping functions to map data (represented
  * as T) into the visual space. This is done in two steps. First, T is mapped to
  * Double for the x and the y position. Second, the two Doubles are mapped into
  * the visual space.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @version 2.11
+ *
+ * @version 2.12
+ * @since 2018
  */
 public class ScatterPlotPainter<T> extends ChartPainter
 		implements IXPositionEncoding, IYPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>,
-		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, ITooltip {
+		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, ITooltip, IOverplottingMitigation {
 
 	// input data
-	protected final List<T> data;
+	final List<T> data;
 
 	// screen coordinates of input data
-	protected final List<Point2D> screenPoints = new CopyOnWriteArrayList<>();
+	protected final List<Point2D> screenPoints;
+	private final ReadWriteLock screenPointsLock = new ReentrantReadWriteLock();
 
 	// overplotting mitigation
 	protected boolean overplottingMitigation = false;
@@ -78,6 +71,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	private boolean tooltipping = true;
 	private int toolTipWidth = 150;
+	private int toolTipHeight = 30;
 
 	// position mapping of data
 	private IPositionEncodingFunction xPositionEncodingFunction;
@@ -92,8 +86,8 @@ public class ScatterPlotPainter<T> extends ChartPainter
 	private Function<? super T, ? extends Paint> colorMapping;
 
 	// maps a T to individual double values which can be mapped to x and y position
-	private final Function<? super T, Double> worldPositionMappingX;
-	private final Function<? super T, Double> worldPositionMappingY;
+	private Function<? super T, Double> worldPositionMappingX;
+	private Function<? super T, Double> worldPositionMappingY;
 
 	private Function<? super T, Double> sizeEncodingFunction = new ConstantSizeEncodingFunction<>(3);
 
@@ -105,171 +99,208 @@ public class ScatterPlotPainter<T> extends ChartPainter
 
 	private boolean refreshingDataPoints;
 
+	/**
+	 * @param data                  the data elements to plot
+	 * @param colorMapping          maps each element to its point color; a null
+	 *                              result falls back to the painter's own paint
+	 * @param worldPositionMappingX maps each element to its x value in data (world)
+	 *                              space
+	 * @param worldPositionMappingY maps each element to its y value in data (world)
+	 *                              space
+	 */
 	public ScatterPlotPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {
 		this.colorMapping = colorMapping;
 		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingY = worldPositionMappingY;
 
-		this.data = Collections.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingX, true));
+		this.data = Collections.unmodifiableList(VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, true));
+
+		this.screenPoints = new ArrayList<Point2D>(data.size());
 
 		initializePositionEncodingFunctions();
 
 		refreshDataPoints();
 	}
 
+	/**
+	 * Builds the default x/y position encoding functions from the world position
+	 * mappings and registers this painter to refresh its screen points whenever
+	 * either one changes.
+	 */
 	private void initializePositionEncodingFunctions() {
-		List<Double> xValues = new ArrayList<>();
-		List<Double> yValues = new ArrayList<>();
-
-		for (T t : data) {
-			xValues.add(worldPositionMappingX.apply(t).doubleValue());
-			yValues.add(worldPositionMappingY.apply(t).doubleValue());
-		}
-
-		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
-		StatisticsSupport yStatistics = new StatisticsSupport(yValues);
-
-		this.xPositionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d,
-				1d);
+		this.xPositionEncodingFunction = PositionEncodingFunctions.createPositionEncodingFunction(data,
+				worldPositionMappingX, 0d, 1d, false, getClass().getSimpleName() + " (x-axis)");
 		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 
-		this.yPositionEncodingFunction = new PositionEncodingFunction(yStatistics.getMin(), yStatistics.getMax(), 0d,
-				1d, true);
+		this.yPositionEncodingFunction = PositionEncodingFunctions.createPositionEncodingFunction(data,
+				worldPositionMappingY, 0d, 1d, true, getClass().getSimpleName() + " (y-axis)");
 		this.yPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
+	/**
+	 * Recomputes {@link #screenPoints} from the current data and position encoding
+	 * functions under the write lock, and updates the overplotting-mitigation alpha
+	 * if enabled. Safe to call while {@link #draw(Graphics2D)} is concurrently
+	 * reading a prior snapshot.
+	 */
 	protected void refreshDataPoints() {
-		refreshingDataPoints = true;
-		screenPoints.clear();
+		screenPointsLock.writeLock().lock();
 
-		if (data == null || chartRectangle == null)
-			return;
+		try {
+			refreshingDataPoints = true;
+			screenPoints.clear();
 
-		for (int i = 0; i < data.size(); i++) {
+			if (data == null || chartRectangle == null)
+				return;
 
-			T t = data.get(i);
-			double worldX = worldPositionMappingX.apply(t).doubleValue();
-			double worldY = worldPositionMappingY.apply(t).doubleValue();
-			double x = xPositionEncodingFunction.apply(worldX);
-			double y = yPositionEncodingFunction.apply(worldY);
-			Point2D point = new Point2D.Double(x, y);
-
-			screenPoints.add(point);
-		}
-
-		if (overplottingMitigation)
-			alpha = Math.max(0.05f, Math.min(1.0f, (screenPoints.size() / 5000.0f)));
-
-		refreshingDataPoints = false;
-	}
-
-	@Override
-	public void draw(Graphics2D g2) {
-
-		if (chartRectangle == null)
-			return;
-
-		Color c = g2.getColor();
-
-		// point size
-		double pointSize = this.pointSize;
-
-		for (int i = 0; i < data.size(); i++) {
-			boolean selected = false;
-			if (selectedFunction != null) {
-				Boolean apply = selectedFunction.apply(data.get(i));
-				if (apply != null)
-					selected = apply.booleanValue();
-			}
-
-			if (drawSelectedLast && selected)
-				continue;
-
-			Point2D point = getScreenPoint(i);
-			if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
-				continue;
-
-			Paint colorToPaint = colorMapping.apply(data.get(i));
-			if (colorToPaint == null)
-				colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
-
-			// new concept with the size-encoding
-			if (Double.isNaN(pointSize))
-				pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
-			if (Double.isNaN(pointSize))
-				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
-
-			drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
-		}
-
-		if (drawSelectedLast) // second loop
 			for (int i = 0; i < data.size(); i++) {
-				boolean selected = false;
-				if (selectedFunction != null) {
-					Boolean apply = selectedFunction.apply(data.get(i));
-					if (apply != null)
-						selected = apply.booleanValue();
-				}
 
-				if (!selected)
-					continue;
+				T t = data.get(i);
+				double worldX = worldPositionMappingX.apply(t).doubleValue();
+				double worldY = worldPositionMappingY.apply(t).doubleValue();
+				double x = xPositionEncodingFunction.apply(worldX);
+				double y = yPositionEncodingFunction.apply(worldY);
 
-				Point2D point = getScreenPoint(i);
-				if (point == null || Double.isNaN(point.getX()) || Double.isNaN(point.getY()))
-					continue;
-
-				Paint colorToPaint = colorMapping.apply(data.get(i));
-				if (colorToPaint == null)
-					colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
-
-				// new concept with the size-encoding
-				if (Double.isNaN(pointSize))
-					pointSize = sizeEncodingFunction.apply(data.get(i)).doubleValue();
-				if (Double.isNaN(pointSize))
-					pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
-
-				drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
+				screenPoints.add(new Point2D.Double(x, y));
 			}
 
-		g2.setColor(c);
+			if (overplottingMitigation)
+				alpha = OverplottingMitigationTools.computeAlpha(screenPoints.size());
+
+		} finally {
+			refreshingDataPoints = false;
+			screenPointsLock.writeLock().unlock();
+		}
 	}
 
 	/**
-	 * Creating screenPoints may take some time. In the past some exceptions have
-	 * been thrown due to accessing the unfinished list of screenpoints. This method
-	 * provides an access method that is more safe.
-	 * 
-	 * @param i index, according to data
-	 * @return
+	 * Draws all points in two passes when a selection exists and
+	 * {@link #drawSelectedLast} is set: unselected points first, then selected
+	 * points on top, so a selection is never visually obscured by unselected points
+	 * drawn after it.
 	 */
-	private Point2D getScreenPoint(int i) {
-		while (refreshingDataPoints) {
-			Threads.sleep(10);
-		}
+	@Override
+	public void draw(Graphics2D g2) {
+		if (chartRectangle == null || data == null || data.isEmpty())
+			return;
+
+		screenPointsLock.readLock().lock();
 		try {
-			return screenPoints.get(i);
-		} catch (Exception e) {
-			return null;
+
+			final int n = data.size();
+			final List<Point2D> points = screenPoints;
+
+			// if screenPoints are currently being rebuilt, just skip this frame.
+			if (points == null || points.size() != n)
+				return;
+
+			final Color oldColor = g2.getColor();
+
+			// get point size once
+			double ps = this.pointSize;
+			if (Double.isNaN(ps))
+				ps = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+
+			// cache flags
+			final boolean hasSelection = (selectedFunction != null);
+			final boolean twoPhase = drawSelectedLast && hasSelection;
+
+			// collect selected indices for second pass
+			List<Integer> selectedIndices = twoPhase ? new ArrayList<>(Math.min(128, n / 10)) : Collections.emptyList();
+
+			// ---- FIRST PASS: draw non-selected ----
+			for (int i = 0; i < n; i++) {
+				final Point2D p = points.get(i);
+				if (p == null || Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
+					continue;
+
+				boolean selected = false;
+				if (hasSelection) {
+					Boolean b = selectedFunction.apply(data.get(i));
+					selected = (b != null && b.booleanValue());
+				}
+
+				if (twoPhase && selected) {
+					selectedIndices.add(i);
+					continue;
+				}
+
+				Paint paint = colorMapping != null ? colorMapping.apply(data.get(i)) : null;
+				if (paint == null)
+					paint = ColorTools.setAlpha(getPaint(), alpha);
+
+				double size = ps;
+				double sEnc = sizeEncodingFunction != null ? sizeEncodingFunction.apply(data.get(i)) : Double.NaN;
+				if (!Double.isNaN(sEnc))
+					size = sEnc;
+
+				drawPoint(g2, p, (float) size, paint, selected);
+			}
+
+			// ---- SECOND PASS: draw selected last ----
+			if (twoPhase && !selectedIndices.isEmpty()) {
+				for (int idx : selectedIndices) {
+					final Point2D p = points.get(idx);
+					if (p == null || Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
+						continue;
+
+					Paint paint = colorMapping != null ? colorMapping.apply(data.get(idx)) : null;
+					if (paint == null)
+						paint = ColorTools.setAlpha(getPaint(), alpha);
+
+					double size = ps;
+					double sEnc = sizeEncodingFunction != null ? sizeEncodingFunction.apply(data.get(idx)) : Double.NaN;
+					if (!Double.isNaN(sEnc))
+						size = sEnc;
+
+					drawPoint(g2, p, (float) size, paint, true);
+				}
+			}
+
+			g2.setColor(oldColor);
+
+		} finally {
+			screenPointsLock.readLock().unlock();
 		}
 	}
 
-	protected void drawIndividualPoint(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint,
-			boolean selected) {
+	/**
+	 * Draws a single point at {@code point}; if {@code selected}, first draws a
+	 * larger point in {@link #selectionPaint} behind it as a selection outline.
+	 */
+	protected void drawPoint(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint, boolean selected) {
 
 		float size = pointSize * 1.33f;
 		if (selected) {
 			double pointSizeBig = Math.max(pointSize * 1.66f, pointSize + 2);
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSizeBig, selectionPaint, true);
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
-		} else
-			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
+			g2.setPaint(selectionPaint);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSizeBig, true);
+			g2.setPaint(pointPaint);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, true);
+		} else {
+			g2.setPaint(pointPaint);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, true);
+		}
 	}
 
+	/**
+	 * @return the default point radius used whenever {@link #pointSize} has not
+	 *         been set explicitly: 0.6% of the shorter of
+	 *         {@code viewWidth}/{@code viewHeight}, at least 3 pixels
+	 */
 	public static double calculatePointSize(double viewWidth, double viewHeight) {
 		return Math.max(3, Math.min(viewWidth, viewHeight) * 0.006);
 	}
 
+	/**
+	 * Derives the outline stroke width from the new rectangle size, updates the
+	 * internal x/y position encoding functions' pixel range (unless an external one
+	 * was supplied via
+	 * {@link #setXPositionEncodingFunction(IPositionEncodingFunction)} /
+	 * {@link #setYPositionEncodingFunction(IPositionEncodingFunction)}), and
+	 * refreshes the screen points.
+	 */
 	public void setRectangle(Rectangle2D rectangle) {
 		super.setRectangle(rectangle);
 
@@ -286,7 +317,7 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		if (size % 2 == 1)
 			size -= 1;
 		size += 1;
-		this.stroke = BasicStrokes.get((float) size);
+		this.stroke = BasicStrokeTools.get((float) size);
 
 		if (!externalXPositionEncodingFunction)
 			updateXPositionEncoding(rectangle);
@@ -296,6 +327,10 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		refreshDataPoints();
 	}
 
+	/**
+	 * Updates the x position encoding function's pixel range to match
+	 * {@code rectangle}.
+	 */
 	private final void updateXPositionEncoding(Rectangle2D rectangle) {
 		if (rectangle == null)
 			return;
@@ -304,6 +339,10 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.xPositionEncodingFunction.setMaxPixel(rectangle.getMaxX());
 	}
 
+	/**
+	 * Updates the y position encoding function's pixel range to match
+	 * {@code rectangle}.
+	 */
 	private final void updateYPositionEncoding(Rectangle2D rectangle) {
 		if (rectangle == null)
 			return;
@@ -312,97 +351,216 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.yPositionEncodingFunction.setMaxPixel(rectangle.getMaxY());
 	}
 
+	/**
+	 * Finds the data element whose screen point is nearest {@code p}, within a
+	 * {@link #calculatePointSize} search box (Manhattan distance, not a true
+	 * circle), and returns a small label painter for it - or null if tooltips are
+	 * disabled, no element is close enough, or a data refresh is currently in
+	 * progress.
+	 */
 	@Override
 	public ChartPainter getTooltip(Point p) {
-		if (!tooltipping)
+		if (!tooltipping || p == null) {
 			return null;
+		}
 
-		if (chartRectangle == null)
+		final Rectangle2D cr = chartRectangle;
+		if (cr == null) {
 			return null;
+		}
 
-		double maxRadius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+		// If points are being refreshed, do not attempt tooltip computation.
+		// (Optional; you already have the lock, but this avoids unnecessary work.)
+		if (refreshingDataPoints) {
+			return null;
+		}
 
-		double px = p.getX();
-		double py = p.getY();
-
-		List<Entry<Double, T>> pointsInRange = new ArrayList<>();
-
-		for (int i = 0; i < screenPoints.size(); i++) {
-			T worldCord = data.get(i);
-			double dX = Math.abs(screenPoints.get(i).getX() - px);
-			if (dX < maxRadius) {
-				double dY = Math.abs(screenPoints.get(i).getY() - py);
-				if (dY < maxRadius)
-					pointsInRange.add(new AbstractMap.SimpleEntry<Double, T>(dX + dY, worldCord));
+		screenPointsLock.readLock().lock();
+		try {
+			if (data == null || data.isEmpty()) {
+				return null;
 			}
+			if (screenPoints == null || screenPoints.isEmpty()) {
+				return null;
+			}
+
+			final int n = data.size();
+			if (screenPoints.size() != n) {
+				// inconsistent snapshot (e.g., refresh in progress); skip this tool tip event
+				return null;
+			}
+
+			final double maxRadius = calculatePointSize(cr.getWidth(), cr.getHeight());
+			final double px = p.getX();
+			final double py = p.getY();
+
+			double bestDist = Double.POSITIVE_INFINITY;
+			T bestElement = null;
+
+			for (int i = 0; i < n; i++) {
+				final Point2D sp = screenPoints.get(i);
+				if (sp == null) {
+					continue;
+				}
+
+				final double dx = Math.abs(sp.getX() - px);
+				if (dx >= maxRadius) {
+					continue;
+				}
+
+				final double dy = Math.abs(sp.getY() - py);
+				if (dy >= maxRadius) {
+					continue;
+				}
+
+				final double dist = dx + dy;
+				if (dist < bestDist) {
+					final T candidate = data.get(i);
+					if (candidate != null) { // critical for preventing NPE later
+						bestDist = dist;
+						bestElement = candidate;
+					}
+				}
+			}
+
+			if (bestElement == null) {
+				return null;
+			}
+
+			String toolTipString;
+			if (toolTipMapping != null) {
+				toolTipString = toolTipMapping.apply(bestElement);
+			} else {
+				// Defensive: world mappings may still return null
+				Double wx = worldPositionMappingX != null ? worldPositionMappingX.apply(bestElement) : null;
+				Double wy = worldPositionMappingY != null ? worldPositionMappingY.apply(bestElement) : null;
+
+				if (wx == null || wy == null || wx.isNaN() || wy.isNaN()) {
+					return null;
+				}
+
+				toolTipString = MathFunctions.round(wx.doubleValue(), 2) + ", "
+						+ MathFunctions.round(wy.doubleValue(), 2);
+			}
+
+			if (toolTipString == null) {
+				return null;
+			}
+
+			StringPainter stringPainter = new StringPainter(toolTipString);
+
+			Rectangle2D rect = ToolTipTools.createToolTipRectangle(cr, p, toolTipWidth, toolTipHeight);
+			stringPainter.setRectangle(rect);
+
+			stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
+			stringPainter.setFontColor(Color.WHITE);
+			stringPainter.setFontSize(15);
+
+			return stringPainter;
+
+		} finally {
+			screenPointsLock.readLock().unlock();
 		}
-
-		if (pointsInRange.size() == 0)
-			return null;
-
-		Entry<Double, T> first = Collections.min(pointsInRange, Entry.comparingByKey());
-		T worldCord = first.getValue();
-
-		String toolTipString = "";
-
-		if (toolTipMapping != null) {
-			toolTipString = toolTipMapping.apply(worldCord);
-		} else {
-			double worldX = worldPositionMappingX.apply(worldCord).doubleValue();
-			double worldY = worldPositionMappingX.apply(worldCord).doubleValue();
-
-			toolTipString = MathFunctions.round(worldX, 2) + ", " + MathFunctions.round(worldY, 2);
-		}
-
-		StringPainter stringPainter = new StringPainter(toolTipString);
-
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, toolTipWidth, 32);
-		stringPainter.setRectangle(rect);
-
-		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
-		stringPainter.setFontColor(Color.WHITE);
-		stringPainter.setFontSize(15);
-
-		return stringPainter;
 	}
 
+	/**
+	 * @return whether overplotting mitigation (data-density-based point alpha) is
+	 *         enabled
+	 */
+	@Override
 	public boolean isAlphaAdjustment() {
 		return overplottingMitigation;
 	}
 
+	/**
+	 * Enables/disables overplotting mitigation and refreshes the screen points so
+	 * the change takes effect immediately.
+	 */
+	@Override
 	public void setAlphaAdjustment(boolean dynamicAlphaAdjustment) {
 		this.overplottingMitigation = dynamicAlphaAdjustment;
 
 		refreshDataPoints();
 	}
 
+	/**
+	 * @return the explicitly set point radius, or {@link Double#NaN} if none was
+	 *         set (in which case {@link #calculatePointSize} is used)
+	 */
 	public double getPointSize() {
 		return pointSize;
 	}
 
+	/**
+	 * @param pointSize fixed point radius to use instead of the value computed by
+	 *                  {@link #calculatePointSize}; pass {@link Double#NaN} to
+	 *                  clear it
+	 */
 	public void setPointSize(double pointSize) {
 		this.pointSize = pointSize;
 	}
 
+	/** @return the current per-element color mapping function */
 	public Function<? super T, ? extends Paint> getColorMapping() {
 		return colorMapping;
 	}
 
+	/** @return the current per-element x (world) value mapping function */
+	public Function<? super T, Double> getWorldPositionMappingX() {
+		return worldPositionMappingX;
+	}
+
+	/**
+	 * @param worldPositionMappingX new per-element x (world) value mapping
+	 *                              function; screen points are recomputed
+	 *                              immediately
+	 */
+	public void setWorldPositionMappingX(Function<? super T, Double> worldPositionMappingX) {
+		this.worldPositionMappingX = worldPositionMappingX;
+
+		refreshDataPoints();
+	}
+
+	/** @return the current per-element y (world) value mapping function */
+	public Function<? super T, Double> getWorldPositionMappingY() {
+		return worldPositionMappingY;
+	}
+
+	/**
+	 * @param worldPositionMappingY new per-element y (world) value mapping
+	 *                              function; screen points are recomputed
+	 *                              immediately
+	 */
+	public void setWorldPositionMappingY(Function<? super T, Double> worldPositionMappingY) {
+		this.worldPositionMappingY = worldPositionMappingY;
+
+		refreshDataPoints();
+	}
+
+	/** @return whether this painter responds to tooltip requests */
 	@Override
 	public boolean isToolTipping() {
 		return tooltipping;
 	}
 
+	/**
+	 * @param tooltipping whether this painter should respond to tooltip requests
+	 */
 	@Override
 	public void setToolTipping(boolean tooltipping) {
 		this.tooltipping = tooltipping;
 	}
 
+	/** Delegates to {@link #getElementsInShape(Shape)}. */
 	@Override
 	public List<T> getElementsInRectangle(RectangularShape rectangle) {
 		return getElementsInShape(rectangle);
 	}
 
+	/**
+	 * @return the data elements whose current screen position falls inside
+	 *         {@code shape}
+	 */
 	@Override
 	public List<T> getElementsInShape(Shape shape) {
 		if (shape == null)
@@ -425,14 +583,23 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		return elements;
 	}
 
+	/**
+	 * @return the data elements whose current screen position falls inside a circle
+	 *         of radius {@link #getPointSize()} (or {@link #calculatePointSize} if
+	 *         unset) centered on {@code p}
+	 */
 	@Override
 	public List<T> getElementsAtPoint(Point p) {
 		if (p == null)
 			return null;
 
+		final Rectangle2D cr = chartRectangle;
+		if (cr == null)
+			return null;
+
 		double radius = this.pointSize;
 		if (Double.isNaN(pointSize))
-			radius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			radius = calculatePointSize(cr.getWidth(), cr.getHeight());
 
 		Ellipse2D circle = new Ellipse2D.Double();
 		circle.setFrameFromCenter(p.getX(), p.getY(), p.getX() + radius, p.getY() + radius);
@@ -454,21 +621,35 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		return elements;
 	}
 
+	/**
+	 * @param sizeEncodingFunction maps each element to its point size; a
+	 *                             {@link Double#NaN} result falls back to the
+	 *                             default point size
+	 */
 	@Override
 	public void setSizeEncodingFunction(Function<? super T, Double> sizeEncodingFunction) {
 		this.sizeEncodingFunction = sizeEncodingFunction;
 	}
 
+	/**
+	 * @param selectedFunction reports whether a given element is currently selected
+	 */
 	@Override
 	public void setSelectedFunction(Function<? super T, Boolean> selectedFunction) {
 		this.selectedFunction = selectedFunction;
 	}
 
+	/** @param colorEncodingFunction maps each element to its point color */
 	@Override
 	public void setColorEncodingFunction(Function<? super T, ? extends Paint> colorEncodingFunction) {
 		this.colorMapping = colorEncodingFunction;
 	}
 
+	/**
+	 * Replaces the x position encoding function with an externally supplied one and
+	 * marks it as external, so {@link #setRectangle(Rectangle2D)} no longer
+	 * overwrites its pixel range automatically.
+	 */
 	@Override
 	public void setXPositionEncodingFunction(IPositionEncodingFunction xPositionEncodingFunction) {
 		this.xPositionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
@@ -479,6 +660,11 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.externalXPositionEncodingFunction = true;
 	}
 
+	/**
+	 * Replaces the y position encoding function with an externally supplied one and
+	 * marks it as external, so {@link #setRectangle(Rectangle2D)} no longer
+	 * overwrites its pixel range automatically.
+	 */
 	@Override
 	public void setYPositionEncodingFunction(IPositionEncodingFunction yPositionEncodingFunction) {
 		this.yPositionEncodingFunction.removePositionEncodingFunctionListener(myPositionEncodingFunctionListener);
@@ -489,36 +675,72 @@ public class ScatterPlotPainter<T> extends ChartPainter
 		this.externalYPositionEncodingFunction = true;
 	}
 
+	/**
+	 * @return the function used to render a tooltip label for an element, or null
+	 *         to fall back to the raw x/y world coordinates
+	 */
 	public Function<? super T, String> getToolTipMapping() {
 		return toolTipMapping;
 	}
 
+	/**
+	 * @param toolTipMapping maps an element to its tooltip label; null falls back
+	 *                       to the raw x/y world coordinates
+	 */
 	public void setToolTipMapping(Function<? super T, String> toolTipMapping) {
 		this.toolTipMapping = toolTipMapping;
 	}
 
+	/**
+	 * @return whether selected points are drawn in a second pass on top of
+	 *         unselected ones
+	 */
 	public boolean isDrawSelectedLast() {
 		return drawSelectedLast;
 	}
 
+	/**
+	 * @param drawSelectedLast whether selected points should be drawn in a second
+	 *                         pass on top of unselected ones
+	 */
 	public void setDrawSelectedLast(boolean drawSelectedLast) {
 		this.drawSelectedLast = drawSelectedLast;
 	}
 
+	/**
+	 * @return the paint used for the selection outline drawn behind a selected
+	 *         point
+	 */
 	public Paint getSelectionPaint() {
 		return selectionPaint;
 	}
 
+	/**
+	 * @param selectionPaint paint used for the selection outline drawn behind a
+	 *                       selected point
+	 */
 	public void setSelectionPaint(Paint selectionPaint) {
 		this.selectionPaint = selectionPaint;
 	}
 
+	/** @return the width of the tooltip label rectangle, in pixels */
 	public int getToolTipWidth() {
 		return toolTipWidth;
 	}
 
+	/** @param toolTipWidth width of the tooltip label rectangle, in pixels */
 	public void setToolTipWidth(int toolTipWidth) {
 		this.toolTipWidth = toolTipWidth;
+	}
+
+	/** @return the height of the tooltip label rectangle, in pixels */
+	public int getToolTipHeight() {
+		return toolTipHeight;
+	}
+
+	/** @param toolTipHeight height of the tooltip label rectangle, in pixels */
+	public void setToolTipHeight(int toolTipHeight) {
+		this.toolTipHeight = toolTipHeight;
 	}
 
 }

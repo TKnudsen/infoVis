@@ -6,6 +6,14 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.tools.GridTools;
 
+/**
+ * <p>
+ * Static factory arranging a collection of {@link ChartPainter}s into a
+ * quadratic {@link Grid2DPaintersChartPanel}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Grid2DPaintersChartPanels {
 	public static <T extends ChartPainter> Grid2DPaintersChartPanel<T> create(Collection<T> chartPainters,
 			Class<? extends T> cls) {

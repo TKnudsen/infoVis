@@ -10,6 +10,16 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.data.table.ItemTableColumnData;
 import com.github.TKnudsen.infoVis.data.table.ItemTableColumnData.ColumnPosition;
 
+/**
+ * <p>
+ * {@link ItemTableModel} built from a set of primary keys plus ranking,
+ * score, and uncertainty functions, with optional extra
+ * {@link ItemTableColumnData} columns positioned west/east of the core
+ * columns.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class ItemRankingTableModel extends ItemTableModel {
 
 	/**

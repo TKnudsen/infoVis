@@ -3,6 +3,14 @@ package com.github.TKnudsen.infoVis.view.interaction.event;
 import java.util.EventObject;
 import java.util.function.Predicate;
 
+/**
+ * <p>
+ * Event fired when a filter predicate changes, carrying the new filter
+ * status.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class FilterChangedEvent<T> extends EventObject {
 
 	/**

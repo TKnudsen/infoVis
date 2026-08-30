@@ -15,33 +15,24 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
-import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctions;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints the distribution of numerical values.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.06
+ * @since 2016
  */
 public abstract class Distribution1DPainter<T> extends ChartPainter
 		implements IColorEncoding<T>, IRectangleSelection<T>, ITooltip {
@@ -86,7 +77,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	public Distribution1DPainter(Collection<T> values, Function<? super T, ? extends Number> worldToDoubleMapping) {
 		if (values != null)
 			this.data = Collections
-					.unmodifiableCollection(VisualMappings.sanityCheckFilter(values, worldToDoubleMapping, true));
+					.unmodifiableCollection(VisualMappingTools.sanityCheckFilter(values, worldToDoubleMapping, true));
 		else
 			this.data = new ArrayList<>();
 		if (data.isEmpty())
@@ -100,14 +91,8 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	}
 
 	protected final void initializePositionEncodingFunction() {
-		List<Double> xValues = new ArrayList<>();
-
-		for (T t : data)
-			xValues.add(getWorldToDoubleMapping().apply(t).doubleValue());
-
-		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
-
-		positionEncodingFunction = new PositionEncodingFunction(xStatistics.getMin(), xStatistics.getMax(), 0d, 1d);
+		positionEncodingFunction = PositionEncodingFunctions.createPositionEncodingFunction(data,
+				getWorldToDoubleMapping(), 0d, 1d, getClass().getSimpleName());
 
 		// painter has no state information, no need to add a
 		// PositionEncodingFunctionListener to the PositionEncodingFunction
@@ -174,7 +159,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		}
 
 		if (!Double.isNaN(worldX)) {
-			double screen = getPositionEncodingFunction().apply(worldX);
+			float screen = getPositionEncodingFunction().apply(worldX).floatValue();
 
 			if (paint == null)
 				paint = ColorTools.setAlpha(getPaint(), alpha);
@@ -186,7 +171,7 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 		g2.setColor(c);
 	}
 
-	public abstract void drawLine(Graphics2D g2, Double positionValue, double capSize);
+	public abstract void drawLine(Graphics2D g2, float positionValue, double capSize);
 
 	public boolean isDynamicAlpha() {
 		return dynamicAlpha;

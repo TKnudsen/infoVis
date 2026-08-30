@@ -17,20 +17,8 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 /**
- * 
- * <p>
- * InfoVis
- * </p>
- * 
- * Creates parallel coordinates panels
- * 
- * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
- *
+ * @since 2018
  */
 public class ParallelCoordinatesFactory {
 

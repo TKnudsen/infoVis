@@ -6,11 +6,16 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import java.util.function.Function;
 
+import com.github.TKnudsen.infoVis.view.interaction.IPanning;
+import com.github.TKnudsen.infoVis.view.interaction.IZooming;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.LassoSelectionHandler;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.MouseButton;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.PanInteractionHandler;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.ZoomInteractionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFunction;
 
@@ -20,20 +25,8 @@ import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
 /**
- * 
- * <p>
- * InfoVis
- * </p>
- * 
- * Creates Scatterplots and/or adds interaction.
- * 
- * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.06
- *
+ * @since 2018
  */
 public class ScatterPlots {
 
@@ -45,6 +38,14 @@ public class ScatterPlots {
 		Function<Double[], Double> worldToDoubleMappingX = p -> p[0];
 		Function<Double[], Double> worldDoubleMappingY = p -> p[1];
 		return new ScatterPlot<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
+	}
+
+	public static ScatterPlotIndexedGPU<Double[]> createForDoublesGPU(List<Double[]> points,
+			List<? extends Paint> colors) {
+		ColorEncodingFunction<Double[]> colorMapping = new ColorEncodingFunction<Double[]>(points, colors);
+		Function<Double[], Double> worldToDoubleMappingX = p -> p[0];
+		Function<Double[], Double> worldDoubleMappingY = p -> p[1];
+		return new ScatterPlotIndexedGPU<>(points, colorMapping, worldToDoubleMappingX, worldDoubleMappingY);
 	}
 
 	public static ScatterPlot<Point2D> createForPoints(List<Point2D> points, List<? extends Paint> colors) {
@@ -70,7 +71,7 @@ public class ScatterPlots {
 			Function<? super T, Double> worldPositionMappingY, Function<? super T, ? extends Paint> colorMapping,
 			boolean alarmWhenDataSanitiCheckFails, SelectionModel<T> selectionModel) {
 
-		List<T> filteredData = VisualMappings.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
+		List<T> filteredData = VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
 				alarmWhenDataSanitiCheckFails);
 
 		ScatterPlot<T> scatterPlot = new ScatterPlot<T>(filteredData, colorMapping, worldPositionMappingX,
@@ -92,7 +93,55 @@ public class ScatterPlots {
 		return scatterPlot;
 	}
 
+	/**
+	 * most general form for creating a scatter plot.
+	 * 
+	 * @param <T>                           t
+	 * @param data                          the data
+	 * @param worldPositionMappingX         x
+	 * @param worldPositionMappingY         y
+	 * @param colorMapping                  color mapping
+	 * @param alarmWhenDataSanitiCheckFails boolean
+	 * @param selectionModel                selection model
+	 * @return scatter plot
+	 */
+	public static <T> ScatterPlotIndexedGPU<T> createGPU(List<T> data,
+			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY,
+			Function<? super T, ? extends Paint> colorMapping, boolean alarmWhenDataSanitiCheckFails,
+			SelectionModel<T> selectionModel) {
+
+		List<T> filteredData = VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY,
+				alarmWhenDataSanitiCheckFails);
+
+		ScatterPlotIndexedGPU<T> scatterPlot = new ScatterPlotIndexedGPU<T>(filteredData, colorMapping,
+				worldPositionMappingX, worldPositionMappingY);
+
+		scatterPlot.setSizeEncodingFunction(new SizeEncodingFunction<>(scatterPlot, SCALE, MIN_SIZE));
+
+		scatterPlot.setDrawXAxis(true);
+		scatterPlot.setDrawYAxis(true);
+
+		scatterPlot.setXAxisOverlay(false);
+		scatterPlot.setYAxisOverlay(false);
+
+		if (selectionModel != null)
+			addInteraction(scatterPlot, selectionModel, true, true, true);
+		else
+			addInteraction(scatterPlot, true, true, true);
+
+		return scatterPlot;
+	}
+
 	public static <T> SelectionModel<T> addInteraction(ScatterPlot<T> scatterPlot, boolean clickSelection,
+			boolean rectangleSelection, boolean addLassoInteraction) {
+		SelectionModel<T> selectionModel = SelectionModels.create();
+
+		addInteraction(scatterPlot, selectionModel, clickSelection, rectangleSelection, addLassoInteraction);
+
+		return selectionModel;
+	}
+
+	public static <T> SelectionModel<T> addInteraction(ScatterPlotIndexedGPU<T> scatterPlot, boolean clickSelection,
 			boolean rectangleSelection, boolean addLassoInteraction) {
 		SelectionModel<T> selectionModel = SelectionModels.create();
 
@@ -154,7 +203,95 @@ public class ScatterPlots {
 		});
 	}
 
-	@Deprecated // use VisualMappings.sanityCheckFilter
+	public static <T> void addInteraction(ScatterPlotIndexedGPU<T> scatterPlot, SelectionModel<T> selectionModel,
+			boolean clickSelection, boolean rectangleSelection, boolean addLassoInteraction) {
+		if (!clickSelection && !rectangleSelection)
+			return;
+
+		SelectionHandler<T> selectionHandler = new SelectionHandler<>(selectionModel);
+		selectionHandler.attachTo(scatterPlot);
+
+		if (clickSelection)
+			selectionHandler.setClickSelection(scatterPlot);
+
+		if (rectangleSelection)
+			selectionHandler.setRectangleSelection(scatterPlot);
+
+		scatterPlot.addChartPainter(new ChartPainter() {
+			@Override
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
+			}
+		});
+
+		scatterPlot.setSelectedFunction(new Function<T, Boolean>() {
+			@Override
+			public Boolean apply(T t) {
+				return selectionHandler.getSelectionModel().isSelected(t);
+			}
+		});
+
+		// lasso selection with the right mouse button
+		if (addLassoInteraction) {
+			LassoSelectionHandler<T> lassoSelectionHandler = new LassoSelectionHandler<>(selectionModel,
+					MouseButton.RIGHT);
+			lassoSelectionHandler.attachTo(scatterPlot);
+			lassoSelectionHandler.setShapeSelection(scatterPlot);
+
+			scatterPlot.addChartPainter(new ChartPainter() {
+				@Override
+				public void draw(Graphics2D g2) {
+					lassoSelectionHandler.draw(g2);
+				}
+			});
+		}
+
+		selectionModel.addSelectionListener(new SelectionListener<T>() {
+
+			@Override
+			public void selectionChanged(SelectionEvent<T> selectionEvent) {
+				scatterPlot.repaint();
+				scatterPlot.revalidate();
+			}
+		});
+	}
+
+	/**
+	 * Attaches mouse-wheel zoom (double-click to reset) to {@code panel}, if it
+	 * implements {@link IZooming} -- e.g. {@link ScatterPlot},
+	 * {@link ScatterPlotIndexedGPU}, {@link ScatterPlotSpriteGPU}, or
+	 * {@link CategoricalYAxisScatterplotPanel}.
+	 *
+	 * <p>
+	 * Deliberately separate from a pan-interaction helper: the two are different
+	 * gestures with different targets, and none of the scatterplot classes above
+	 * also support mouse-drag panning -- it defaults to the left mouse button,
+	 * same as rectangle selection, and the two would fight over the same drag.
+	 * </p>
+	 *
+	 * @param panel the panel to wire; a no-op if it does not implement
+	 *              {@link IZooming}
+	 */
+	public static void addZoomInteraction(InfoVisChartPanel panel) {
+		if (panel instanceof IZooming)
+			new ZoomInteractionHandler((IZooming) panel).attachTo(panel);
+	}
+
+	/**
+	 * Attaches mouse-drag pan to {@code panel}, if it implements
+	 * {@link IPanning}. None of the scatterplot classes in this package
+	 * implement it (see {@link #addZoomInteraction} for why); this exists for
+	 * other, non-selectable {@link IPanning} implementers.
+	 *
+	 * @param panel the panel to wire; a no-op if it does not implement
+	 *              {@link IPanning}
+	 */
+	public static void addPanInteraction(InfoVisChartPanel panel) {
+		if (panel instanceof IPanning)
+			new PanInteractionHandler((IPanning) panel).attachTo(panel);
+	}
+
+	@Deprecated // use VisualMappingTools.sanityCheckFilter
 	/**
 	 * applies a filter operation using a given data set. and returns a new list,
 	 * only containing those elements which can be applied by both given position
@@ -185,6 +322,6 @@ public class ScatterPlots {
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldToDoubleMappingX,
 			Function<? super T, Double> worldDoubleMappingY, boolean warnForQualityLeaks) {
 
-		return VisualMappings.sanityCheckFilter(data, worldToDoubleMappingX, worldDoubleMappingY, warnForQualityLeaks);
+		return VisualMappingTools.sanityCheckFilter(data, worldToDoubleMappingX, worldDoubleMappingY, warnForQualityLeaks);
 	}
 }

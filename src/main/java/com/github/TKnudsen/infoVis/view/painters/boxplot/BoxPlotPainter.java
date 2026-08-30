@@ -16,25 +16,21 @@ import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
  * <p>
- * InfoVis
- * </p>
+ * Base class for box plot painters with optimized Graphics2D handling.
  * 
- * <p>
- * Paints a boxplot
+ * Uses cached strokes, float-based rendering, and avoids unnecessary state
+ * changes. Designed for high-performance drawing of many box plots.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.04
+ *
+ * @version 2.1 (optimized)
+ * @since 2016
  */
 public abstract class BoxPlotPainter extends ChartPainter implements IRectangleSelection<Double>, ITooltip {
 
@@ -60,40 +56,55 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	private IPositionEncodingFunction positionEncodingFunction;
 	protected boolean externalPositionEncodingFunction = false;
 
-	protected Stroke dashedstroke = new BasicStroke(stroke.getLineWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
-			10.0f, DisplayTools.dashPattern, 0);
-
+	protected Stroke dashedstroke;
 	private boolean toolTipping = true;
 
 	// listening to the positionEncodingFunction
 	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = this::intializeScreenCoordinates;
 
 	public BoxPlotPainter(double[] data) {
-		double[] copy = Arrays.copyOf(data, data.length);
+		double[] copy = DataConversion.toPrimitives(VisualMappingTools.sanityCheckFilter(DataConversion.doubleToList(data),
+				Number::doubleValue));
 		Arrays.sort(copy);
 		this.dataStatistics = new StatisticsSupport(copy);
 
 		initializePositionEncodingFunction();
+
+		setBackgroundPaint(null);
 	}
 
 	public BoxPlotPainter(Collection<? extends Number> data) {
-		double[] primitives = DataConversion.toPrimitives(data);
+		double[] primitives = DataConversion.toPrimitives(VisualMappingTools.sanityCheckFilter(data, Number::doubleValue));
 		Arrays.sort(primitives);
 		this.dataStatistics = new StatisticsSupport(primitives);
 
 		initializePositionEncodingFunction();
+
+		setBackgroundPaint(null);
 	}
 
+	/**
+	 * No raw data available here to sanity-check -- dataStatistics is already
+	 * computed by the caller. The caller is responsible for having filtered
+	 * null/NaN values before building it (see VisualMappingTools.sanityCheckFilter,
+	 * used by the other two constructors).
+	 */
 	public BoxPlotPainter(StatisticsSupport dataStatistics) {
 		this.dataStatistics = dataStatistics;
 
 		initializePositionEncodingFunction();
+
+		setBackgroundPaint(null);
 	}
 
 	private void initializePositionEncodingFunction() {
 		this.positionEncodingFunction = new PositionEncodingFunction(dataStatistics.getMin(), dataStatistics.getMax(),
 				0d, 1d, isInvertedAxis());
 		this.positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+
+		// initialize once here to avoid null dashed stroke during first draw
+		this.dashedstroke = new BasicStroke(stroke.getLineWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f,
+				DisplayTools.getDashPattern(), 0);
 	}
 
 	protected abstract boolean isInvertedAxis();
@@ -113,23 +124,18 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	@Override
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
-
-		Color c = g2.getColor();
+		final Color oldColor = g2.getColor();
 
 		drawMainQuantile(g2);
-
 		drawMedian(g2);
-
 		drawLowerWhisker(g2);
-
 		drawUpperWhisker(g2);
-
 		drawDashedConnectors(g2);
 
-		if (isDrawOutliers())
+		if (drawOutliers)
 			drawOutliers(g2);
 
-		g2.setColor(c);
+		g2.setColor(oldColor);
 	}
 
 	private void intializeScreenCoordinates() {
@@ -142,58 +148,63 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 		lowerWhiskerScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(outlierPercentile));
 		upperWhiskerScreen = positionEncodingFunction.apply(dataStatistics.getPercentile(100 - outlierPercentile));
 
-		if (isDrawOutliers()) {
+		if (drawOutliers) {
 			if (outlierValues == null)
-				calculateOutlierValues();
+				outlierValues = dataStatistics.getOutliers(outlierPercentile);
 
 			if (outlierValues == null)
-				this.outlierScreenCoordinates = null;
+				outlierScreenCoordinates = null;
 			else {
-				this.outlierScreenCoordinates = new double[outlierValues.length];
-				for (int i = 0; i < outlierValues.length; i++)
+				final int n = outlierValues.length;
+				outlierScreenCoordinates = new double[n];
+				for (int i = 0; i < n; i++)
 					outlierScreenCoordinates[i] = positionEncodingFunction.apply(outlierValues[i]);
 			}
-		} else
-			this.outlierScreenCoordinates = null;
+		} else {
+			outlierScreenCoordinates = null;
+		}
 
 		quartilesRectangle = calculateQuartilesRectangle();
 	}
-
-	private void calculateOutlierValues() {
-		this.outlierValues = dataStatistics.getOutliers(outlierPercentile);
-	}
-
-	abstract Rectangle2D calculateQuartilesRectangle();
 
 	@Override
 	public void setStroke(BasicStroke stroke) {
 		this.stroke = stroke;
 		this.dashedstroke = new BasicStroke(stroke.getLineWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f,
-				DisplayTools.dashPattern, 0);
+				DisplayTools.getDashPattern(), 0);
 	}
+
+	abstract Rectangle2D calculateQuartilesRectangle();
 
 	protected abstract void drawMedian(Graphics2D g2);
 
-	private void drawMainQuantile(Graphics2D g2) {
-		Color c = g2.getColor();
-		g2.setPaint(getPaint());
+	protected abstract void drawDashedConnectors(Graphics2D g2);
 
-		Stroke s = g2.getStroke();
+	protected abstract void drawOutliers(Graphics2D g2);
+
+	protected abstract void drawLevel(Graphics2D g2, double ratioOfAxis, Paint color);
+
+	private void drawMainQuantile(Graphics2D g2) {
+		if (quartilesRectangle == null)
+			return;
+
+		final Paint oldPaint = g2.getPaint();
+		final Stroke oldStroke = g2.getStroke();
 		g2.setStroke(stroke);
 
-		if (quartilesRectangle != null) {
-			if (fill) {
-				g2.setColor(ColorTools.setAlpha(getPaint(),
-						(float) ((getColor().getAlpha() / 255.0f) * Math.min(1.0, Math.max(0, fillAlpha)))));
-				g2.fill(quartilesRectangle);
-			}
-
-			g2.setPaint(getPaint());
-			g2.draw(quartilesRectangle);
+		// Fill and draw using DisplayTools-friendly state reuse
+		if (fill) {
+			Paint fillPaint = ColorTools.setAlpha(getPaint(),
+					(float) ((getColor().getAlpha() / 255.0f) * Math.min(1.0, Math.max(0, fillAlpha))));
+			g2.setPaint(fillPaint);
+			g2.fill(quartilesRectangle);
 		}
 
-		g2.setStroke(s);
-		g2.setColor(c);
+		g2.setPaint(getPaint());
+		g2.draw(quartilesRectangle);
+
+		g2.setStroke(oldStroke);
+		g2.setPaint(oldPaint);
 	}
 
 	private void drawLowerWhisker(Graphics2D g2) {
@@ -204,11 +215,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 		drawLevel(g2, upperWhiskerScreen, getPaint());
 	}
 
-	protected abstract void drawDashedConnectors(Graphics2D g2);
-
-	protected abstract void drawOutliers(Graphics2D g2);
-
-	protected abstract void drawLevel(Graphics2D g2, double ratioOfAxis, Paint col);
+	// ---- Tool tip and interaction ----
 
 	@Override
 	public boolean isToolTipping() {
@@ -219,6 +226,8 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	public void setToolTipping(boolean toolTipping) {
 		this.toolTipping = toolTipping;
 	}
+
+	// ---- getters and setters ----
 
 	public boolean isFill() {
 		return fill;

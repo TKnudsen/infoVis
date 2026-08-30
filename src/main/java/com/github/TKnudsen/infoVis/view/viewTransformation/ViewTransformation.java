@@ -8,6 +8,15 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.transformations.dimensionalityReduction.DimensionalityReductionPipeline;
 
+/**
+ * <p>
+ * Base class mapping data items to 2D screen position (via a
+ * {@link DimensionalityReductionPipeline}) and to color, caching computed
+ * colors since some color maps are expensive.
+ * </p>
+ *
+ * @version 1.0
+ */
 public abstract class ViewTransformation<T> {
 
 	public enum DimRed {

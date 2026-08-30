@@ -4,209 +4,197 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
-import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
-import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.NormalizationFunction;
+import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.Parsers;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
-import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
+import com.github.TKnudsen.infoVis.view.panels.bins.AbstractBinnedDistributionPanel;
 
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
 /**
  * <p>
- * InfoVis
- * </p>
+ * Factory + helper utilities for the new categorical BarChart panels.
  * 
- * <p>
- * Factory for BarCharts. Also provides tools and bar chart modification
- * capability.
- * </p>
+ * Supports: - Horizontal and Vertical variants - Legends - Styling
+ * (border/selection paint, tooltipping, grid spacing) - Interaction wiring
+ * (click + rectangle selection)
  * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
+ * Notes: - BarChart is item-based (selection domain is T / T, not bin index). -
+ * Styling operations are applied to all three bar chart painter layers if the
+ * component is an AbstractBinnedDistributionPanel.
  * </p>
- * 
- * @author Juergen Bernard
- * @version 1.04
+ *
+ * @version 2.01
+ * @since 2016
  */
-public class BarCharts {
+public final class BarCharts {
+
+	public static final Color DEFAULT_COLOR = Color.GRAY;
+	public static final Color DEFAULT_FILTER_COLOR = Color.DARK_GRAY;
+
+	// ============================================================
+	// FACTORY METHODS
+	// ============================================================
 
 	/**
-	 * creates a bar chart with all bars having the same color
-	 * 
-	 * @param bars  bars
-	 * @param color color
-	 * @return bar chart
+	 * Minimal default vertical categorical bar chart (alphabetical order,
+	 * missing-bin on).
 	 */
-	public static BarChart createBarChart(List<? extends Number> bars, Color color) {
-		List<Color> colors = new ArrayList<Color>();
+	public static <T> BarChartVertical<T> createBarChartVertical(Collection<? extends T> data,
+			java.util.function.Function<? super T, String> worldToCategoryMapping) {
 
-		for (@SuppressWarnings("unused")
-		Number d : bars)
-			colors.add(color);
-
-		return new BarChart(bars, colors);
-	}
-
-	public static BarChart createBarChart(List<? extends Number> bars, List<Color> colors) {
-		return new BarChart(bars, colors);
-	}
-
-	public static BarChartHorizontal createBarChartHorizontal(List<? extends Number> bars, Color color) {
-		List<Color> colors = new ArrayList<Color>();
-
-		for (@SuppressWarnings("unused")
-		Number d : bars)
-			colors.add(color);
-
-		return createBarChartHorizontal(bars, colors);
-	}
-
-	public static BarChartHorizontal createBarChartHorizontal(List<? extends Number> bars, List<Color> colors) {
-		return new BarChartHorizontal(bars, colors);
-	}
-
-	public static <T> SortedMap<String, Integer> createData(Collection<? extends T> data,
-			Function<? super T, String> worldToCategoryMapping) {
-
-		if (data.isEmpty())
-			return null;
-
-		SortedMap<String, Integer> counts = new TreeMap<>();
-		for (T t : data) {
-			if (t == null)
-				continue;
-
-			String s = worldToCategoryMapping.apply(t);
-			if (s == null)
-				continue;
-
-			if (!counts.containsKey(s))
-				counts.put(s, 0);
-
-			counts.put(s, counts.get(s) + 1);
-		}
-
-		return counts;
+		return new BarChartVertical<>(data, worldToCategoryMapping);
 	}
 
 	/**
-	 * 
-	 * @param data           list of bar chart data
-	 * @param barchartColors one color for each bar chart layer
-	 * @return bar chart
+	 * Minimal default horizontal categorical bar chart (alphabetical order,
+	 * missing-bin on).
 	 */
-	public static BarChart createLayeredBarChart(List<List<? extends Number>> data, List<Color> barchartColors) {
-		Objects.requireNonNull(data);
+	public static <T> BarChartHorizontal<T> createBarChartHorizontal(Collection<? extends T> data,
+			java.util.function.Function<? super T, String> worldToCategoryMapping) {
 
-		if (data.isEmpty())
-			return null;
-
-		// create bar chart
-		Color color = Color.GRAY;
-		if (barchartColors != null && !barchartColors.isEmpty())
-			color = barchartColors.get(0);
-		BarChart barChart = createBarChart(data.get(0), color);
-
-		// add additional bar chart layers
-		for (int i = 1; i < data.size(); i++) {
-			List<? extends Number> bars = data.get(i);
-
-			List<Color> colors = new ArrayList<Color>();
-			Color c = barchartColors.size() > i ? barchartColors.get(i) : Color.BLACK;
-			for (@SuppressWarnings("unused")
-			Number d : bars)
-				colors.add(c);
-
-			BarChartVerticalPainter barChartVerticalPainter = new BarChartVerticalPainter(bars, colors);
-			barChart.addChartPainter(barChartVerticalPainter, true);
-		}
-
-		return barChart;
+		return new BarChartHorizontal<>(data, worldToCategoryMapping);
 	}
 
 	/**
-	 * values is the collection of numbers (not bins) which will be binned here. The
-	 * result is represented with a bar chart.
-	 * 
-	 * @param values   values
-	 * @param bins     bins
-	 * @param barColor colors
-	 * @return bar chart
+	 * Full constructor wrapper (vertical).
 	 */
-	public static BarChart createHistogramBarchart(Collection<? extends Number> values, int bins, Color barColor) {
+	public static <T> BarChartVertical<T> createBarChartVertical(Collection<? extends T> data,
+			java.util.function.Function<? super T, String> worldToCategoryMapping,
+			BarChart.CategoryOrder categoryOrder, List<String> customOrder, boolean includeMissingBin,
+			String missingLabel, Color allDataColor, Color filterColor) {
 
-		NormalizationFunction normalization = new LinearNormalizationFunction(values);
-
-		Double[] counts = new Double[bins];
-		for (Number value : values)
-			for (int i = 0; i < bins; i++) {
-				if (value == null || Double.isNaN(value.doubleValue()))
-					continue;
-				Number n = normalization.apply(value);
-				if (1 / (int) bins * i < n.doubleValue())
-					counts[i]++;
-			}
-
-		List<Color> colors = new ArrayList<Color>();
-		for (int i = 0; i < bins; i++)
-			colors.add(barColor);
-
-		BarChart barChart = BarCharts.createBarChart(DataConversion.arrayToList(counts), colors);
-		barChart.setBackground(null);
-
-		return barChart;
+		return new BarChartVertical<>(data, worldToCategoryMapping, categoryOrder,
+				customOrder, includeMissingBin, missingLabel, allDataColor, filterColor);
 	}
 
-	public static void addLegend(BarChart barChart, List<String> labels) {
+	/**
+	 * Full constructor wrapper (horizontal).
+	 */
+	public static <T> BarChartHorizontal<T> createBarChartHorizontal(Collection<? extends T> data,
+			java.util.function.Function<? super T, String> worldToCategoryMapping,
+			BarChart.CategoryOrder categoryOrder, List<String> customOrder, boolean includeMissingBin,
+			String missingLabel, Color allDataColor, Color filterColor) {
 
-		StringPainter[][] painters = new StringPainter[labels.size()][1];
-
-		for (int i = 0; i < labels.size(); i++) {
-			StringPainter stringPainter = new StringPainter(labels.get(i));
-			stringPainter.setBackgroundPaint(null);
-
-			stringPainter.setVerticalOrientation(true);
-			stringPainter.setVerticalStringAlignment(VerticalStringAlignment.UP);
-			painters[i][0] = stringPainter;
-		}
-
-		Grid2DPainterPainter<StringPainter> gridPainter = new Grid2DPainterPainter<>(painters);
-		gridPainter.setBackgroundPaint(null);
-
-		barChart.addChartPainter(gridPainter);
+		return new BarChartHorizontal<>(data, worldToCategoryMapping,
+				categoryOrder, customOrder, includeMissingBin, missingLabel, allDataColor, filterColor);
 	}
 
-	public static void addLegend(BarChartHorizontal barChart, List<String> labels) {
-		addLegend(barChart, labels, HorizontalStringAlignment.RIGHT);
-	}
+	// ============================================================
+	// LEGEND
+	// ============================================================
 
-	public static void addLegend(BarChartHorizontal barChart, List<String> labels,
+	/**
+	 * Adds a legend row (one {@link StringPainter} per label) and applies a
+	 * horizontal string alignment strategy.
+	 *
+	 * Intended for legends where labels are rendered horizontally.
+	 *
+	 * @param chart     bar chart panel
+	 * @param labels    labels in bin order
+	 * @param alignment horizontal alignment within each legend cell
+	 */
+	public static void addLegendHorizontal(InfoVisChartPanel chart, List<String> labels,
 			HorizontalStringAlignment alignment) {
+
+		Objects.requireNonNull(chart, "chart must not be null");
+		Objects.requireNonNull(labels, "labels must not be null");
+
+		// Validate label count matches bin count if possible
+		if (chart instanceof BarChart<?>) {
+			BarChart<?> barChart = (BarChart<?>) chart;
+			int expectedCount = barChart.getBinLabels().size();
+			if (labels.size() != expectedCount) {
+				throw new IllegalArgumentException(
+						"Legend labels count (" + labels.size() + ") does not match bin count (" + expectedCount + ")");
+			}
+		}
+
+		if (alignment == null)
+			alignment = HorizontalStringAlignment.CENTER;
 
 		StringPainter[][] painters = new StringPainter[1][labels.size()];
 
-		for (int i = 0; i < labels.size(); i++) {
-			StringPainter stringPainter = new StringPainter(labels.get(i));
-			stringPainter.setBackgroundPaint(null);
+		// Font alignment: use the panel font (same as axes / theme).
+		java.awt.Font legendFont = chart.getFont();
 
-			stringPainter.setHorizontalStringAlignment(alignment);
-			painters[0][i] = stringPainter;
+		for (int i = 0; i < labels.size(); i++) {
+			StringPainter sp = new StringPainter(labels.get(i));
+			sp.setBackgroundPaint(null);
+
+			// caller decides whether labels are horizontal or vertical orientation;
+			// we only apply the requested alignment here.
+			sp.setHorizontalStringAlignment(alignment);
+
+			if (legendFont != null) {
+				sp.setFont(legendFont);
+			}
+
+			painters[0][i] = sp;
+		}
+
+		Grid2DPainterPainter<StringPainter> gridPainter = new Grid2DPainterPainter<>(painters);
+		gridPainter.setBackgroundPaint(null);
+
+		chart.addChartPainter(gridPainter);
+	}
+
+	/**
+	 * Adds a legend row (one {@link StringPainter} per label) and applies a
+	 * vertical string alignment strategy.
+	 *
+	 * Intended for legends where labels are rendered vertically (rotated) OR where
+	 * vertical alignment is explicitly desired for horizontal labels.
+	 *
+	 * @param chart             bar chart panel
+	 * @param labels            labels in bin order
+	 * @param verticalAlignment vertical alignment within each legend cell
+	 */
+	public static void addLegendVertical(BarChartVertical<?> barChart, List<String> labels,
+			StringPainter.VerticalStringAlignment verticalAlignment, boolean verticalTextOrientation) {
+
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		Objects.requireNonNull(labels, "labels must not be null");
+
+		// Validate label count matches bin count if possible
+		int expectedCount = barChart.getBinLabels().size();
+		if (labels.size() != expectedCount) {
+			throw new IllegalArgumentException(
+					"Legend labels count (" + labels.size() + ") does not match bin count (" + expectedCount + ")");
+		}
+
+		if (verticalAlignment == null)
+			verticalAlignment = StringPainter.VerticalStringAlignment.CENTER;
+
+		StringPainter[][] painters = new StringPainter[labels.size()][1];
+
+		// Font alignment: use the panel font (same as axes / theme).
+		java.awt.Font legendFont = barChart.getFont();
+
+		for (int i = 0; i < labels.size(); i++) {
+			StringPainter sp = new StringPainter(Parsers.parseString(labels.get(i)));
+			sp.setBackgroundPaint(null);
+			sp.setVerticalOrientation(verticalTextOrientation);
+
+			// caller decides whether labels are horizontal or vertical orientation;
+			// we only apply the requested alignment here.
+			sp.setVerticalStringAlignment(verticalAlignment);
+
+			if (legendFont != null) {
+				sp.setFont(legendFont);
+			}
+
+			painters[i][0] = sp;
 		}
 
 		Grid2DPainterPainter<StringPainter> gridPainter = new Grid2DPainterPainter<>(painters);
@@ -215,19 +203,33 @@ public class BarCharts {
 		barChart.addChartPainter(gridPainter);
 	}
 
-	public static SelectionModel<Integer> addInteraction(IBarChart barChart) {
+	// ============================================================
+	// INTERACTION
+	// ============================================================
+
+	public static <T> SelectionModel<T> addInteraction(BarChart<T> barChart) {
 		return addInteraction(barChart, true, true, null);
 	}
 
-	public static SelectionModel<Integer> addInteraction(IBarChart barChart, boolean clickInteraction,
-			boolean rectangleSelection, SelectionModel<Integer> selectionModel) {
+	/**
+	 * Wires up a SelectionHandler to the given IBarChart.
+	 *
+	 * - clickInteraction: click selects picked elements - rectangleSelection:
+	 * rectangle selects picked elements
+	 *
+	 * IMPORTANT: The selection domain is T (data objects), not bins.
+	 */
+	public static <T> SelectionModel<T> addInteraction(BarChart<T> barChart, boolean clickInteraction,
+			boolean rectangleSelection, SelectionModel<T> selectionModel) {
+
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
 		if (selectionModel == null)
 			selectionModel = SelectionModels.create();
 
-		SelectionHandler<Integer> selectionHandler = new SelectionHandler<>(selectionModel);
+		SelectionHandler<T> selectionHandler = new SelectionHandler<>(selectionModel);
 
-		if (barChart instanceof Component)
-			selectionHandler.attachTo((Component) barChart);
+		selectionHandler.attachTo(barChart);
 
 		if (clickInteraction)
 			selectionHandler.setClickSelection(barChart);
@@ -235,58 +237,161 @@ public class BarCharts {
 		if (rectangleSelection)
 			selectionHandler.setRectangleSelection(barChart);
 
-		if (barChart instanceof InfoVisChartPanel)
-			((InfoVisChartPanel) barChart).addChartPainter(new ChartPainter() {
-				@Override
-				public void draw(Graphics2D g2) {
-					selectionHandler.draw(g2);
-				}
-			});
-
-		barChart.setSelectedFunction(new Function<Integer, Boolean>() {
-
+		// Draw selection rectangle overlay
+		barChart.addChartPainter(new ChartPainter() {
 			@Override
-			public Boolean apply(Integer t) {
-				return selectionHandler.getSelectionModel().isSelected(t);
+			public void draw(Graphics2D g2) {
+				selectionHandler.draw(g2);
 			}
 		});
+
+		selectionModel.addSelectionListener(barChart);
+		if (selectionModel.getSelection().size() > 0)
+			barChart.setSelectedFunction(selectionModel::isSelected);
 
 		return selectionModel;
 	}
 
-	public static double getGridSpacing(IBarChart barChart) {
-		return barChart.getBarChartPainter().getGridSpacing();
+	// ============================================================
+	// STYLING HELPERS
+	// ============================================================
+
+	public static void setLayerColors(BarChart<?> barChart, Color globalColor, Color filterColor,
+			Color selectionColor) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
+		barChart.setGlobalColor(globalColor);
+		barChart.setFilterColor(filterColor);
+		barChart.setSelectionColor(selectionColor);
 	}
 
-	public static void setGridSpacing(IBarChart barChart, double gridSpacing) {
-		barChart.getBarChartPainter().setGridSpacing(gridSpacing);
+	public static double getGridSpacing(BarChart<?> barChart) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		BarChartPainter p = barChart.getBarChartPainter();
+		return (p != null) ? p.getGridSpacing() : 0.0;
 	}
 
-	public static boolean isToolTipping(IBarChart barChart) {
+	public static void setGridSpacing(BarChart<?> barChart, double gridSpacing) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		forEachPainter(barChart, p -> p.setGridSpacing(gridSpacing));
+	}
+
+	public static boolean isToolTipping(BarChart<?> barChart) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
 		if (barChart instanceof InfoVisChartPanel)
 			return ((InfoVisChartPanel) barChart).isShowingTooltips();
-		else
-			return barChart.getBarChartPainter().isToolTipping();
+
+		BarChartPainter p = barChart.getBarChartPainter();
+		return p != null && p.isToolTipping();
 	}
 
-	public static void setToolTipping(IBarChart barChart, boolean toolTipping) {
-		if (barChart instanceof InfoVisChartPanel)
-			((InfoVisChartPanel) barChart).setShowingTooltips(toolTipping);
-		else
-			barChart.getBarChartPainter().setToolTipping(toolTipping);
+	public static void setToolTipping(BarChart<?> barChart, boolean toolTipping) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
+		barChart.setShowingTooltips(toolTipping);
 	}
 
-	public static Paint getBorderPaint(IBarChart barChart) {
-		return barChart.getBarChartPainter().getBorderPaint();
+	public static Paint getBorderPaint(BarChart<?> barChart) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
+		BarChartPainter p = barChart.getBarChartPainter();
+		return (p != null) ? p.getBorderPaint() : null;
 	}
 
-	public static void setBorderPaint(IBarChart barChart, Paint borderPaint) {
-		barChart.getBarChartPainter().setBorderPaint(borderPaint);
+	public static void setBorderPaint(BarChart<?> barChart, Paint borderPaint) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		forEachPainter(barChart, p -> p.setBorderPaint(borderPaint));
+	}
+
+	public static <T> void setFilterPaint(BarChart<T> barChart, Color filterPaint) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		barChart.setFilterColor(filterPaint);
+	}
+
+	public static <T> void setSelectionPaint(BarChart<T> barChart, Color selectionPaint) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+		barChart.setSelectionColor(selectionPaint);
+		forEachPainter(barChart, p -> p.setSelectionPaint(selectionPaint));
 	}
 
 	/**
-	 * avoid instantiation
+	 * Convenience: set base colors for the three layers (global/filter). Selection
+	 * painter color is controlled by setSelectionPaint.
+	 *
+	 * Note: This updates painter colors only (no bin re-computation).
+	 */
+	public static void setLayerColors(BarChart<?> barChart, Color allDataColor, Color filterColor) {
+		Objects.requireNonNull(barChart, "barChart must not be null");
+
+		if (barChart instanceof AbstractBinnedDistributionPanel<?>) {
+			@SuppressWarnings("rawtypes")
+			AbstractBinnedDistributionPanel p = (AbstractBinnedDistributionPanel) barChart;
+
+			if (allDataColor != null && p.getGlobalPainter() != null)
+				p.getGlobalPainter().setColor(allDataColor);
+
+			if (filterColor != null && p.getFilterPainter() != null)
+				p.getFilterPainter().setColor(filterColor);
+
+			if (barChart instanceof Component)
+				((Component) barChart).repaint();
+		} else {
+			// Fallback: treat main painter as filter painter
+			if (filterColor != null && barChart.getBarChartPainter() != null) {
+				barChart.getBarChartPainter().setColor(filterColor);
+				if (barChart instanceof Component)
+					((Component) barChart).repaint();
+			}
+		}
+	}
+
+	// ============================================================
+	// INTERNAL: painter iteration
+	// ============================================================
+
+	@FunctionalInterface
+	private interface PainterConsumer {
+		void accept(BarChartPainter painter);
+	}
+
+	/**
+	 * Applies an operation to all three painters when possible. Otherwise applies
+	 * only to the main painter from IBarChart.
+	 */
+	private static void forEachPainter(BarChart<?> barChart, PainterConsumer op) {
+		if (barChart == null || op == null)
+			return;
+
+		// Best: we have the 3-layer getters
+		if (barChart instanceof AbstractBinnedDistributionPanel<?>) {
+			@SuppressWarnings("rawtypes")
+			AbstractBinnedDistributionPanel p = (AbstractBinnedDistributionPanel) barChart;
+
+			BarChartPainter g = p.getGlobalPainter();
+			BarChartPainter f = p.getFilterPainter();
+			BarChartPainter s = p.getSelectionPainter();
+
+			if (g != null)
+				op.accept(g);
+			if (f != null)
+				op.accept(f);
+			if (s != null)
+				op.accept(s);
+
+			return;
+		}
+
+		// Fallback: apply to single painter
+		BarChartPainter main = barChart.getBarChartPainter();
+		if (main != null)
+			op.accept(main);
+	}
+
+	/**
+	 * Avoid instantiation.
 	 */
 	private BarCharts() {
-	};
+		// no-op
+	}
 }

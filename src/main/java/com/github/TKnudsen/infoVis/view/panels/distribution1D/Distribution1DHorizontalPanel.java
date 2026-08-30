@@ -4,6 +4,8 @@ import java.awt.Paint;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRange;
+import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRangeTools;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DHorizontalHighlightPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DPainter;
@@ -11,19 +13,11 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Horizontal distribution chart with distribution painter inside.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.07
+ * @since 2018
  */
 public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<Double>
 		implements Distribution1DPanel<T> {
@@ -56,31 +50,19 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 		initializeData(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
-	protected void initializeData(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
+	protected void initializeData(Collection<T> data, Function<? super T, ? extends Number> worldPositionMappingX,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 
 		if (data == null)
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
 				throw new IllegalArgumentException("Distribution1DHorizontalPanel: no valid input given");
 
-		double min = Double.POSITIVE_INFINITY;
-		if (!Double.isNaN(minGlobal))
-			min = minGlobal;
-		else
-			for (T t : data)
-				min = Math.min(min, worldToDoubleMapping.apply(t).doubleValue());
-
-		double max = Double.NEGATIVE_INFINITY;
-		if (!Double.isNaN(maxGlobal))
-			max = maxGlobal;
-		else
-			for (T t : data)
-				max = Math.max(max, worldToDoubleMapping.apply(t).doubleValue());
-
-		initializeXAxisPainter(min, max);
+		NumericRange rangeX = NumericRangeTools.computeFiniteRangeStrict(data, worldPositionMappingX, null, null);
+		
+		initializeXAxisPainter(rangeX.getMin(), rangeX.getMax());
 
 		this.distribution1DHorizontalPainter = new Distribution1DHorizontalHighlightPainter<T>(data,
-				worldToDoubleMapping, colorEncodingFunction);
+				worldPositionMappingX, colorEncodingFunction);
 
 		this.addChartPainter(distribution1DHorizontalPainter, true);
 	}

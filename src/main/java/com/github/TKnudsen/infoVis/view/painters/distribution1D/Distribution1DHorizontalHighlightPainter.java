@@ -15,19 +15,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints highlighted elements on top of a distribution painter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.06
+ * @since 2016
  */
 public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DHorizontalPainter<T> {
 
@@ -89,6 +81,9 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 	}
 
 	public void drawHighlightTriangle(Graphics2D g2, T worldData, Paint paint) {
+		if (chartRectangle == null)
+			return;
+
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 

@@ -5,18 +5,8 @@ import java.awt.Component;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncodingFunction;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.04
- *
- * @param <T> t
+ * @since 2016
  */
 public class SizeEncodingFunction<T> implements ISizeEncodingFunction<T> {
 

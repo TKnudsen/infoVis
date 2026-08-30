@@ -16,16 +16,8 @@ import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 2.04
+ * @since 2018
  */
 public class BoxPlotVerticalMultiplesChartPanel extends YAxisNumericalChartPanel<Double>
 		implements IRectangleSelection<Double> {

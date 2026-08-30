@@ -17,16 +17,45 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodin
 
 /**
  * <p>
- * InfoVis
+ * Mouse-wheel/double-click zoom handler for a raw
+ * {@link IPositionEncodingFunction}. Unlike
+ * {@link com.github.TKnudsen.infoVis.view.interaction.handlers.ZoomInteractionHandler
+ * ZoomInteractionHandler}, this handler does not target an
+ * {@link com.github.TKnudsen.infoVis.view.interaction.IZooming IZooming} object
+ * and does not itself apply the result to anything: it only <em>reads</em>
+ * {@code positionEncodingFunction} for the zoom math (cursor position,
+ * current/global range), then <em>broadcasts</em> the new interval to every
+ * registered {@link NumberIntervalChangeListener} via
+ * {@link #addNumberIntervalListener(NumberIntervalChangeListener)}. Each
+ * listener is responsible for applying that interval itself, through whichever
+ * axis setter its own view actually needs (e.g.
+ * {@code panel.setXAxisMinValue(...)}/{@code setXAxisMaxValue(...)} -- never by
+ * writing {@code positionEncodingFunction} directly, which would desync a
+ * view's own cached tick/marker positions).
  * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.02
  *
+ * <p>
+ * <b>Choose this over {@code ZoomInteractionHandler} exactly when one zoom
+ * gesture must drive more than one view</b> -- e.g. several panels sharing one
+ * linked time/value axis. One handler, attached to a single "driving"
+ * component, can have many listeners; {@code ZoomInteractionHandler} always
+ * drives exactly one {@code IZooming} target and never broadcasts. If there is
+ * only one target and it can implement {@code IZooming} itself, prefer
+ * {@code ZoomInteractionHandler} -- it is the simpler contract.
+ * </p>
+ *
+ * <p>
+ * See
+ * {@link com.github.TKnudsen.infoVis.view.panels.scatterPlot.ZoomingHandlerTester
+ * ZoomingHandlerTester} for a self-contained, runnable demo (two panels, one
+ * handler, linked x-axis zoom). Real production usage lives in
+ * {@code stocksExplorer} (multiple views); the original reference usage -- one
+ * handler synchronizing several time-series panels -- is
+ * {@code TimeSeriesUnivariateChartTest} in {@code TimeSeriesLib}.
+ * </p>
+ *
+ * @since 2017
+ * @version 2.01 revised in August 2026
  */
 public class ZoomingHandler extends InteractionHandler {
 
@@ -42,7 +71,7 @@ public class ZoomingHandler extends InteractionHandler {
 	private final List<NumberIntervalChangeListener> numberIntervalChangeListeners = new CopyOnWriteArrayList<>();
 
 	/**
-	 * 
+	 *
 	 * @param worldGlobalMin           min
 	 * @param worldGlobalMax           max
 	 * @param positionEncodingFunction function
@@ -99,7 +128,7 @@ public class ZoomingHandler extends InteractionHandler {
 	/**
 	 * modifies the {@link IPositionEncodingFunction} and fires a
 	 * {@link NumberIntervalChangedEvent} afterwards
-	 * 
+	 *
 	 * @param e mouse event
 	 */
 	public void handleZoom(MouseWheelEvent e) {
@@ -179,7 +208,7 @@ public class ZoomingHandler extends InteractionHandler {
 	 * retrieves the current NumberInterval spanned by the xAxis. In contrast to the
 	 * time interval of the data the time interval of the visual structure may
 	 * differ due to interaction or linking purposes.
-	 * 
+	 *
 	 * @return
 	 */
 	private final NumberInterval getCurrentXAxisMinMaxValues() {

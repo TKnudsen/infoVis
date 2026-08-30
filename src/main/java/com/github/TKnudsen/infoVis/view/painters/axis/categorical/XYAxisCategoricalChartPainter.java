@@ -12,18 +12,8 @@ import com.github.TKnudsen.infoVis.view.painters.axis.IYAxisCategorical;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Basic class for charts with two categorical axes.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.04
+ * @version 1.06
+ * @since 2016
  */
 public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y extends List<String>> extends AxisPainter
 		implements IXAxisCategorical<X>, IYAxisCategorical<Y> {
@@ -43,7 +33,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 		if (rectangle == null)
 			return;
 
-		double border = Math.max(1, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005);
+		double border = Math.max(1, Math.min(3.0, Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.005));
 		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
@@ -68,8 +58,10 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 
 		g2.setColor(color);
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setColor(c);
 	}

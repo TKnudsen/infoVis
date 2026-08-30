@@ -15,8 +15,8 @@ import com.github.TKnudsen.infoVis.data.barChart.BarChartDataForTesting;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartValueBased;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
@@ -72,13 +72,13 @@ public class BarChartVerticalPanelTester {
 		}
 
 		// BARCHART
-		BarChart barChart = BarCharts.createBarChart(points, colors);
+		BarChartValueBased barChart = BarChartsValueBased.createBarChart(points, colors);
 		barChart.setBackground(null);
-		BarCharts.addLegend(barChart, labels);
+		BarChartsValueBased.addLegend(barChart, labels);
 
 		// SELECTION MODEL, INTERACTION
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
-		BarCharts.addInteraction(barChart, true, true, selectionModel);
+		BarChartsValueBased.addInteraction(barChart, true, true, selectionModel);
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 

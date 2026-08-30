@@ -1,9 +1,11 @@
 package com.github.TKnudsen.infoVis.view.ui;
 
 /**
- * 
- * 
+ * <p>
+ * Horizontal or vertical orientation for graphical marks and channels.
+ * </p>
  *
+ * @version 1.0
  */
 public enum Orientation {
 	/**

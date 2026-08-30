@@ -12,19 +12,11 @@ import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartPanel;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Horizontal boxplot chart
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.05
+ * @since 2016
  */
 public class BoxPlotHorizontalChartPanel extends XAxisNumericalChartPanel<Double>
 		implements IRectangleSelection<Double> {

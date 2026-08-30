@@ -4,19 +4,11 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Tools for the creation of a matrix (2D-grid) of Rectangle2D.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.04
+ *
+ * @version 1.05
+ * @since 2016
  */
 public class Rectangle2DTools {
 
@@ -49,7 +41,29 @@ public class Rectangle2DTools {
 		return rectangleArray;
 	}
 
+	/**
+	 * 
+	 * @param width
+	 * @param height
+	 * @param xCount
+	 * @param yCount
+	 * @return
+	 */
 	public static double calculateSpacingValue(double width, double height, int xCount, int yCount) {
-		return Math.floor(Math.min(width / (double) xCount, height / (double) yCount) * 0.05);
+		return calculateSpacingValue(width, height, xCount, yCount, 0.05);
+	}
+
+	/**
+	 * 
+	 * @param width
+	 * @param height
+	 * @param xCount
+	 * @param yCount
+	 * @param ratio  default: 0.05
+	 * @return
+	 */
+	public static double calculateSpacingValue(double width, double height, int xCount, int yCount, double ratio) {
+		return Math.floor(Math.min(width / (double) xCount, height / (double) yCount))
+				* Math.max(0.01, Math.min(0.5, ratio));
 	}
 }

@@ -11,6 +11,15 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 
+/**
+ * <p>
+ * Panel-facing contract wrapping a {@link Distribution1DPainter}: color
+ * encoding, rectangle selection, special-value highlighting, and tooltip
+ * behavior.
+ * </p>
+ *
+ * @version 1.0
+ */
 public interface Distribution1DPanel<T> extends IColorEncoding<T>, IRectangleSelection<T> {
 
 	public Distribution1DPainter<T> getDistribution1DPainter();

@@ -9,38 +9,36 @@ import java.util.TreeSet;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.04
+ * @version 1.05
+ * @since 2016
  */
 public class AxisCartTools {
 
-	public static String suggestMeaningfulValueString(double value) {
-		if (value < 0.5)
-			return String.valueOf(roundToDigitsUnequalsZero(value, 2));
-		if (value < 1)
-			return String.valueOf(roundToDigitsUnequalsZero(value, 3));
-		if (value < 10)
-			return String.valueOf((int) roundToDigitsUnequalsZero(value, 3));
-		if (value < 100)
-			return String.valueOf((int) roundToDigitsUnequalsZero(value, 3));
-		if (value < 1000)
-			return String.valueOf((int) MathFunctions.round(value, 0));
-		if (value < 2000)
+	/**
+	 * 
+	 * @param value
+	 * @param maxValue determines the formatting rule
+	 * @return
+	 */
+	public static String suggestMeaningfulValueString(double value, double maxValue) {
+		if (maxValue <= 0.05)
+			return String.format(java.util.Locale.ROOT, "%.3f", MathFunctions.round(value, 3));
+		if (maxValue <= 0.5)
+			return String.format(java.util.Locale.ROOT, "%.2f", MathFunctions.round(value, 2));
+		if (maxValue <= 5)
+			return String.format(java.util.Locale.ROOT, "%.2f", MathFunctions.round(value, 2));
+		if (maxValue <= 50)
+			return String.format(java.util.Locale.ROOT, "%.1f", MathFunctions.round(value, 1));
+		if (maxValue < 1000)
+			return String.format(java.util.Locale.ROOT, "%.0f", MathFunctions.round(value, 0));
+		if (maxValue < 5000)
 			return String.valueOf(MathFunctions.round(value / 1000.0, 2)) + "k";
-		if (value < 1000000)
+		if (maxValue < 1000000)
 			return String.valueOf(MathFunctions.round(value / 1000.0, 1)) + "k";
-		if (value < 1000000000)
-			return String.valueOf((int) MathFunctions.round(value / 1000000.0, 3)) + "m";
-		if (value < 1000000000000L)
-			return String.valueOf((int) MathFunctions.round(value / 1000000000.0, 3)) + "g";
+		if (maxValue < 1000000000)
+			return String.valueOf(MathFunctions.round(value / 1000000.0, 1)) + "M";
+		if (maxValue < 1000000000000L)
+			return String.valueOf(MathFunctions.round(value / 1000000000.0, 1)) + "G";
 		return "";
 	}
 
@@ -92,18 +90,6 @@ public class AxisCartTools {
 		return markerValues;
 	}
 
-	@Deprecated
-	public static double roundToDigitsUnequalsZero(double value, int decimals) {
-		if (Double.isNaN(value))
-			return value;
-
-		double fact = Math.pow(10, decimals);
-		double d = value * fact;
-		d = Math.round(d);
-		d /= fact;
-		return d;
-	}
-
 	public static double suggestMeaningfulValueIntervalLinear(double valueInterval) {
 		if (Double.isNaN(valueInterval))
 			return Double.NaN;
@@ -129,11 +115,11 @@ public class AxisCartTools {
 			tmp = 0.25;
 		else if (tmp < 0.85)
 			tmp = 0.5;
-		else if (tmp < 1.66)
+		else if (tmp < 1.33)
 			tmp = 1;
-		else if (tmp < 4.5)
+		else if (tmp < 2.5)
 			tmp = 2;
-		else if (tmp < 8)
+		else if (tmp < 6.0)
 			tmp = 5;
 		else
 			tmp = 10;

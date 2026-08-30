@@ -7,6 +7,7 @@ import com.github.TKnudsen.infoVis.view.chartLayouts.ChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.chartLayouts.XYAxisChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 import com.github.TKnudsen.infoVis.view.painters.axis.IXAxis;
 import com.github.TKnudsen.infoVis.view.painters.axis.IYAxis;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
@@ -20,22 +21,14 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Panel for charts with numerical x and y axes
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.06
+ *
+ * @version 2.07
+ * @since 2016
  */
 public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> extends InfoVisChartPanel
-		implements IXAxis<X>, IYAxis<Y>, IXPositionEncoder, IYPositionEncoder {
+		implements IXAxis<X>, IYAxis<Y>, IXPositionEncoder, IYPositionEncoder, IAxisLogarithmicScale {
 
 	/**
 	 * 
@@ -124,24 +117,47 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		updateBounds();
 	}
 
+	@Override
+	/**
+	 * Sets the background color of this panel and manages chart painter
+	 * backgrounds.
+	 * <p>
+	 * <b>Non-null color:</b> Sets a unified panel background and clears all chart
+	 * painter backgrounds (making them transparent).
+	 * <p>
+	 * <b>Null:</b> Clears the panel background and preserves individual chart
+	 * painter backgrounds.
+	 * <p>
+	 * <b>Note:</b> Painter backgrounds cleared by a non-null color are not restored
+	 * when switching back to null. Manage externally if restoration is needed.
+	 *
+	 * @param backgroundColor the background color for the panel, or null to allow
+	 *                        individual chart painter backgrounds to be visible
+	 */
 	public void setBackground(Color backgroundColor) {
 		super.setBackground(backgroundColor);
 
-		if (this.xAxisPainter != null)
+		if (this.xAxisPainter != null && backgroundColor != null)
 			xAxisPainter.setBackgroundPaint(null);
 
-		if (this.yAxisPainter != null)
+		if (this.yAxisPainter != null && backgroundColor != null)
 			yAxisPainter.setBackgroundPaint(null);
 	}
 
+	/**
+	 * @deprecated use setBackground for panels and setBackgroundColor for single
+	 *             painters. Panels overwrite painter's behavior, but not the other
+	 *             way around.
+	 * @param backgroundColor
+	 */
 	public void setBackgroundColor(Color backgroundColor) {
-		super.setBackground(backgroundColor);
+		// super.setBackground(backgroundColor);
 
 		if (this.xAxisPainter != null)
-			xAxisPainter.setBackgroundPaint(null);
+			xAxisPainter.setBackgroundPaint(backgroundColor);
 
 		if (this.yAxisPainter != null)
-			yAxisPainter.setBackgroundPaint(null);
+			yAxisPainter.setBackgroundPaint(backgroundColor);
 	}
 
 	public void setXAxisPainter(XAxisNumericalPainter<X> xAxisPainter) {
@@ -157,7 +173,10 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 				((IXPositionEncoding) chartPainter)
 						.setXPositionEncodingFunction(xAxisPainter.getPositionEncodingFunction());
 
-		setBackgroundColor(getBackgroundColor());
+		// distribute background color
+		//setBackground(getBackground());
+		
+		this.xAxisPainter.setBackgroundPaint(null);
 
 		updateBounds();
 	}
@@ -175,13 +194,36 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 				((IYPositionEncoding) chartPainter)
 						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
 
-		setBackgroundColor(getBackgroundColor());
+		// setBackgroundColor(getBackgroundColor());
+		// setBackgroundColor(getBackground());
+		// refresh newly added components
+		//setBackground(getBackground());
+		this.yAxisPainter.setBackgroundPaint(null);
 
 		updateBounds();
 	}
 
+	/**
+	 * Sets both axis painters' line/marker paint and font (label) color in one
+	 * call -- e.g. white, for readability on a dark look-and-feel background
+	 * where the default black axis label text is illegible. Mirrors
+	 * {@code TimeSeriesBundleChartWithoutSelectionModel.setAxisPaintersColor}
+	 * but lives here so every {@code XYNumericalChartPanel} subclass (including
+	 * {@code ScatterPlot}) gets it, not just time series bundle charts.
+	 */
+	public void setAxisPaintersColor(Color color) {
+		if (xAxisPainter != null) {
+			xAxisPainter.setPaint(color);
+			xAxisPainter.setFontColor(color);
+		}
+		if (yAxisPainter != null) {
+			yAxisPainter.setPaint(color);
+			yAxisPainter.setFontColor(color);
+		}
+	}
+
 //	/**
-//	 * 
+//	 *
 //	 * @return
 //	 * @deprecated naming convention. method now called isXAxisOverlay
 //	 */
@@ -299,6 +341,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		this.xAxisPainter.setPhysicalUnit(physicalUnit);
 	}
 
+	@Override
 	public boolean isLogarithmicScale() {
 		return this.xAxisPainter.isLogarithmicScale();
 	}
@@ -347,6 +390,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 		updateBounds();
 	}
 
+	@Override
 	public void setLogarithmicScale(boolean logarithmicScale) {
 		this.xAxisPainter.setLogarithmicScale(logarithmicScale);
 		this.yAxisPainter.setLogarithmicScale(logarithmicScale);
@@ -362,6 +406,16 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	@Override
 	public IPositionEncodingFunction getYPositionEncodingFunction() {
 		return yAxisPainter.getPositionEncodingFunction();
+	}
+
+	@Override
+	public void setForeground(Color fg) {
+		super.setForeground(fg);
+
+		if (xAxisPainter != null)
+			xAxisPainter.setFontColor(fg);
+		if (yAxisPainter != null)
+			yAxisPainter.setFontColor(fg);
 	}
 
 }

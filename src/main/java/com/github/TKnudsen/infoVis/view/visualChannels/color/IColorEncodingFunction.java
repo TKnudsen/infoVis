@@ -4,18 +4,12 @@ import java.awt.Paint;
 import java.util.function.Function;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.03
+ * Marker interface for functions that encode a data item of type {@code T}
+ * as its visual {@link Paint} (typically a {@link java.awt.Color}) - the
+ * color-channel counterpart to the position and size encoding functions.
  *
- * @param <T> t
+ * @version 1.03
+ * @since 2016
  */
 public interface IColorEncodingFunction<T> extends Function<T, Paint> {
 

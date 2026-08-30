@@ -5,19 +5,8 @@ import java.util.EventObject;
 import com.github.TKnudsen.ComplexDataObject.data.interval.NumberInterval;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Event is used to notify interested parties that the number interval of some
- * particular context has changed in the event source.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
+ * @since 2016
  */
 public class NumberIntervalChangedEvent extends EventObject {
 

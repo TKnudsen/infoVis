@@ -17,17 +17,8 @@ import com.github.TKnudsen.infoVis.view.interaction.event.NumberIntervalChangedE
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.01
- *
+ * @since 2018
  */
 public class PanningOneAxisHandler extends InteractionHandler {
 

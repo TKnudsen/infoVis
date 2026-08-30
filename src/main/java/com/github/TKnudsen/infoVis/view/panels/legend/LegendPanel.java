@@ -17,6 +17,14 @@ import javax.swing.JPanel;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Container laying out a list of {@link LegendItemPanel}s, with click-based
+ * single selection exposed as a {@link SelectionModel} of labels.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class LegendPanel extends JPanel {
 
 	/**

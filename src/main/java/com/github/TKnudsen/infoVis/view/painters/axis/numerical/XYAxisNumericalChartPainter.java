@@ -12,16 +12,8 @@ import com.github.TKnudsen.infoVis.view.painters.axis.IYAxis;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.01
+ * @version 2.02
+ * @since 2016
  */
 public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Number> extends AxisPainter
 		implements IXAxis<X>, IYAxis<Y> {
@@ -73,8 +65,10 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 
 		g2.setPaint(getPaint());
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setStroke(s);
 		g2.setColor(c);
@@ -246,5 +240,21 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 
 	public void setYAxisOverlay(boolean overlayOfYAxis) {
 		this.xyAxisChartRectangleLayout.setYAxisOverlay(overlayOfYAxis);
+	}
+
+	/**
+	 * Sets both axis painters' line/marker paint and font (label) color in one
+	 * call -- e.g. white, for readability on a dark look-and-feel background
+	 * where the default black axis label text is illegible.
+	 */
+	public void setAxisPaintersColor(Color color) {
+		if (xAxisPainter != null) {
+			xAxisPainter.setPaint(color);
+			xAxisPainter.setFontColor(color);
+		}
+		if (yAxisPainter != null) {
+			yAxisPainter.setPaint(color);
+			yAxisPainter.setFontColor(color);
+		}
 	}
 }

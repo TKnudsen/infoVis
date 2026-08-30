@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.awt.Shape;
 import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -17,29 +16,24 @@ import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainters;
 import com.github.TKnudsen.infoVis.view.painters.parallelCoordinates.ParallelCoordinatesPainter;
-import com.github.TKnudsen.infoVis.view.panels.axis.YYYNumericalChartPanel;
+import com.github.TKnudsen.infoVis.view.panels.axis.YYYAxesNumericalChartPanel;
+import com.github.TKnudsen.infoVis.view.visualChannels.IOverplottingMitigation;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.ISizeEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFunction;
 
 /**
  * <p>
- * InfoVis
+ * Chart panel for parallel coordinates / ParallelCoordinatesPainter. The panel
+ * comes without storing the data, as this is done within the nested painter.
  * </p>
- * 
- * <p>
- * Chart panel for parallel coordinates / ParallelCoordinatesPainter.
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.01
+ *
+ * @version 1.02
+ * @since 2018
  */
-public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> implements IRectangleSelection<T>,
-		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, IColorEncoding<T>, ISizeEncoding<T> {
+public class ParallelCoordinates<T> extends YYYAxesNumericalChartPanel<Double> implements IRectangleSelection<T>,
+		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, IColorEncoding<T>, ISizeEncoding<T>,
+		IOverplottingMitigation {
 
 	/**
 	 * 
@@ -47,8 +41,6 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 	private static final long serialVersionUID = -1954336336194404097L;
 
 	private ParallelCoordinatesPainter<T> parallelCoordinatesPainter;
-
-	private List<T> data;
 
 	/**
 	 * world coordinates/position/values of the individual y dimensions
@@ -64,7 +56,6 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 			List<Function<? super T, Double>> worldPositionMappingsY) {
 		super(worldPositionMappingsY.size());
 
-		this.data = Collections.unmodifiableList(data);
 		this.colorMapping = colorMapping;
 
 		if (worldPositionMappingsY.isEmpty())
@@ -75,21 +66,20 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		YYYAxisChartRectangleLayout layout = (YYYAxisChartRectangleLayout) getChartRectangleLayout();
 		layout.setRelativeSpaceBetweenAxes(relativeSpacing(this.worldPositionMappingsY.size()));
 
-		initializeYAxisPainters();
+		initializeYAxisPainters(data);
 
-		initializePainter();
+		initializePainter(data);
 
 		addChartPainter(parallelCoordinatesPainter, true);
 
-		setBackgroundColor(null);
+		setBackground(null);
 	}
 
 	private static double relativeSpacing(int yAxes) {
 		return Math.min(0.4, Math.max(0, -0.0375 * yAxes + 0.375));
 	}
 
-	@Override
-	protected void initializeYAxisPainters() {
+	protected void initializeYAxisPainters(List<T> data) {
 		List<YAxisNumericalPainter<Double>> yAxisPainters = new ArrayList<>();
 
 		for (int i = 0; i < worldPositionMappingsY.size(); i++) {
@@ -98,10 +88,10 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 			yAxisPainters.add(yAxis);
 		}
 
-		setyAxisPainters(yAxisPainters);
+		setYAxisPainters(yAxisPainters);
 	}
 
-	protected void initializePainter() {
+	protected void initializePainter(List<T> data) {
 		parallelCoordinatesPainter = new ParallelCoordinatesPainter<>(data, colorMapping, worldPositionMappingsY);
 
 		// will be done a second time when the painter will be added and registered...
@@ -136,23 +126,6 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 		this.parallelCoordinatesPainter.setSizeEncodingFunction(sizeEncodingFunction);
 	}
 
-//	public Function<? super T, String> getToolTipMapping() {
-//		return parallelCoordinatesPainter.getToolTipMapping();
-//	}
-//
-//	public void setToolTipMapping(Function<? super T, String> toolTipMapping) {
-//		parallelCoordinatesPainter.setToolTipMapping(toolTipMapping);
-//	}
-
-	/**
-	 * use for inheriting classes only
-	 * 
-	 * @return data
-	 */
-	protected List<T> getData() {
-		return data;
-	}
-
 	/**
 	 * use for inheriting classes only
 	 * 
@@ -173,6 +146,17 @@ public class ParallelCoordinates<T> extends YYYNumericalChartPanel<Double> imple
 
 	public void setSelectionPaint(Paint selectionPaint) {
 		this.parallelCoordinatesPainter.setSelectionPaint(selectionPaint);
+	}
+
+	@Override
+	public boolean isAlphaAdjustment() {
+		return parallelCoordinatesPainter != null && parallelCoordinatesPainter.isAlphaAdjustment();
+	}
+
+	@Override
+	public void setAlphaAdjustment(boolean alphaAdjustment) {
+		if (parallelCoordinatesPainter != null)
+			parallelCoordinatesPainter.setAlphaAdjustment(alphaAdjustment);
 	}
 
 }

@@ -15,14 +15,15 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.JTextComponent;
 
 /**
+ * <p>
  * allows search and auto-complete operations.
  * 
  * masks all events from the original JCombobox class. Only lets ActionEvents
  * pass which fulfill the constraints defined in the constructor.
  * 
  * Supports action events by using the enter key.
+ * </p>
  *
- * @param <E> e
  */
 public class AutoCompleteComboBox<E> extends JComboBox<E> {
 

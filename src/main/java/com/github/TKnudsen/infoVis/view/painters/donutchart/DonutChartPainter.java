@@ -15,20 +15,12 @@ import com.github.TKnudsen.infoVis.view.painters.piechart.PieChartPainter;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Donut chart painter. Crops a center pie area from the pie segments of the
  * inherited PieChartPainter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.02
+ * @since 2016
  */
 public class DonutChartPainter extends PieChartPainter {
 

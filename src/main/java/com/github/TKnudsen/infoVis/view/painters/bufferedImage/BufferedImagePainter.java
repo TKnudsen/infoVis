@@ -15,12 +15,9 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * 
  * 2023-04-16: background paint in the constructor set to null per default.
  * </p>
- * 
- * <p>
- * Copyright: Copyright (c) 2015-2024
- * </p>
- * 
+ *
  * @version 1.17
+ * @since 2015
  */
 public class BufferedImagePainter extends ChartPainter {
 

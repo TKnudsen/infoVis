@@ -1,0 +1,36 @@
+The colormap lookup images in this directory (bremm.png, teulingfig2.png,
+steiger.png, schumann.png, ziegler.png, cubediagonal.png) are copied,
+unmodified, from:
+
+    Color2D (https://github.com/dominikjaeckle/Color2D)
+    Copyright 2017 Dominik Jaeckle
+    Licensed under the Apache License, Version 2.0
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Color2D itself credits these colormaps to:
+    Steiger, M., Bernard, J., Thum, S., Mittelstädt, S., Hutter, M., Keim,
+    D. A., and Kohlhammer, J., "Explorative Analysis of 2D Color Maps,"
+    WSCG (2015).
+
+which re-implements colormaps originally published by (per colormap):
+    Bremm, S., von Landesberger, T., Bernard, J., and Schreck, T.,
+        "Assisted descriptor selection based on visual comparative data
+        analysis," EuroVis (2011).                              [bremm]
+    Teuling, A. J., Stöckli, R., and Seneviratne, S. I., "Bivariate colour
+        maps for visualizing climate data," Intl. J. of Climatology (2011).
+                                                              [teulingfig2]
+    Ziegler, H., Nietzschmann, T., and Keim, D. A., "Visual exploration and
+        discovery of atypical behavior in financial time series data using
+        two-dimensional colormaps," Information Visualization (2007).
+                                                                  [ziegler]
+
+See the corresponding *ColorMap2D.java class in this package for the exact
+attribution of each individual colormap.
+
+teulingfig3.png is NOT from Color2D. It was built directly from the primary
+source -- Teuling, A. J., Stöckli, R., and Seneviratne, S. I., "Bivariate
+colour maps for visualizing climate data," International Journal of
+Climatology 31(9), 1408-1412 (2011), (c) 2010 Royal Meteorological Society --
+by sampling the 25 cells of that paper's own Figure 3 legend (a flat,
+undistorted 5x5 swatch printed at n=5, a=0.37) and bilinearly upsampling
+between them. See TeulingFig3ColorMap2D.java for details.

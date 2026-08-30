@@ -10,19 +10,11 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Utilities for the creation of tool tips
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.04
+ * @since 2016
  */
 public class ToolTipTools {
 	public static Rectangle2D createToolTipRectangle(Rectangle2D context, Point p, double width, double height) {

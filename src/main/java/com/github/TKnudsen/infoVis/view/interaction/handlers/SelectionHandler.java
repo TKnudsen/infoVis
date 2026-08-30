@@ -19,16 +19,8 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import de.javagl.selection.SelectionModel;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.01
+ * @since 2017
  */
 public class SelectionHandler<T> extends InteractionHandler {
 
@@ -144,9 +136,9 @@ public class SelectionHandler<T> extends InteractionHandler {
 	}
 
 	public Rectangle2D getSelectionRectangle() {
-		if (pointSelectionStart == null || pointSelectionEnd == null) {
+		if (pointSelectionStart == null || pointSelectionEnd == null)
 			return null;
-		}
+
 		double minX = Math.min(pointSelectionStart.getX(), pointSelectionEnd.getX());
 		double minY = Math.min(pointSelectionStart.getY(), pointSelectionEnd.getY());
 		double width = Math.abs(pointSelectionStart.getX() - pointSelectionEnd.getX());

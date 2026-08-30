@@ -7,6 +7,14 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
+/**
+ * <p>
+ * Text field with auto-complete against a candidate list, used internally by
+ * {@link AutoCompleteComboBox}.
+ * </p>
+ *
+ * @version 1.0
+ */
 class AutoTextField<E> extends JTextField {
 
 	/**

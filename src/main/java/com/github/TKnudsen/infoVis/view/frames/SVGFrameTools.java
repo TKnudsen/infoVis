@@ -12,19 +12,11 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Creates SVGFrames for given painters or panels
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.08
+ * @since 2016
  */
 public class SVGFrameTools {
 
@@ -39,13 +31,37 @@ public class SVGFrameTools {
 	}
 
 	/**
-	 * 
+	 * @deprecated name ambiguous. Use dropSVGFrameHorizontal directly.
 	 * @param panels   the panels
 	 * @param headline the title
 	 * @return the frame
 	 */
 	public static SVGFrame dropSVGFrame(List<JPanel> panels, String headline) {
+		return dropSVGFrameHorizontal(panels, headline);
+	}
+
+	/**
+	 * 
+	 * @param panels   the panels
+	 * @param headline the title
+	 * @return the frame
+	 */
+	public static SVGFrame dropSVGFrameHorizontal(List<JPanel> panels, String headline) {
 		JPanel panel = new JPanel(new GridLayout(0, panels.size()));
+		for (JPanel p : panels)
+			panel.add(p);
+
+		return SVGFrameTools.dropSVGFrame(panel, headline, 1200, 600);
+	}
+
+	/**
+	 * 
+	 * @param panels   the panels
+	 * @param headline the title
+	 * @return the frame
+	 */
+	public static SVGFrame dropSVGFrameVertical(List<JPanel> panels, String headline) {
+		JPanel panel = new JPanel(new GridLayout(panels.size(), 0));
 		for (JPanel p : panels)
 			panel.add(p);
 

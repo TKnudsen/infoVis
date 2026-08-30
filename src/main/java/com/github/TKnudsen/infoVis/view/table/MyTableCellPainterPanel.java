@@ -11,6 +11,15 @@ import javax.swing.JPanel;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
 
+/**
+ * <p>
+ * Panel that resizes and draws one or more {@link ChartPainter}s to fill its
+ * bounds on each repaint, used for table cell renderers whose size is only
+ * known once the panel is added to the table.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class MyTableCellPainterPanel extends JPanel {
 
 	/**
@@ -25,7 +34,7 @@ public class MyTableCellPainterPanel extends JPanel {
 		super.paintComponent(g);
 
 		// fill background
-		Rectangle2D rect = ComponentTools.getCompontentDrawableRectangle(this);
+		Rectangle2D rect = ComponentTools.getDrawableRectangle(this);
 		if (rect != null) {
 			g.setColor(getBackground());
 			g.fillRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());

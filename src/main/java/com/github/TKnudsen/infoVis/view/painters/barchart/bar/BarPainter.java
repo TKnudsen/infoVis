@@ -14,19 +14,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodin
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints a single bar
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.04
+ * @since 2016
  */
 public abstract class BarPainter extends ChartPainter implements ITooltip {
 

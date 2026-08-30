@@ -4,6 +4,8 @@ import java.awt.Paint;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRange;
+import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRangeTools;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DVerticalHighlightPainter;
@@ -11,19 +13,11 @@ import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Vertical distribution chart with distribution painter inside.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.08
+ * @since 2018
  */
 public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Double> implements Distribution1DPanel<T> {
 
@@ -56,30 +50,18 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 		initializeData(data, worldToDoubleMapping, colorEncodingFunction);
 	}
 
-	protected void initializeData(Collection<T> data, Function<? super T, ? extends Number> worldToDoubleMapping,
+	protected void initializeData(Collection<T> data, Function<? super T, ? extends Number> worldPositionMappingY,
 			Function<? super T, ? extends Paint> colorEncodingFunction) {
 
 		if (data == null)
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
 				throw new IllegalArgumentException("InfoVisBoxPlotVerticalPanel: no valid input given");
 
-		double min = Double.POSITIVE_INFINITY;
-		if (!Double.isNaN(minGlobal))
-			min = minGlobal;
-		else
-			for (T t : data)
-				min = Math.min(min, worldToDoubleMapping.apply(t).doubleValue());
+		NumericRange rangeY = NumericRangeTools.computeFiniteRangeStrict(data, worldPositionMappingY, null, null);
 
-		double max = Double.NEGATIVE_INFINITY;
-		if (!Double.isNaN(maxGlobal))
-			max = maxGlobal;
-		else
-			for (T t : data)
-				max = Math.max(max, worldToDoubleMapping.apply(t).doubleValue());
+		initializeYAxisPainter(rangeY.getMin(), rangeY.getMax());
 
-		initializeYAxisPainter(min, max);
-
-		this.distribution1DVerticalPainter = new Distribution1DVerticalHighlightPainter<T>(data, worldToDoubleMapping,
+		this.distribution1DVerticalPainter = new Distribution1DVerticalHighlightPainter<T>(data, worldPositionMappingY,
 				colorEncodingFunction);
 		this.distribution1DVerticalPainter.setBackgroundPaint(null);
 

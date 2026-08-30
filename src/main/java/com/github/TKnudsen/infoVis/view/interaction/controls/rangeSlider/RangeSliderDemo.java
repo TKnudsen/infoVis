@@ -17,6 +17,14 @@ import javax.swing.event.ChangeListener;
 
 import com.github.TKnudsen.infoVis.view.ui.NimbusUITools;
 
+/**
+ * <p>
+ * Standalone demo panel showing a {@link RangeSlider} with labels displaying
+ * its current lower and upper values.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class RangeSliderDemo extends JPanel {
 
 	/**

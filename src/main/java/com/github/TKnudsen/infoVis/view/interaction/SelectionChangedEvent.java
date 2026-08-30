@@ -4,16 +4,8 @@ import java.beans.PropertyChangeEvent;
 import java.util.Map;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
+ * @since 2016
  */
 public class SelectionChangedEvent extends PropertyChangeEvent {
 

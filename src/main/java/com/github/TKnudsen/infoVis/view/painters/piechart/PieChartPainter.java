@@ -26,19 +26,11 @@ import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Basic pie chart painter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.03
+ * @since 2016
  */
 public class PieChartPainter extends ChartPainter
 		implements IClickSelection<Integer>, ISelectionVisualizer<Integer>, ITooltip {

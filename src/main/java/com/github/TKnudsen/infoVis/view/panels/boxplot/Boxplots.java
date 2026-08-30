@@ -3,11 +3,14 @@ package com.github.TKnudsen.infoVis.view.panels.boxplot;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
+import com.github.TKnudsen.infoVis.view.panels.axis.XAxisNumericalChartsJuxtaposedPanel;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionEvent;
@@ -15,6 +18,15 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Static factory and interaction helpers for horizontal/vertical box plot
+ * panels: creation from raw data, and rectangle-selection wiring against a
+ * {@link SelectionModel}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Boxplots {
 
 	public static <T> BoxPlotHorizontalChartPanel createHorizontalBoxplot(Collection<T> data,
@@ -55,6 +67,35 @@ public class Boxplots {
 		BoxPlotVerticalChartPanel panel = new BoxPlotVerticalChartPanel(statistics, minGlobal, maxGlobal);
 
 		return panel;
+	}
+
+	public static <T> XAxisNumericalChartsJuxtaposedPanel<Number> createHoritontalBoxplots(
+			Collection<Collection<T>> datas, Function<? super T, ? extends Number> worldToDoubleMapping,
+			double minGlobal, double maxGlobal) {
+		Objects.requireNonNull(datas, "Boxplots: no valid input given");
+
+		if (datas == null || worldToDoubleMapping == null)
+			throw new IllegalArgumentException("Boxplots: no valid input given");
+
+		XAxisNumericalChartsJuxtaposedPanel<Number> chartPanel = new XAxisNumericalChartsJuxtaposedPanel<Number>(
+				minGlobal, maxGlobal);
+
+		for (Collection<T> data : datas) {
+			Collection<Number> d = new ArrayList<>();
+			for (T t : data) {
+				Number n = worldToDoubleMapping.apply(t);
+				if (!Double.isNaN(n.doubleValue()))
+					d.add(n);
+			}
+
+			StatisticsSupport statistics = new StatisticsSupport(d);
+
+			BoxPlotHorizontalPainter painter = new BoxPlotHorizontalPainter(statistics);
+
+			chartPanel.addChartPainter(painter);
+		}
+
+		return chartPanel;
 	}
 
 	/**

@@ -11,6 +11,14 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 
+/**
+ * <p>
+ * Table cell renderer displaying a {@link Boolean} value as a centered,
+ * theme-consistent checkbox.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class TableCellCheckBoxRenderer extends JCheckBox implements TableCellRenderer {
 
 	/**

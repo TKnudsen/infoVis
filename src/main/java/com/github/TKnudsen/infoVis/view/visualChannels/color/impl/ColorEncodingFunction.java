@@ -11,20 +11,12 @@ import com.github.TKnudsen.ComplexDataObject.data.interfaces.ISelfDescription;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Stores the color mapping for a given set of data. other data is mapped to a
  * default color.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.03
+ * @since 2017
  */
 public class ColorEncodingFunction<T> extends ConstantColorEncodingFunction<T> implements ISelfDescription {
 

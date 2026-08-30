@@ -7,25 +7,18 @@ import java.util.Collection;
 import java.util.List;
 
 import com.github.TKnudsen.infoVis.view.painters.barchart.bar.BarHorizontalPainter;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart;
 import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEncoding;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Basic horizontal bar chart painter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.04
+ * @since 2016
  */
 public class BarChartHorizontalPainter extends BarChartPainter implements IXPositionEncoding {
 
@@ -67,11 +60,13 @@ public class BarChartHorizontalPainter extends BarChartPainter implements IXPosi
 			return;
 
 		double gridSpacing = getGridSpacing();
-		if (Double.isNaN(gridSpacing))
+		if (Double.isNaN(gridSpacing)) {
 			gridSpacing = Rectangle2DTools.calculateSpacingValue(chartRectangle.getWidth(), chartRectangle.getHeight(),
-					barPainters.size(), barPainters.size());
+					barPainters.size(), barPainters.size(), BarChart.BARCHART_GRID_SPACING_RATIO);
+			gridSpacing = Math.max(1.0, gridSpacing);
+		}
 		Rectangle2D[][] rectangleMatrix = Rectangle2DTools.createRectangleMatrix(chartRectangle, 1, barPainters.size(),
-				gridSpacing);
+				(int)gridSpacing);
 
 		if (rectangleMatrix != null)
 			for (int i = 0; i < barPainters.size(); i++)

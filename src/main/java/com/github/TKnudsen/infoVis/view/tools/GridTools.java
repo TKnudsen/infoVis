@@ -4,7 +4,35 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * <p>
+ * Static helpers for arranging a collection of items into a roughly
+ * quadratic 2D grid.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class GridTools {
+
+	/**
+	 * heuristics to guess grid sizes x and y, aiming for a quadratic grid layout
+	 * 
+	 * @param <T>
+	 * @param items
+	 * @return
+	 */
+	public static int[] suggestQuadraticGrid(Collection<?> items) {
+
+		int x = (int) Math.ceil(Math.sqrt(items.size()));
+		int y = (int) Math.floor(Math.sqrt(items.size()));
+		if (Math.sqrt(items.size()) - (int) Math.floor(Math.sqrt(items.size())) > 0.5)
+			y++;
+
+		x = Math.max(x, 1);
+		y = Math.max(y, 1);
+
+		return new int[] { x, y };
+	}
 
 	/**
 	 * heuristics to guess grid sizes x and y, aiming for a quadratic grid layout
@@ -15,13 +43,9 @@ public class GridTools {
 	 */
 	public static <T> T[][] toGridQuadratic(Collection<T> items, Class<? extends T> cls) {
 
-		int x = (int) Math.ceil(Math.sqrt(items.size()));
-		int y = (int) Math.floor(Math.sqrt(items.size()));
-		if (Math.sqrt(items.size()) - (int) Math.floor(Math.sqrt(items.size())) > 0.5)
-			y++;
-
-		x = Math.max(x, 1);
-		y = Math.max(y, 1);
+		int[] xy = suggestQuadraticGrid(items);
+		int x = Math.max(1, xy[0]);
+		int y = Math.max(1, xy[1]);
 
 		@SuppressWarnings("unchecked")
 		T[][] grid = (T[][]) Array.newInstance(cls, x, y);

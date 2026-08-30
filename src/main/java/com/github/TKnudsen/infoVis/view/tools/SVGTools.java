@@ -9,19 +9,11 @@ import de.javagl.svggraphics.SvgGraphicsWriter;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * allows saving a JComponent as a SVG image.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.05
+ * @since 2016
  */
 public class SVGTools {
 

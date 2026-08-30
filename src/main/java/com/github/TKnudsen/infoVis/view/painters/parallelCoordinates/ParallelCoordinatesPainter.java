@@ -6,7 +6,9 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RectangularShape;
@@ -15,11 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
-import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -28,11 +28,12 @@ import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
-import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokeTools;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
-import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.OverplottingMitigationTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
+import com.github.TKnudsen.infoVis.view.visualChannels.IOverplottingMitigation;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncoding;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunction;
@@ -43,31 +44,25 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints a parallel coordinates plot using visual mapping functions to map data
  * (represented as T) into the visual space. This is done in two steps. First, T
  * is mapped to Double for the individual y positions. Second, the Double values
  * are mapped into the visual space.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @version 1.04
+ *
+ * @version 1.05
+ * @since 2018
  */
 public class ParallelCoordinatesPainter<T> extends ChartPainter
 		implements IXPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>, IShapeSelection<T>,
-		IClickSelection<T>, ISelectionVisualizer<T>, ITooltip {
+		IClickSelection<T>, ISelectionVisualizer<T>, ITooltip, IOverplottingMitigation {
 
 	// input data
 	protected final List<T> data;
 
 	// screen coordinates of input data
-	protected final List<Point2D[]> screenPoints = new CopyOnWriteArrayList<>();
+	// protected final List<Point2D[]> screenPoints = new CopyOnWriteArrayList<>();
+	protected final List<Point2D[]> screenPoints;
 
 	// overplotting mitigation
 	protected boolean overplottingMitigation = false;
@@ -104,7 +99,10 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		this.worldPositionMappingsY = worldPositionMappingsY;
 
 		// data sanity check
-		this.data = Collections.unmodifiableList(VisualMappings.sanityCheckFilter(data, worldPositionMappingsY, true));
+		this.data = Collections
+				.unmodifiableList(VisualMappingTools.sanityCheckFilter(data, worldPositionMappingsY, true));
+
+		this.screenPoints = new ArrayList<Point2D[]>(data.size());
 
 		initializePositionEncodingFunctions();
 
@@ -114,62 +112,72 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	private void initializePositionEncodingFunctions() {
 		this.yPositionEncodingFunctions = new ArrayList<>();
 
-//		List<Double> xValues = new ArrayList<>();
 		for (int i = 0; i < worldPositionMappingsY.size(); i++) {
 			Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(i);
 
-			List<Double> yValues = new ArrayList<>();
+			double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 			for (T t : data) {
-//				xValues.add((double) i);
-				yValues.add(worldPositionMappingY.apply(t).doubleValue());
+				double v = worldPositionMappingY.apply(t);
+				if (v < min)
+					min = v;
+				if (v > max)
+					max = v;
 			}
 
-			StatisticsSupport yStatistics = new StatisticsSupport(yValues);
-
-			this.yPositionEncodingFunctions
-					.add(new PositionEncodingFunction(yStatistics.getMin(), yStatistics.getMax(), 0d, 1d, true));
-
-			// TODO expensive as for every axis event every axis is refreshed
-			for (IPositionEncodingFunction positionEncodingFunction : this.yPositionEncodingFunctions)
-				positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
+			this.yPositionEncodingFunctions.add(new PositionEncodingFunction(min, max, 0d, 1d, true));
 		}
 
-//		StatisticsSupport xStatistics = new StatisticsSupport(xValues);
+		for (IPositionEncodingFunction positionEncodingFunction : this.yPositionEncodingFunctions)
+			positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 
 		this.xPositionEncodingFunction = new PositionEncodingFunction(0, worldPositionMappingsY.size() - 1, 0d, 1d);
 		this.xPositionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 	}
 
+	/**
+	 * Efficiently recomputes screen-space points for all data items.
+	 *
+	 * <p>
+	 * This version avoids object churn by reusing the existing {@code screenPoints}
+	 * list (no CopyOnWriteArrayList, no new Point2D objects per point). Each poly
+	 * line is represented by a primitive float array to minimize GC pressure.
+	 * </p>
+	 */
 	protected void refreshDataPoints() {
-		screenPoints.clear();
-
-		// chartRectangle == null means that position encoding will make no sense
-		// (still)
 		if (data == null || chartRectangle == null)
 			return;
 
-		for (int i = 0; i < data.size(); i++) {
-			T t = data.get(i);
+		final int n = data.size();
+		final int dim = worldPositionMappingsY.size();
 
-			Point2D[] points = new Point2D[worldPositionMappingsY.size()];
+		// Ensure capacity and reuse existing arrays if possible
+		if (screenPoints.size() != n) {
+			screenPoints.clear();
+			for (int i = 0; i < n; i++)
+				screenPoints.add(new Point2D.Float[dim]);
+		}
 
-			for (int x = 0; x < worldPositionMappingsY.size(); x++) {
-				Function<? super T, Double> worldPositionMappingY = worldPositionMappingsY.get(x);
+		for (int i = 0; i < n; i++) {
+			final T t = data.get(i);
+			final Point2D[] pts = screenPoints.get(i);
 
-				double worldX = x;
-				double worldY = worldPositionMappingY.apply(t).doubleValue();
+			for (int d = 0; d < dim; d++) {
+				double worldX = d;
+				double worldY = worldPositionMappingsY.get(d).apply(t);
+
 				float xP = xPositionEncodingFunction.apply(worldX).floatValue();
-				float yP = yPositionEncodingFunctions.get(x).apply(worldY).floatValue();
+				float yP = yPositionEncodingFunctions.get(d).apply(worldY).floatValue();
 
-				Point2D point = new Point2D.Float(xP, yP);
-				points[x] = point;
+				Point2D p = pts[d];
+				if (p == null)
+					pts[d] = new Point2D.Float(xP, yP);
+				else
+					((Point2D.Float) p).setLocation(xP, yP);
 			}
-
-			screenPoints.add(points);
 		}
 
 		if (overplottingMitigation)
-			alpha = Math.max(0.05f, Math.min(1.0f, 1.0f / (screenPoints.size() / 3000.0f)));
+			alpha = OverplottingMitigationTools.computeAlpha(screenPoints.size());
 	}
 
 	@Override
@@ -180,119 +188,136 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		drawLinesAndPoints(g2);
 	}
 
+	/**
+	 * Optimized drawing of all polylines and points in the parallel coordinates
+	 * view.
+	 *
+	 * <p>
+	 * Uses {@link java.awt.geom.GeneralPath} batching to reduce the number of
+	 * individual draw calls, minimizes Graphics2D state changes (paint/stroke), and
+	 * caches alpha-blended colors. The goal is to drastically reduce CPU load in
+	 * Java2D's rendering pipeline when many lines are drawn.
+	 * </p>
+	 */
 	private void drawLinesAndPoints(Graphics2D g2) {
-		Color c = g2.getColor();
+		if (data.isEmpty() || screenPoints.isEmpty())
+			return;
 
-		// point size
-		float pointSize = this.pointSize;
+		final int n = data.size();
+		final int dim = worldPositionMappingsY.size();
 
-		for (int i = 0; i < data.size(); i++) {
-			Point2D[] point = screenPoints.get(i);
-			if (point == null)
+		// Resolve point size once per frame
+		float basePointSize = this.pointSize;
+		if (Float.isNaN(basePointSize))
+			basePointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+
+		// Prepare strokes once
+		final BasicStroke stroke = BasicStrokeTools.get(basePointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+		final BasicStroke selectedStroke = BasicStrokeTools.get(basePointSize + 2, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND);
+
+		// Cache alpha-adjusted default paint
+		final Paint defaultAlphaPaint = ColorTools.setAlpha(getPaint(), alpha);
+
+		// Backup current Graphics2D state
+		final Stroke oldStroke = g2.getStroke();
+		final Paint oldPaint = g2.getPaint();
+
+		// Prepare rendering settings
+		g2.setStroke(stroke);
+
+		// Optional selection handling
+		final boolean hasSelection = (selectedFunction != null);
+		final List<Integer> selectedIndices = (drawSelectedLast && hasSelection)
+				? new ArrayList<>(Math.min(128, n / 10))
+				: null;
+
+		// --- First pass: draw non-selected (or all) lines ---
+		Paint currentPaint = oldPaint;
+		final GeneralPath path = new GeneralPath(); // reusable path for all lines
+
+		for (int i = 0; i < n; i++) {
+			final Point2D[] pts = screenPoints.get(i);
+			if (pts == null || pts.length == 0)
 				continue;
 
+			// Determine if selected
 			boolean selected = false;
-			if (selectedFunction != null) {
-				Boolean apply = selectedFunction.apply(data.get(i));
-				if (apply != null)
-					selected = apply.booleanValue();
+			if (hasSelection) {
+				final Boolean sel = selectedFunction.apply(data.get(i));
+				selected = (sel != null && sel);
 			}
 
-			if (drawSelectedLast && selected)
+			if (drawSelectedLast && selected && selectedIndices != null) {
+				selectedIndices.add(i);
 				continue;
+			}
 
-			Paint colorToPaint = colorMapping.apply(data.get(i));
-			if (colorToPaint == null)
-				colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
+			// Determine paint (cached)
+			Paint paint = (colorMapping != null) ? colorMapping.apply(data.get(i)) : null;
+			if (paint == null)
+				paint = defaultAlphaPaint;
 
-			// new concept with the size-encoding
-			if (Double.isNaN(pointSize))
-				pointSize = sizeEncodingFunction.apply(data.get(i)).floatValue();
-			if (Double.isNaN(pointSize))
-				pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			// Switch paint only when necessary
+			if (paint != currentPaint) {
+				g2.setPaint(paint);
+				currentPaint = paint;
+			}
 
-			drawIndividualPoint(g2, point, (float) pointSize, colorToPaint, selected);
+			drawPolyline(g2, pts, path);
 		}
 
-		if (drawSelectedLast) // second loop
-			for (int i = 0; i < data.size(); i++) {
-				Point2D[] point = screenPoints.get(i);
-				if (point == null)
-					continue;
+		// --- Second pass: selected items (drawn last for emphasis) ---
+		if (selectedIndices != null && !selectedIndices.isEmpty()) {
+			for (int idx : selectedIndices) {
+				final Point2D[] pts = screenPoints.get(idx);
+				if (pts != null && pts.length > 0) {
+					g2.setStroke(selectedStroke);
+					g2.setPaint(selectionPaint);
+					drawPolyline(g2, pts, path);
 
-				boolean selected = false;
-				if (selectedFunction != null) {
-					Boolean apply = selectedFunction.apply(data.get(i));
-					if (apply != null)
-						selected = apply.booleanValue();
+					g2.setStroke(stroke);
+					Paint paint = (colorMapping != null) ? colorMapping.apply(data.get(idx)) : null;
+					g2.setPaint(paint);
+					drawPolyline(g2, pts, path);
 				}
-
-				if (!selected)
-					continue;
-
-				Paint colorToPaint = colorMapping.apply(data.get(i));
-				if (colorToPaint == null)
-					colorToPaint = ColorTools.setAlpha(getPaint(), alpha);
-
-				// new concept with the size-encoding
-				if (Double.isNaN(pointSize))
-					pointSize = sizeEncodingFunction.apply(data.get(i)).floatValue();
-				if (Double.isNaN(pointSize))
-					pointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
-
-				drawIndividualPoint(g2, point, pointSize, colorToPaint, selected);
 			}
+		}
 
-		g2.setColor(c);
+		// Restore original Graphics2D state
+		if (currentPaint != oldPaint)
+			g2.setPaint(oldPaint);
+		g2.setStroke(oldStroke);
 	}
 
 	/**
-	 * code is copied from the trajectory painter. may be externalized to a tools
-	 * class.
-	 * 
-	 * @param g2         g2
-	 * @param pointArray points
-	 * @param pointSize  point size
-	 * @param pointPaint paint
-	 * @param selected   is selected
+	 * Draws a polyline efficiently using a reusable {@link GeneralPath}.
+	 *
+	 * <p>
+	 * The stroke and paint are assumed to be already configured in the
+	 * {@link Graphics2D} context. This method avoids object allocations by reusing
+	 * the provided path.
+	 * </p>
+	 *
+	 * @param g2   the graphics context
+	 * @param pts  array of screen-space points
+	 * @param path reusable path
 	 */
-	protected void drawIndividualPoint(Graphics2D g2, Point2D[] pointArray, float pointSize, Paint pointPaint,
-			boolean selected) {
+	private static void drawPolyline(Graphics2D g2, Point2D[] pts, GeneralPath path) {
+		final int len = pts.length;
+		if (len == 0 || pts[0] == null)
+			return;
 
-		Point2D lastPoint = null;
+		path.reset();
+		path.moveTo((float) pts[0].getX(), (float) pts[0].getY());
 
-		for (int i = 0; i < pointArray.length; i++) {
-			Point2D point = pointArray[i];
-
-			float size = pointSize * 1.33f;
-			
-			if (selected) {
-				// line
-				if (lastPoint != null) {
-					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
-							(float) point.getY(),
-							BasicStrokes.get(pointSize + 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
-							selectionPaint);
-					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
-							(float) point.getY(),
-							BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
-				}
-
-				// point
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
-			} else {
-				// line
-				if (lastPoint != null)
-					DisplayTools.drawLine(g2, (float) lastPoint.getX(), (float) lastPoint.getY(), (float) point.getX(),
-							(float) point.getY(),
-							BasicStrokes.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
-
-				// point
-				DisplayTools.drawPoint(g2, point.getX(), point.getY(), size, pointPaint, true);
-			}
-
-			lastPoint = point;
+		for (int i = 1; i < len; i++) {
+			Point2D p = pts[i];
+			if (p != null)
+				path.lineTo((float) p.getX(), (float) p.getY());
 		}
+
+		g2.draw(path);
 	}
 
 	public static float calculatePointSize(double viewWidth, double viewHeight) {
@@ -315,7 +340,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		if (size % 2 == 1)
 			size -= 1;
 		size += 1;
-		this.stroke = BasicStrokes.get((float) size);
+		this.stroke = BasicStrokeTools.get((float) size);
 
 		if (!externalXPositionEncodingFunction)
 			updateXPositionEncoding(rectangle);
@@ -401,11 +426,13 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		return stringPainter;
 	}
 
-	public boolean isDynamicAlphaAdjustment() {
+	@Override
+	public boolean isAlphaAdjustment() {
 		return overplottingMitigation;
 	}
 
-	public void setDynamicAlphaAdjustment(boolean dynamicAlphaAdjustment) {
+	@Override
+	public void setAlphaAdjustment(boolean dynamicAlphaAdjustment) {
 		this.overplottingMitigation = dynamicAlphaAdjustment;
 	}
 

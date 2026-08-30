@@ -16,19 +16,11 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Panel that interactively manages a 2D data aggregation.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2020-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.01
+ * @since 2020
  */
 public class Grid2DAggregationPanel<T> extends InfoVisChartPanel implements IClickSelection<T> {
 

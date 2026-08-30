@@ -18,19 +18,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints the distribution of numerical values in a horizontal arrangement
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.06
+ * @since 2016
  */
 public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T> implements IXPositionEncoding {
 
@@ -46,9 +38,14 @@ public class Distribution1DHorizontalPainter<T> extends Distribution1DPainter<T>
 	}
 
 	@Override
-	public void drawLine(Graphics2D g2, Double positionValue, double capSize) {
-		DisplayTools.drawLine(g2, positionValue, chartRectangle.getMinY() - capSize, positionValue,
-				getValueYEndPosition() + capSize);
+	public void drawLine(Graphics2D g2, float positionValue, double capSize) {
+		if (chartRectangle == null)
+			return;
+
+		float yStart = (float) (chartRectangle.getMinY() - capSize);
+		float yEnd = (float) (getValueYEndPosition() + capSize);
+
+		DisplayTools.drawLine(g2, positionValue, yStart, positionValue, yEnd);
 	}
 
 	/**

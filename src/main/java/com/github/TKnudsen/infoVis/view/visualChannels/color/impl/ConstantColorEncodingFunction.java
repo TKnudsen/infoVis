@@ -8,19 +8,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.IColorEncodingFunct
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Provides a constant color for all entities.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.03
+ * @since 2017
  */
 public class ConstantColorEncodingFunction<T> implements IColorEncodingFunction<T>, ISelfDescription {
 

@@ -3,25 +3,18 @@ package com.github.TKnudsen.infoVis.view.painters.scatterplot;
 import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Creates scatter plot painters.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.02
+ *
+ * @version 1.03
+ * @since 2016
  */
 public class ScatterPlotPainters {
 
@@ -45,6 +38,24 @@ public class ScatterPlotPainters {
 		Function<Point2D, Double> worldPositionMappingX = p -> p.getX();
 		Function<Point2D, Double> worldPositionMappingY = p -> p.getY();
 		return new ScatterPlotPainter<>(points, colorMapping, worldPositionMappingX, worldPositionMappingY);
+	}
+
+	public static <T> List<T> getData(ScatterPlotPainter<T> scatterPlotPainter) {
+		Objects.requireNonNull(scatterPlotPainter);
+
+		return scatterPlotPainter.data;
+	}
+
+	public static <T> List<T> getData(ScatterPlotIndexedGPUPainter<T> scatterPlotPainter) {
+		Objects.requireNonNull(scatterPlotPainter);
+
+		return scatterPlotPainter.data;
+	}
+
+	public static <T> List<T> getData(ScatterPlotSpriteGPUPainter<T> scatterPlotPainter) {
+		Objects.requireNonNull(scatterPlotPainter);
+
+		return scatterPlotPainter.data;
 	}
 
 }

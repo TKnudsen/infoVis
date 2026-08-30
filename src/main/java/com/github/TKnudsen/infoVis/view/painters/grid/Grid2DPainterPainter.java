@@ -6,9 +6,11 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.categorical.XAxisCategoricalPainter;
@@ -20,19 +22,11 @@ import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
 
 /**
  * <p>
- * InfoVis
+ * Manages and paints a grid of ChartPainters.
  * </p>
- * 
- * <p>
- * Paints a grid of ChartPainters.
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.03
+ *
+ * @version 2.04
+ * @since 2016
  */
 public class Grid2DPainterPainter<T extends ChartPainter>
 		extends XYAxisCategoricalChartPainter<List<String>, List<String>> implements ITooltip, Iterable<T> {
@@ -104,9 +98,6 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	@Override
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
-
-		// already executed by the XYAxisCategoricalChartPainter
-		// drawChart(g2);
 	}
 
 	@Override
@@ -196,13 +187,12 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	}
 
 	public int[] getGridIndex(Point p) {
-		if (enableToolTipping)
-			if (grid != null)
-				for (int i = 0; i < grid.length; i++)
-					for (int j = 0; j < grid[i].length; j++)
-						if (grid[i][j].contains(p)) {
-							return new int[] { i, j };
-						}
+		if (grid != null)
+			for (int i = 0; i < grid.length; i++)
+				for (int j = 0; j < grid[i].length; j++)
+					if (grid[i][j].contains(p)) {
+						return new int[] { i, j };
+					}
 		return null;
 	}
 
@@ -307,6 +297,13 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 
 	public T[][] getPainters() {
 		return painters;
+	}
+
+	public Collection<T> getPaintersAsList() {
+		if (painters != null)
+			return DataConversion.array2DToList(painters);
+
+		return null;
 	}
 
 	public T getPainter(int i, int j) {

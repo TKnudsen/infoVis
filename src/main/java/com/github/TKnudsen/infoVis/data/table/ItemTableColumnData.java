@@ -4,7 +4,9 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
+ * <p>
  * describes how the column of a table shall be represented visually
+ * </p>
  *
  */
 public class ItemTableColumnData {

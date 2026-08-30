@@ -5,19 +5,11 @@ import java.util.List;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Returns the list of elements that are selected by a given rectangular shape
  * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.04
+ * @since 2017
  */
 public interface IRectangleSelection<T> {
 

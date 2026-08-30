@@ -12,15 +12,18 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.tools.BasicStrokes;
+import com.github.TKnudsen.infoVis.view.tools.BasicStrokeTools;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
+ * <p>
  * paints the statistical distribution of angles (between -90 and +90 by
  * default) by combining a speedometer metaphor with a boxplot.
  * 
  * dataStatistics may be null. makes handling easier from extetnal
+ * </p>
+ *
  */
 public class AngleDistributionCircularPainter extends ChartPainter {
 
@@ -186,11 +189,11 @@ public class AngleDistributionCircularPainter extends ChartPainter {
 		Line2D.Double tickLine = new Line2D.Double(x0, y0, x1, y1);
 
 		// draw tick
-		g2.setStroke(BasicStrokes.get(0.5f));
+		g2.setStroke(BasicStrokeTools.get(0.5f));
 		g2.setPaint(getBorderPaint());
 		g2.draw(tickLine);
 
-		// draw actual value at degree°
+		// draw actual value (in degrees)
 		DisplayTools.drawRotatedString(g2, MathFunctions.round(angle / 90 * maxAngle, 1) + "", (float) (x1 + 3),
 				(float) (y1 + Math.cos(tickLength)), 0.0f);
 
@@ -201,14 +204,14 @@ public class AngleDistributionCircularPainter extends ChartPainter {
 		Line2D.Double meanLine = new Line2D.Double(rectangle.getMinX(), rectangle.getCenterY(), outerRect.getMaxX(),
 				rectangle.getCenterY());
 
-		g2.setStroke(BasicStrokes.get(0.5f));
+		g2.setStroke(BasicStrokeTools.get(0.5f));
 //		g2.setPaint(ColorTools.setAlpha(getBorderPaint(), 0.33f));
 		g2.setPaint(getBorderPaint());
 		g2.draw(meanLine);
 	}
 
 	private void rawBoxPlotSupportingRadius(Graphics2D g2) {
-		g2.setStroke(BasicStrokes.get(0.5f));
+		g2.setStroke(BasicStrokeTools.get(0.5f));
 //		g2.setPaint(ColorTools.setAlpha(getBorderPaint(), 0.33f));
 		g2.setPaint(getBorderPaint());
 		g2.draw(outerArc);
@@ -266,7 +269,7 @@ public class AngleDistributionCircularPainter extends ChartPainter {
 		g2.draw(box97);
 
 		float strokeWidth = Math.round(boxplotStokeWidthRelative * outerRect.getWidth());
-		g2.setStroke(BasicStrokes.get(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+		g2.setStroke(BasicStrokeTools.get(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		g2.setPaint(ColorTools.setAlpha(getPaint(), 0.75f));
 		Arc2D.Double box75 = new Arc2D.Double(outerRect, r25, degree_quantil75, Arc2D.OPEN);
 		g2.draw(box75);
@@ -306,7 +309,7 @@ public class AngleDistributionCircularPainter extends ChartPainter {
 
 		Line2D.Double meanLine = new Line2D.Double(x0, y0, x1, y1);
 
-		g2.setStroke(BasicStrokes.get(Math.max(1, Math.round(0.1 * boxPlotStrokeWidth)), BasicStroke.CAP_BUTT,
+		g2.setStroke(BasicStrokeTools.get(Math.max(1, Math.round(0.1 * boxPlotStrokeWidth)), BasicStroke.CAP_BUTT,
 				BasicStroke.JOIN_BEVEL));
 		g2.setPaint((meanLinePaint == null) ? getBorderPaint() : meanLinePaint);
 		g2.draw(meanLine);

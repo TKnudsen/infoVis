@@ -10,18 +10,9 @@ import com.github.TKnudsen.infoVis.view.painters.axis.IYAxis;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.05
+ * @version 2.06
+ * @since 2016
  */
-
 public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisPainter implements IYAxis<Y> {
 
 	protected YAxisChartRectangleLayout yAxisChartRectangleLayout = new YAxisChartRectangleLayout();
@@ -62,8 +53,10 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 
 		g2.setColor(color);
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setColor(c);
 	}

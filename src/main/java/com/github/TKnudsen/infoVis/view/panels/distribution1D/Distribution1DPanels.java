@@ -13,7 +13,8 @@ import java.util.function.Function;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
@@ -23,6 +24,15 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Static factory and interaction helpers for {@link Distribution1DPanel}:
+ * creation from raw data with color encoding, and selection-model wiring
+ * that highlights selected values.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Distribution1DPanels {
 
 	public static Distribution1DPanel<Double> createForDoubles(Collection<Double> data, boolean vertical) {
@@ -111,8 +121,9 @@ public class Distribution1DPanels {
 			SelectionModel<T> selectionModel, ShapeAttributes selectionShapeAttribtes) {
 
 		return addInteraction(distributionPanel, selectionModel,
-				new ConstantColorEncodingFunction<>(selectionShapeAttribtes.getColor()),
-				selectionShapeAttribtes.getStroke());
+				new ConstantColorEncodingFunction<>(
+						selectionShapeAttribtes != null ? selectionShapeAttribtes.getColor() : Color.MAGENTA),
+				selectionShapeAttribtes != null ? selectionShapeAttribtes.getStroke() : DisplayTools.thickStroke);
 	}
 
 	/**
@@ -171,7 +182,7 @@ public class Distribution1DPanels {
 		return selectionListener;
 	}
 
-	@Deprecated // use VisualMappings.sanityCheckFilter
+	@Deprecated // use VisualMappingTools.sanityCheckFilter
 	/**
 	 * applies a filter operation using a list of data. Returns a new list, only
 	 * containing those elements which can be applied by the position mapping
@@ -184,6 +195,6 @@ public class Distribution1DPanels {
 	 */
 	public static <T> List<T> sanityCheckFilter(Collection<T> data, Function<? super T, Double> worldPositionMapping,
 			boolean warnForQualityLeaks) {
-		return VisualMappings.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
+		return VisualMappingTools.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
 	}
 }

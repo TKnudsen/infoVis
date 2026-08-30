@@ -11,6 +11,14 @@ import com.github.TKnudsen.infoVis.view.painters.primitives.RectanglePainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 import com.github.TKnudsen.infoVis.view.panels.QuadraticPanel;
 
+/**
+ * <p>
+ * Single legend entry: a colored square next to a label, optionally
+ * mirrored, with its own tooltip.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class LegendItemPanel extends JPanel {
 
 	/**

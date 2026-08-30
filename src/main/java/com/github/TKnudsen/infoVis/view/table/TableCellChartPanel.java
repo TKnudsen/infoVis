@@ -6,6 +6,14 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
+/**
+ * <p>
+ * {@link InfoVisChartPanel} variant sized to fill a table cell, used as the
+ * base for the size/color-encoded glyph renderers in this package.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class TableCellChartPanel extends InfoVisChartPanel {
 
 	/**

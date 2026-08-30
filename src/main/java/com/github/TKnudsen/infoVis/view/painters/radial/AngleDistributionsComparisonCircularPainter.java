@@ -15,6 +15,15 @@ import java.util.Map;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 
+/**
+ * <p>
+ * Overlays multiple {@link AngleDistributionCircularPainter} instances at
+ * decreasing scale to compare several angle distributions in one radial
+ * chart.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class AngleDistributionsComparisonCircularPainter extends ChartPainter {
 
 	private final List<StatisticsSupport> distributions;

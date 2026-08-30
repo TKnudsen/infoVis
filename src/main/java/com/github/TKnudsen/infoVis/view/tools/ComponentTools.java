@@ -1,61 +1,98 @@
 package com.github.TKnudsen.infoVis.view.tools;
 
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Insets;
 import java.awt.geom.Rectangle2D;
 
 /**
  * <p>
- * InfoVis
+ * This class provides helpers to compute the drawable area of a component. The
+ * drawable area excludes borders and padding defined by insets.
  * </p>
- * 
- * <p>
- * Some tools for components
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.02
+ *
+ * @version 2.03
+ * @since 2018
  */
-public class ComponentTools {
+public final class ComponentTools {
 
 	/**
-	 * retrieves the coordinates of a Component within its canvas. It does NOT
-	 * necessarily start with (0/0).
-	 * 
-	 * @param panel panel
-	 * @return rectangle
+	 * Prevent instantiation.
 	 */
-	public static Rectangle2D getBoundsRectangle(Component panel) {
-		if (panel == null)
-			return null;
-
-		Rectangle2D rectangle = new Rectangle2D.Double(panel.getBounds().getX(), panel.getBounds().getY(),
-				panel.getBounds().getWidth(), panel.getBounds().getHeight());
-
-		return rectangle;
+	private ComponentTools() {
+		throw new AssertionError("Utility class must not be instantiated.");
 	}
 
 	/**
-	 * retrieves the rectangle within a component starting at (0/0), its with, and
-	 * its height.
-	 * 
-	 * @param panel panel
-	 * @return rectangle
+	 * Returns the drawable rectangle of a component.
+	 *
+	 * <p>
+	 * The returned rectangle is in the local coordinate system of the component.
+	 * Its origin starts after the insets. Its width and height exclude the inset
+	 * space.
+	 * </p>
+	 *
+	 * @param component the component; may be null
+	 * @return the drawable rectangle, or null if the component is null or the
+	 *         computed size is negative
 	 */
-	public static Rectangle2D getCompontentDrawableRectangle(Component panel) {
-		if (panel == null)
+	public static Rectangle2D getDrawableRectangle(Component component) {
+		if (component == null) {
 			return null;
+		}
 
-		Rectangle2D rect = getBoundsRectangle(panel);
+		Insets insets = getComponentInsets(component);
 
-		if (rect == null)
+		double x = insets.left;
+		double y = insets.top;
+		double width = component.getWidth() - insets.left - insets.right;
+		double height = component.getHeight() - insets.top - insets.bottom;
+
+		if (width < 0 || height < 0) {
 			return null;
+		}
 
-		Rectangle2D rectangle = new Rectangle2D.Double(0, 0, rect.getWidth(), rect.getHeight());
+		return new Rectangle2D.Double(x, y, width, height);
+	}
 
-		return rectangle;
+	/**
+	 * Returns the insets of a component.
+	 *
+	 * @param component the component; must not be null
+	 * @return the insets of the component, or zero insets if unavailable
+	 */
+	private static Insets getComponentInsets(Component component) {
+		if (component instanceof Container) {
+			Insets insets = ((Container) component).getInsets();
+			if (insets != null) {
+				return insets;
+			}
+		}
+
+		return new Insets(0, 0, 0, 0);
+	}
+
+	/**
+	 * Backward-compatible alias for {@link #getDrawableRectangle(Component)}.
+	 *
+	 * @param component the component
+	 * @return the drawable rectangle, or null if the component is null or invalid
+	 * @deprecated Use {@link #getDrawableRectangle(Component)}.
+	 */
+	@Deprecated
+	public static Rectangle2D getCompontentDrawableRectangle(Component component) {
+		return getDrawableRectangle(component);
+	}
+
+	/**
+	 * Backward-compatible alias for {@link #getDrawableRectangle(Component)}.
+	 *
+	 * @param component the component
+	 * @return the drawable rectangle, or null if the component is null or invalid
+	 * @deprecated Use {@link #getDrawableRectangle(Component)}.
+	 */
+	@Deprecated
+	public static Rectangle2D getBoundsRectangle(Component component) {
+		return getDrawableRectangle(component);
 	}
 }

@@ -14,17 +14,8 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.Horizontal
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ColorEncodingFunction;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
- *
+ * @since 2018
  */
 public class LabeledScatterplotPainter extends ScatterPlotPainter<Double[]> {
 

@@ -3,16 +3,8 @@ package com.github.TKnudsen.infoVis.view.chartLayouts;
 import java.awt.geom.Rectangle2D;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.03
+ * @since 2018
  */
 public class ChartRectangleLayout {
 

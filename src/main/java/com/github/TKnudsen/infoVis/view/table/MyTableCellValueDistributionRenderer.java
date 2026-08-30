@@ -14,10 +14,19 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.painters.distribution1D.Distribution1DHorizontalPainters;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartValueBased;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 
+/**
+ * <p>
+ * {@link MyTableCellDefaultRenderer} variant that renders a cell containing
+ * a {@code Collection<Number>} as a bar chart, box plot, or 1D distribution
+ * glyph instead of a plain value.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class MyTableCellValueDistributionRenderer extends MyTableCellDefaultRenderer {
 
 	private Color darkBackgroundColor = Color.DARK_GRAY;
@@ -54,7 +63,7 @@ public class MyTableCellValueDistributionRenderer extends MyTableCellDefaultRend
 			switch (distributionGlyph) {
 			case Barchart:
 				@SuppressWarnings("unchecked")
-				BarChart barchart = BarCharts.createHistogramBarchart((Collection<Number>) value, 10, Color.GRAY);
+				BarChartValueBased barchart = BarChartsValueBased.createHistogramBarchart((Collection<Number>) value, 10, Color.GRAY);
 //				barchart.setLineColor(Color.DARK_GRAY.darker());
 				barchart.setDrawYAxis(false);
 				chartPainter = barchart.getChartPainters().get(0);

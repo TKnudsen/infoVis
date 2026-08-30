@@ -6,6 +6,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+/**
+ * <p>
+ * Static helper wrapping a component in a titled border.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class BorderTools {
 	public static JPanel wrapWithTitle(String title, JComponent component) {
 		JPanel panel = new JPanel(new GridLayout(1, 1));

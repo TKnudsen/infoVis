@@ -14,19 +14,11 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Abstract basis class for axe drawings.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.05
+ * @since 2016
  */
 public abstract class AxisCategoricalPainter<T extends List<String>> extends AxisPainter {
 

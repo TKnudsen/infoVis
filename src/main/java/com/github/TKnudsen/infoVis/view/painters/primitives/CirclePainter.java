@@ -8,16 +8,11 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ * Draws a filled and/or outlined circle inscribed in the painter's
+ * rectangle, centered on it and sized to the shorter of its two sides.
+ *
  * @version 1.02
+ * @since 2016
  */
 public class CirclePainter extends ChartPainter {
 

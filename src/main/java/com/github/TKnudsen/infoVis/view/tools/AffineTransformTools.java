@@ -4,17 +4,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
- *
+ * @since 2018
  */
 public class AffineTransformTools {
 

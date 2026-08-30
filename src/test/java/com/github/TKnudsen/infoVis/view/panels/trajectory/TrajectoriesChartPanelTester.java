@@ -71,7 +71,7 @@ public class TrajectoriesChartPanelTester {
 		TrajectoriesChartPanel<Point2D> panel = TrajectoriesChartPanels.createForPoints(points, colors);
 
 		// size encoding
-//		panel.setSizeEncodingFunction(new SizeEncodingFunction<>(panel, 0.5));
+		// panel.setSizeEncodingFunction(new SizeEncodingFunction<>(panel, 0.5));
 
 		// size encoding: increase size towards the end
 		Map<Point2D, Double> scales = new HashMap<>();

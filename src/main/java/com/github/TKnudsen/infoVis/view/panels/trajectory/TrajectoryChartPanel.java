@@ -10,19 +10,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFun
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Chart panel for trajectory data mapped to numerical x and y axes.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.01
+ *
+ * @version 1.02
+ * @since 2019
  */
 public class TrajectoryChartPanel<T> extends ScatterPlot<T> {
 
@@ -36,10 +28,16 @@ public class TrajectoryChartPanel<T> extends ScatterPlot<T> {
 		super(data, colorMapping, worldPositionMappingX, worldPositionMappingY);
 	}
 
+	/**
+	 * Installs a {@link TrajectoryPainter} instead of the default
+	 * {@link com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotPainter
+	 * ScatterPlotPainter}; deliberately does not call {@code super}, per the
+	 * override contract documented on {@link ScatterPlot#initializePainter(List)}.
+	 */
 	@Override
-	protected void initializePainter() {
-		this.scatterPlotPainter = new TrajectoryPainter<T>(getData(), this.getColorMapping(),
-				getWorldPositionMappingX(), getWorldPositionMappingY());
+	protected void initializePainter(List<T> data) {
+		this.scatterPlotPainter = new TrajectoryPainter<T>(data, this.getColorMapping(), getWorldPositionMappingX(),
+				getWorldPositionMappingY());
 
 		this.scatterPlotPainter.setSizeEncodingFunction(new SizeEncodingFunction<>(this));
 	}

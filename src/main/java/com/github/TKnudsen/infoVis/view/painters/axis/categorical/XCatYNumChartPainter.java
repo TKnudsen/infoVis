@@ -15,16 +15,8 @@ import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPa
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.03
+ * @since 2016
  */
 public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Number> extends AxisPainter
 		implements IXAxisCategorical<X>, IYAxis<Y> {

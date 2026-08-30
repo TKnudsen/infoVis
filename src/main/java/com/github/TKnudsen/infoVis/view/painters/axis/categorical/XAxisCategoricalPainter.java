@@ -12,21 +12,12 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.Horizontal
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
 
 /**
- * 
- * <p>
- * InfoVis
- * </p>
- * 
  * <p>
  * Paints categorical labels along a X axis.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.05
+ * @since 2016
  */
 public class XAxisCategoricalPainter<T extends List<String>> extends AxisCategoricalPainter<T> implements ITooltip {
 

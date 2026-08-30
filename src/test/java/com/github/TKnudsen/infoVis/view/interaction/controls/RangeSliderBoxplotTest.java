@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSlider;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 

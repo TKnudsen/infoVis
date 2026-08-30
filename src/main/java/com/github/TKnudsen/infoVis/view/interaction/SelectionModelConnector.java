@@ -24,7 +24,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  */
-//TODO remove this class. it is borrowed from somewhere else.
 package com.github.TKnudsen.infoVis.view.interaction;
 
 import java.util.Collections;
@@ -37,25 +36,8 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * A connection between two {@link SelectionModel} instances.<br>
- * <br>
- * It will update the selection in each {@link SelectionModel} based on the
- * other, using functions that map between the selections. Depending on the
- * {@link ConnectionMode} that is {@link #setConnectionMode(ConnectionMode)
- * set}, it may forward the selection from the first to the second model, vice
- * versa, or in both directions.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
  * @version 1.02
- * @param <A> The type of the elements in the first {@link SelectionModel}
- * @param <B> The type of the elements in the second {@link SelectionModel}
+ * @since 2016
  */
 public final class SelectionModelConnector<A, B> {
 	/**

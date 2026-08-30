@@ -4,22 +4,15 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Little helpers when working with colors.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.06
+ * @since 2016
  */
 public class ColorTools {
 
@@ -96,11 +89,11 @@ public class ColorTools {
 
 		double w = Double.isNaN(weight) ? 0.5 : Math.max(0.0, Math.min(1.0, weight));
 
-		double r = color1.getRed() * (1 - w) + color2.getRed() * w;
-		double g = color1.getGreen() * (1 - w) + color2.getGreen() * w;
-		double b = color1.getBlue() * (1 - w) + color2.getBlue() * w;
+		int r = clampRgb((int) (color1.getRed() * (1 - w) + color2.getRed() * w));
+		int g = clampRgb((int) (color1.getGreen() * (1 - w) + color2.getGreen() * w));
+		int b = clampRgb((int) (color1.getBlue() * (1 - w) + color2.getBlue() * w));
 
-		return new Color((int) r, (int) g, (int) b);
+		return new Color(r, g, b);
 	}
 
 	/**
@@ -127,6 +120,9 @@ public class ColorTools {
 	 * @return the color
 	 */
 	public static Color mergeColors(Collection<Color> colors) {
+		if (colors == null || colors.isEmpty())
+			return null;
+
 		double r = 0;
 		double g = 0;
 		double b = 0;
@@ -153,6 +149,14 @@ public class ColorTools {
 
 	/**
 	 * 
+	 * @return color
+	 */
+	public static Color randomColor(Random random) {
+		return new Color((float) random.nextFloat(), (float) random.nextFloat(), (float) random.nextFloat());
+	}
+
+	/**
+	 * 
 	 * @param color color
 	 * @return rgb
 	 */
@@ -170,6 +174,24 @@ public class ColorTools {
 	 */
 	public static Color getColor(int rgb) {
 		return new Color(rgb);
+	}
+
+	/**
+	 * Relative luminance in [0..1], using WCAG formula with sRGB gamma correction.
+	 */
+	public static float calculateLuminance(Color color) {
+		Objects.requireNonNull(color, "color required");
+		float r = (float) gammaCorrect(color.getRed() / 255.0);
+		float g = (float) gammaCorrect(color.getGreen() / 255.0);
+		float b = (float) gammaCorrect(color.getBlue() / 255.0);
+		return 0.2126f * r + 0.7152f * g + 0.0722f * b;
+	}
+
+	private static double gammaCorrect(double channel) {
+		if (channel <= 0.03928) {
+			return channel / 12.92;
+		}
+		return Math.pow((channel + 0.055) / 1.055, 2.4);
 	}
 
 	/**
@@ -242,5 +264,13 @@ public class ColorTools {
 
 		System.err.println("ColorTools.darker not successful for paint " + paint);
 		return Color.BLACK;
+	}
+
+	// ============================================================
+	// Color math
+	// ============================================================
+
+	public static int clampRgb(int v) {
+		return Math.max(0, Math.min(255, v));
 	}
 }

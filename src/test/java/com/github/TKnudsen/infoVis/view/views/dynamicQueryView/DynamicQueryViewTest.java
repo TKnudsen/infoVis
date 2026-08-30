@@ -9,9 +9,9 @@ import javax.swing.JPanel;
 
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataObject;
 import com.github.TKnudsen.ComplexDataObject.data.dataFactory.DataSets;
-import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.DoubleParser;
+import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.Parsers;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.views.DynamicQueryView;
 import com.github.TKnudsen.infoVis.view.views.DynamicQueryViews;
 
@@ -22,7 +22,6 @@ import de.javagl.selection.SelectionModels;
 
 public class DynamicQueryViewTest {
 
-	private static DoubleParser doubleParser = new DoubleParser();
 	private static List<ComplexDataObject> titanicData = DataSets.titanicDataSet();
 
 	public static void main(String[] args) {
@@ -30,10 +29,13 @@ public class DynamicQueryViewTest {
 		SelectionModel<ComplexDataObject> selectionModel = SelectionModels.create();
 
 		DynamicQueryView<ComplexDataObject> dqFare = createDynamicQuery("FARE", 25, selectionModel);
-		DynamicQueryView<ComplexDataObject> dqAge = createDynamicQuery("AGE", 10,selectionModel);
+		DynamicQueryView<ComplexDataObject> dqAge = createDynamicQuery("AGE", 10, selectionModel);
 
 		dqFare.addFilterStatusListener(dqAge);
 		dqAge.addFilterStatusListener(dqFare);
+
+		// lock the upper thumb, because we can
+		dqAge.setUpperThumbLocked(true);
 
 		JPanel panel = new JPanel(new GridLayout(0, 1));
 		panel.add(dqFare);
@@ -53,10 +55,10 @@ public class DynamicQueryViewTest {
 
 	private static DynamicQueryView<ComplexDataObject> createDynamicQuery(String attribute, int bins,
 			SelectionModel<ComplexDataObject> selectionModel) {
-		Function<ComplexDataObject, Number> toNumberFunction = e -> doubleParser.apply(e.getAttribute(attribute));
+		Function<ComplexDataObject, Number> toNumberFunction = e -> Parsers.parseDouble(e.getAttribute(attribute));
 
 		// filter NaNs
-		List<ComplexDataObject> titanicDataSet = VisualMappings.sanityCheckFilter(titanicData, toNumberFunction, true);
+		List<ComplexDataObject> titanicDataSet = VisualMappingTools.sanityCheckFilter(titanicData, toNumberFunction, true);
 
 		// view
 		DynamicQueryView<ComplexDataObject> dynamicQuery = DynamicQueryViews.createDynamicQuery(titanicDataSet,

@@ -3,18 +3,8 @@ package com.github.TKnudsen.infoVis.view.chartLayouts;
 import java.awt.geom.Rectangle2D;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Rectangle layout with an x axis (default: bottom) and a chartRectangle.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.03
+ * @since 2016
  */
 public class XAxisChartRectangleLayout extends ChartRectangleLayout {
 

@@ -12,24 +12,17 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LogarithmicNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.NormalizationFunction;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Uses a fixed, given set of position mappings
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.02
+ * @since 2016
  */
-public final class FixedPositionEncodingFunction implements IPositionEncodingFunction {
+public final class FixedPositionEncodingFunction implements IPositionEncodingFunction, IAxisLogarithmicScale {
 
 	private Number minValue;
 	private Number maxValue;
@@ -186,6 +179,7 @@ public final class FixedPositionEncodingFunction implements IPositionEncodingFun
 		this.scalingFunction.setGlobalMax(maxValue);
 	}
 
+	@Override
 	public boolean isLogarithmicScale() {
 		return logarithmicScale;
 	}

@@ -3,6 +3,14 @@ package com.github.TKnudsen.infoVis.view.ui.slider;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 
+/**
+ * <p>
+ * Static helpers building triangular thumb shapes for horizontal and
+ * vertical sliders.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Sliders {
 
 	/**

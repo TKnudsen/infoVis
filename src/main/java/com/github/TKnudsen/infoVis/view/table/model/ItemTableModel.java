@@ -1,6 +1,5 @@
 package com.github.TKnudsen.infoVis.view.table.model;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +12,15 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.infoVis.view.table.RelativeCellValueProvider;
 
+/**
+ * <p>
+ * Abstract table model over a {@code Object[][]} data matrix, computing and
+ * caching per-row/per-column {@link StatisticsSupport} to implement
+ * {@link RelativeCellValueProvider}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public abstract class ItemTableModel extends AbstractTableModel implements RelativeCellValueProvider {
 
 	/**

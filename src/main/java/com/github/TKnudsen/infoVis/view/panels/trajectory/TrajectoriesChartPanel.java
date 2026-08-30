@@ -14,19 +14,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFun
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Chart panel for trajectories data mapped to numerical x and y axes.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.01
+ * @since 2019
  */
 public class TrajectoriesChartPanel<T> extends TrajectoryChartPanel<T> {
 
@@ -91,7 +83,6 @@ public class TrajectoriesChartPanel<T> extends TrajectoryChartPanel<T> {
 		yAxisPainter.setMaxValue(maxY);
 	}
 
-	@Override
 	protected void initializePainter() {
 		this.scatterPlotPainter = createPainter(getData());
 	}

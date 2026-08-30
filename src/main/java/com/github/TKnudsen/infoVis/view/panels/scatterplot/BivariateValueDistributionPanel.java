@@ -14,7 +14,7 @@ import com.github.TKnudsen.infoVis.view.interaction.handlers.LassoSelectionHandl
 import com.github.TKnudsen.infoVis.view.interaction.handlers.MouseButton;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFunction;
 
@@ -23,6 +23,14 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Panel wrapping a {@link ScatterPlot} for two mapped numeric attributes,
+ * pre-wired with click, rectangle, and lasso selection.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class BivariateValueDistributionPanel<T> extends JPanel {
 
 	/**
@@ -44,7 +52,7 @@ public class BivariateValueDistributionPanel<T> extends JPanel {
 	public BivariateValueDistributionPanel(List<T> data, Function<T, Double> worldPositionMappingX,
 			Function<T, Double> worldPositionMappingY, SelectionModel<T> selectionModel, String chartTitle) {
 
-		this.data = VisualMappings.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY, true);
+		this.data = VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, worldPositionMappingY, true);
 		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingY = worldPositionMappingY;
 		this.selectionModel = selectionModel;

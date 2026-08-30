@@ -2,19 +2,11 @@ package com.github.TKnudsen.infoVis.view.painters.string;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * StringPainter that is calibrated to paint titles
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2024 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.04
+ * @since 2016
  */
 public class TitlePainter extends StringPainter {
 

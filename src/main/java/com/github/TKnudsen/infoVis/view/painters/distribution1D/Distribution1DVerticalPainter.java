@@ -18,19 +18,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints the distribution of numerical values in a vertical arrangement.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.07
+ *
+ * @version 2.08
+ * @since 2016
  */
 public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> implements IYPositionEncoding {
 
@@ -45,9 +37,11 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 	}
 
 	@Override
-	public void drawLine(Graphics2D g2, Double positionValue, double capSize) {
-		DisplayTools.drawLine(g2, chartRectangle.getMinX() + capSize, positionValue, getValueXEndPosition() - capSize,
-				positionValue);
+	public void drawLine(Graphics2D g2, float positionValue, double capSize) {
+		float yStart = (float) (chartRectangle.getMinX() - capSize);
+		float yEnd = (float) (getValueXEndPosition() + capSize);
+
+		DisplayTools.drawLine(g2, positionValue, yStart, positionValue, yEnd);
 	}
 
 	/**

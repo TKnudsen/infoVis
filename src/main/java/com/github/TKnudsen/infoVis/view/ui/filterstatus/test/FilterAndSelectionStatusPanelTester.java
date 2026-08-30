@@ -13,6 +13,13 @@ import com.github.TKnudsen.infoVis.view.ui.filterstatus.FilterAndSelectionStatus
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Standalone demo dropping an SVGFrame with a {@link FilterAndSelectionStatusPanel}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class FilterAndSelectionStatusPanelTester {
 
 	public static void main(String[] args) {

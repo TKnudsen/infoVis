@@ -29,6 +29,16 @@ import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.ui.NimbusUITools;
 import com.github.TKnudsen.infoVis.view.ui.Orientation;
 
+/**
+ * <p>
+ * Table cell renderer that formats numeric values and, when the model
+ * implements {@link RelativeCellValueProvider}, augments or replaces the
+ * cell with a size/color-encoded glyph (rectangle, heat map, dot, donut, bar,
+ * or bipolar rectangle).
+ * </p>
+ *
+ * @version 1.0
+ */
 public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	/**
@@ -41,6 +51,13 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 	private Color myDataEncodingColor = new Color(51, 98, 140);
 	private Function<Integer, Color> colorFunctionFromRow;
 	private Function<Double, Color> valueToColorEncodingFunction;
+
+	/**
+	 * Fill color for NaN/infinite cells -- a flat, neutral, unmistakably
+	 * "not part of the value scale" gray, distinct from anything
+	 * {@link #valueToColorEncodingFunction} would ever produce for a real value.
+	 */
+	private Color missingValueColor = new Color(80, 80, 80);
 
 	private Color darkBackgroundColor = NimbusUITools.standardBackgroundColor;
 
@@ -148,23 +165,50 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 		row = table.convertRowIndexToModel(row);
 
 		double relativeSize = model.getRelativeValueAt(row, column, false);
-		if (Double.isNaN(relativeSize))
-			return component;
 
-		Color dataColor = myDataEncodingColor;
-		if (colorFunctionFromRow != null)
-			dataColor = colorFunctionFromRow.apply(row);
-		else if (valueToColorEncodingFunction != null)
-			try {
-				dataColor = valueToColorEncodingFunction.apply(relativeSize);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		// relativeSize is NaN for two unrelated reasons: (a) this column doesn't
+		// participate in relative/glyph encoding at all -- true for every plain
+		// numeric column (Min/Max/Median/Mean/...), which RelativeCellValueProvider
+		// implementations commonly signal by returning NaN unconditionally for any
+		// non-glyph column (see AttributesOverviewTableModel.getRelativeValueAt) --
+		// or (b) this glyph column's specific cell value is genuinely NaN/infinite.
+		// Only (b) should get the missing-value swatch below; conflating the two
+		// (checking relativeSize alone) drew that swatch next to every ordinary
+		// number in every non-glyph column, since relativeSize is NaN there
+		// regardless of how valid the real value is. Checking the raw model value
+		// directly is what tells the two cases apart.
+		Object rawValue = table.getModel().getValueAt(row, column);
+		boolean cellValueMissing = rawValue instanceof Number && (Double.isNaN(((Number) rawValue).doubleValue())
+				|| Double.isInfinite(((Number) rawValue).doubleValue()));
+
+		if (Double.isNaN(relativeSize) && !cellValueMissing)
+			return component;
 
 		JPanel cell = new JPanel(new BorderLayout());
 		cell.setBackground(component.getBackground());
 
-		JPanel panel = createRectangleSizeEncodingJPanel(relativeSize, dataColor);
+		JPanel panel;
+		if (cellValueMissing) {
+			// Was: return component unchanged, i.e. fall back to the raw
+			// DefaultTableCellRenderer text ("NaN") on a plain background --
+			// jarring next to the colored glyphs everywhere else in the column.
+			// A same-size, same-shape swatch in a fixed neutral color keeps the
+			// grid's visual rhythm intact instead. The literal value is still
+			// available via the tooltip (attachToolTip), so nothing is lost.
+			panel = createMissingValueJPanel();
+		} else {
+			Color dataColor = myDataEncodingColor;
+			if (colorFunctionFromRow != null)
+				dataColor = colorFunctionFromRow.apply(row);
+			else if (valueToColorEncodingFunction != null)
+				try {
+					dataColor = valueToColorEncodingFunction.apply(relativeSize);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			panel = createRectangleSizeEncodingJPanel(relativeSize, dataColor);
+		}
 		panel.setBackground(component.getBackground());
 
 		switch (glyphPlacement) {
@@ -310,6 +354,28 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	}
 
+	/**
+	 * Same size/shape as a normal glyph cell (see the {@code HeatMap} case in
+	 * {@link #createRectangleSizeEncodingJPanel(double, Color)}), but always a
+	 * flat {@link #missingValueColor} rather than anything derived from a value
+	 * -- there is no meaningful size or hue to encode for NaN/infinite data.
+	 */
+	protected JPanel createMissingValueJPanel() {
+		JPanel panel = new JPanel(new GridLayout(1, 1));
+
+		RectanglePainter rectanglePainter = new RectanglePainter();
+		rectanglePainter.setDrawOutline(true);
+		rectanglePainter.setPaint(missingValueColor);
+
+		TableCellChartPanel chartPanel = new TableCellChartPanel(rectanglePainter);
+		chartPanel.setBackground(null);
+		panel.add(chartPanel);
+
+		panel.setPreferredSize(new Dimension(16, 16));
+
+		return panel;
+	}
+
 	protected void attachToolTip(Component component, Object toolTipValue) {
 		if (component instanceof JComponent) {
 			String toolTipText = "";
@@ -403,6 +469,14 @@ public class MyTableCellDefaultRenderer extends DefaultTableCellRenderer {
 
 	public void setValueToColorEncodingFunction(Function<Double, Color> valueToColorEncodingFunction) {
 		this.valueToColorEncodingFunction = valueToColorEncodingFunction;
+	}
+
+	public Color getMissingValueColor() {
+		return missingValueColor;
+	}
+
+	public void setMissingValueColor(Color missingValueColor) {
+		this.missingValueColor = missingValueColor;
 	}
 
 }

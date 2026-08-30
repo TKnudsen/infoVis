@@ -15,6 +15,15 @@ import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
 import de.javagl.selection.SelectionEvent;
 import de.javagl.selection.SelectionListener;
 
+/**
+ * <p>
+ * Panel showing all-data/filter/selection counts as three overlaid
+ * {@link ScorePainter} bars, refreshing whenever filter status or selection
+ * changes.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class FilterAndSelectionStatusPanel<T> extends InfoVisChartPanel
 		implements FilterStatusListener<T>, SelectionListener<T> {
 

@@ -15,19 +15,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Paints highlighted elements on top of a distribution painter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2022 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.08
+ * @since 2016
  */
 public class Distribution1DVerticalHighlightPainter<T> extends Distribution1DVerticalPainter<T> {
 

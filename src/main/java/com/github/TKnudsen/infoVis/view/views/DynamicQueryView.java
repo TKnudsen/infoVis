@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.geom.RectangularShape;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -14,23 +17,39 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSlider;
-import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanel;
-import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliderPanels;
-import com.github.TKnudsen.infoVis.view.interaction.controls.InfoVisRangeSliders;
+import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRange;
+import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSlider;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSliderPanel;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSliderPanels;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSliders;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
-import com.github.TKnudsen.infoVis.view.interaction.handlers.TooltipHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.TitlePainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanels;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histogram;
 import com.github.TKnudsen.infoVis.view.panels.histogram.Histograms;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
+import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctions;
 
 import de.javagl.selection.SelectionModel;
 
-public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterStatusListener<T> {
+/**
+ * <p>
+ * Dynamic query view with histogram and range slider for filtering data.
+ * 
+ * <h2>Lifecycle Management</h2> Always call {@link #dispose()} when this view
+ * is no longer needed to prevent memory leaks. This clears all listeners and
+ * releases resources.
+ * </p>
+ *
+ * @version 2.0 (revised)
+ * @since 2019
+ */
+public class DynamicQueryView<T> extends JPanel
+		implements Predicate<T>, FilterStatusListener<T>, IClickSelection<T>, IRectangleSelection<T> {
 
 	/**
 	 * 
@@ -39,24 +58,28 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	private final Function<T, Number> scaledToNumberFunction;
 
-//	public static final int Y_AXIS_WIDTH = 22;
 	public static final int Y_AXIS_WIDTH = 28;
 	private final Histogram<T> histogram;
 
-	private final JPanel eastSpacer;
+	// needed because the slider requires space left and right
+	private final JPanel histogramEastSpacer;
+	private final JPanel westSpacerYAxisForSlider;
+
 	private final InfoVisRangeSliderPanel rangeSliderPanel;
 	private final InfoVisRangeSlider rangeSlider;
 	private static final int INTEGER_MULTIPLIER = 1000;
-	private static double LARGE_VALUE_MITIGATOR = 1.0;
+
+	// FIX: Instance field instead of static
+	private final double largeValueMitigator;
+	// private static double LARGE_VALUE_MITIGATOR = 1.0;
 
 	private boolean missingValuesAreIn = false;
 
-	/**
-	 * tool tip
-	 */
-	private ChartPainter toolTipPainter = null;
-	private boolean toolTipping = true;
-	private TooltipHandler tooltipHandler;
+	// Store listener reference for removal
+	private final ChangeListener rangeSliderChangeListener;
+
+	// track disposed state
+	private boolean disposed = false;
 
 	/**
 	 * listeners
@@ -117,10 +140,11 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		if (binCount < 1)
 			throw new IllegalArgumentException(this.getClass().getSimpleName() + ": bin count must be creater zero");
 
-		this.scaledToNumberFunction = scaledToNumberFunction(toNumberFunction);
+		this.largeValueMitigator = calculateLargeValueMitigator(data, toNumberFunction);
+		this.scaledToNumberFunction = scaledToNumberFunction(toNumberFunction, largeValueMitigator);
 
 		// range slider
-		rangeSliderPanel = createRangeSliderPanel(data, toNumberFunction);
+		rangeSliderPanel = createRangeSliderPanel(data, toNumberFunction, largeValueMitigator);
 		rangeSlider = rangeSliderPanel.getRangeSlider();
 		rangeSlider.getRangeSliderUI().setRangeColor(filterColor != null ? filterColor : Color.DARK_GRAY);
 		rangeSlider.setMinimumSize(new Dimension(0, InfoVisRangeSlider.SLIDER_POINTER_WIDTH));
@@ -131,26 +155,29 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		southGrid.add(rangeSliderPanel);
 
 		JPanel south = new JPanel(new BorderLayout());
-		JPanel westSpacer = new JPanel();
-		westSpacer.setPreferredSize(
+		westSpacerYAxisForSlider = new JPanel();
+		westSpacerYAxisForSlider.setPreferredSize(
 				new Dimension((int) (Y_AXIS_WIDTH - InfoVisRangeSlider.SLIDER_POINTER_WIDTH * 0.5), 0));
-		south.add(westSpacer, BorderLayout.WEST);
-
+		south.add(westSpacerYAxisForSlider, BorderLayout.WEST);
 		south.add(southGrid, BorderLayout.CENTER);
 
 		add(south, BorderLayout.SOUTH);
 
-		// this is for internal highlighting reasons
-		rangeSlider.addChangeListener(new ChangeListener() {
-
+		// This is for internal highlighting reasons
+		// Store listener reference for later removal
+		this.rangeSliderChangeListener = new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
+				if (disposed)
+					return; // Guard against post-disposal events
 
-				// this view implements predicate for the range slider
-				FilterChangedEvent<T> filterChangedEvent = new FilterChangedEvent<T>(DynamicQueryView.this,
+				FilterChangedEvent<T> filterChangedEvent = new FilterChangedEvent<>(DynamicQueryView.this,
 						DynamicQueryView.this);
-				for (FilterStatusListener<T> filterStatusListener : filterStatusListeners)
-					filterStatusListener.filterStatusChanged(filterChangedEvent);
+
+				// Defensive copy to avoid ConcurrentModificationException
+				for (FilterStatusListener<T> listener : new ArrayList<>(filterStatusListeners)) {
+					listener.filterStatusChanged(filterChangedEvent);
+				}
 
 				if (rangeSlider.isInNeutralState())
 					rangeSlider.getRangeSliderUI().setRangeColor(filterColor != null ? filterColor : Color.DARK_GRAY);
@@ -160,13 +187,15 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 				repaint();
 			}
-		});
+		};
+		rangeSlider.addChangeListener(rangeSliderChangeListener);
 
 		// vertical histogram and spacing
 		histogram = Histograms.create(data, scaledToNumberFunction, null, null, binCount, true, defaultColor,
 				filterColor);
-		histogram.setDrawXAxis(false); // do not draw the histogram's x axis. it shows numbers according to the
-										// INTEGER_MULTIPLIER. show the axis of the slider instead
+		// do not draw the histogram's x axis. it shows numbers according to the
+		// INTEGER_MULTIPLIER. show the axis of the slider instead
+		histogram.setDrawXAxis(false);
 		histogram.setDrawYAxis(true);
 		histogram.setYAxisOverlay(false);
 		histogram.setYAxisLegendWidth(Y_AXIS_WIDTH);
@@ -176,42 +205,105 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		addFilterStatusListener(histogram);
 
 		JPanel histogramCanvas = new JPanel(new BorderLayout());
-		eastSpacer = new JPanel();
-		eastSpacer.setPreferredSize(new Dimension((int) (InfoVisRangeSlider.SLIDER_POINTER_WIDTH * 0.5), 0));
-		histogramCanvas.add(eastSpacer, BorderLayout.EAST);
+		histogramEastSpacer = new JPanel();
+		histogramEastSpacer.setPreferredSize(new Dimension((int) (InfoVisRangeSlider.SLIDER_POINTER_WIDTH * 0.5), 0));
+		histogramCanvas.add(histogramEastSpacer, BorderLayout.EAST);
 		histogramCanvas.add(histogram, BorderLayout.CENTER);
 
 		add(histogramCanvas, BorderLayout.CENTER);
 	}
 
-	private InfoVisRangeSliderPanel createRangeSliderPanel(Collection<T> data, Function<T, Number> toNumberFunction) {
-		double min = Double.POSITIVE_INFINITY;
+	/**
+	 * Calculates the mitigator value for this instance based on data range.
+	 * 
+	 * @return mitigator value (1.0 for normal ranges, smaller for large values)
+	 */
+	private double calculateLargeValueMitigator(Collection<T> data, Function<T, Number> toNumberFunction) {
 		double max = Double.NEGATIVE_INFINITY;
 
 		for (T t : data) {
-			double d = toNumberFunction.apply(t).doubleValue();
-			min = Math.min(min, d);
+			Number n = toNumberFunction.apply(t);
+			if (n == null)
+				continue;
+
+			double d = n.doubleValue();
+			if (Double.isNaN(d))
+				continue;
+
 			max = Math.max(max, d);
 		}
 
 		if (max > Integer.MAX_VALUE / INTEGER_MULTIPLIER) {
-//			throw new IllegalArgumentException("DynamicQueryView: maximum value for the dynamic query must not exceed "
-//					+ Integer.MAX_VALUE / INTEGER_MULTIPLIER);
-
-			// change LARGE_VALUE_MITIGATOR from 1.0 to...
 			double dec = Math.ceil(Math.log10(max / (Integer.MAX_VALUE / INTEGER_MULTIPLIER)));
-			LARGE_VALUE_MITIGATOR = 1 / Math.pow(10, dec);
+			return 1.0 / Math.pow(10, dec);
 		}
 
-		// no need any more: range slider was replaced
-		// LookAndFeelFactory.setDefaultStyle(1);
-		return new InfoVisRangeSliderPanel((int) Math.floor(min * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
-				(int) Math.ceil(max * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
-				(int) Math.floor(min * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)),
-				(int) Math.ceil(max * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)), min, max);
+		return 1.0;
+	}
+
+	private InfoVisRangeSliderPanel createRangeSliderPanel(Collection<T> data, Function<T, Number> toNumberFunction,
+			double largeValueMitigator) {
+
+		NumericRange range = PositionEncodingFunctions.computeRange(data, toNumberFunction,
+				getClass().getSimpleName() + " range slider");
+
+		return new InfoVisRangeSliderPanel(
+				(int) Math.floor(range.getMin() * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(range.getMax() * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.floor(range.getMin() * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(range.getMax() * (largeValueMitigator * INTEGER_MULTIPLIER)), range.getMin(),
+				range.getMax());
+	}
+
+	/**
+	 * Releases all resources and removes all listeners.
+	 * 
+	 * <p>
+	 * <b>CRITICAL:</b> Always call this method when the view is no longer needed to
+	 * prevent memory leaks. After calling dispose(), this view should not be used.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method is idempotent - safe to call multiple times.
+	 * </p>
+	 */
+	public void dispose() {
+		if (disposed)
+			return;
+
+		disposed = true;
+
+		// Remove change listener from range slider
+		if (rangeSlider != null && rangeSliderChangeListener != null)
+			rangeSlider.removeChangeListener(rangeSliderChangeListener);
+
+		// Clear all filter status listeners
+		filterStatusListeners.clear();
+
+		if (histogram != null)
+			histogram.dispose();
+	}
+
+	/**
+	 * Checks if this view has been disposed.
+	 * 
+	 * @return true if dispose() has been called
+	 */
+	public boolean isDisposed() {
+		return disposed;
+	}
+
+	/**
+	 * Guards against operations after disposal.
+	 */
+	private void checkNotDisposed() {
+		if (disposed)
+			throw new IllegalStateException("DynamicQueryView has been disposed");
 	}
 
 	public void setTitle(String title) {
+		checkNotDisposed();
+
 		Collection<TitlePainter> titlePainters = new ArrayList<>();
 		for (ChartPainter painter : histogram.getChartPainters())
 			if (painter instanceof TitlePainter)
@@ -224,8 +316,10 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 	}
 
 	public void addFilterStatusListener(FilterStatusListener<T> listener) {
-		this.filterStatusListeners.remove(listener);
+		checkNotDisposed();
+		Objects.requireNonNull(listener, "listener");
 
+		this.filterStatusListeners.remove(listener);
 		this.filterStatusListeners.add(listener);
 	}
 
@@ -233,25 +327,41 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		this.filterStatusListeners.remove(listener);
 	}
 
-	@Override
 	/**
-	 * changes to the global filter status will be delegated to the histogram.
+	 * Removes all filter status listeners.
 	 */
+	public void clearFilterStatusListeners() {
+		this.filterStatusListeners.clear();
+	}
+
+	@Override
 	public void filterStatusChanged(FilterChangedEvent<T> filterChangedEvent) {
-		histogram.filterStatusChanged(filterChangedEvent);
+		if (!disposed) {
+			histogram.filterStatusChanged(filterChangedEvent);
+		}
+	}
+
+	public void addChangeListener(ChangeListener l) {
+		checkNotDisposed();
+		this.rangeSlider.addChangeListener(l);
 	}
 
 	/**
-	 * Adds a ChangeListener to the slider of the view.
-	 *
-	 * @param l the ChangeListener to add
+	 * Removes a ChangeListener from the slider.
+	 * 
+	 * @param l the ChangeListener to remove
 	 */
-	public void addChangeListener(ChangeListener l) {
-		this.rangeSlider.addChangeListener(l);
+	public void removeChangeListener(ChangeListener l) {
+		if (rangeSlider != null) {
+			this.rangeSlider.removeChangeListener(l);
+		}
 	}
 
 	@Override
 	public boolean test(T t) {
+		if (disposed)
+			return true; // Neutral behavior after disposal
+
 		// this is new: a range slider is only active if the two sliders are not in
 		// minimum-maximum (default) constellation
 		if (rangeSlider.isInNeutralState())
@@ -260,57 +370,58 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 		double d = scaledToNumberFunction.apply(t).doubleValue();
 		if (Double.isNaN(d) && missingValuesAreIn)
 			return true;
+
 		return rangeSlider.inRange(d);
 	}
 
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
+		checkNotDisposed();
+
 		System.err.println(
 				"DynamicQueryView:getXPositionEncodingFunction returns the range slider position encoding function which has "
-						+ (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER) + "times too big values");
+						+ (largeValueMitigator * INTEGER_MULTIPLIER) + " times scaled values");
 		return rangeSlider.getXPositionEncodingFunction();
 	}
 
-	/**
-	 * the slider is in integers, the value domain is in doubles. To compensate this
-	 * all real world doubles are multiplied by the
-	 * LARGE_VALUE_MITIGATOR*INTEGER_MULTIPLIER;
-	 * 
-	 * @param toNumberFunction
-	 * @return
-	 */
-	private static <T> Function<T, Number> scaledToNumberFunction(Function<T, Number> toNumberFunction) {
-		return t -> toNumberFunction.apply(t).doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
+	private Function<T, Number> scaledToNumberFunction(Function<T, Number> toNumberFunction,
+			double largeValueMitigator) {
+		return t -> toNumberFunction.apply(t).doubleValue() * (largeValueMitigator * INTEGER_MULTIPLIER);
 	}
 
 	public Histogram<T> getHistogram() {
 		return histogram;
 	}
 
-	public boolean isShowingTooltips(DynamicQueryView<T> view) {
-		return view.getHistogram().isShowingTooltips();
+	public boolean isShowingTooltips() {
+		return histogram.isShowingTooltips();
 	}
 
-	public void setShowingTooltips(DynamicQueryView<T> view, boolean showingTooltips) {
-		view.getHistogram().setShowingTooltips(showingTooltips);
+	public void setShowingTooltips(boolean showingTooltips) {
+		checkNotDisposed();
+		histogram.setShowingTooltips(showingTooltips);
 		InfoVisRangeSliderPanels.setShowingTooltips(rangeSliderPanel, showingTooltips);
 	}
 
 	public Number getMinimumRangeBound() {
+		checkNotDisposed();
 		return InfoVisRangeSliders.getMinRangeBound(rangeSlider).doubleValue()
-				/ (double) (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
+				/ (largeValueMitigator * INTEGER_MULTIPLIER);
 	}
 
 	public void setMinimumRangeBound(Number value) {
-		rangeSlider.setLowValue((int) (value.doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)));
+		checkNotDisposed();
+		rangeSlider.setLowValue((int) (value.doubleValue() * (largeValueMitigator * INTEGER_MULTIPLIER)));
 	}
 
 	public Number getMaximumRangeBound() {
+		checkNotDisposed();
 		return InfoVisRangeSliders.getMaxRangeBound(rangeSlider).doubleValue()
-				/ (double) (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER);
+				/ (largeValueMitigator * INTEGER_MULTIPLIER);
 	}
 
 	public void setMaximumRangeBound(Number value) {
-		rangeSlider.setHighValue((int) (value.doubleValue() * (LARGE_VALUE_MITIGATOR * INTEGER_MULTIPLIER)));
+		checkNotDisposed();
+		rangeSlider.setHighValue((int) (value.doubleValue() * (largeValueMitigator * INTEGER_MULTIPLIER)));
 	}
 
 	public boolean isMissingValuesAreIn() {
@@ -319,5 +430,99 @@ public class DynamicQueryView<T> extends JPanel implements Predicate<T>, FilterS
 
 	public void setMissingValuesAreIn(boolean missingValuesAreIn) {
 		this.missingValuesAreIn = missingValuesAreIn;
+	}
+
+	/**
+	 * Sets the background color of this component.
+	 *
+	 * @param bg the desired background <code>Color</code>
+	 * @see java.awt.Component#getBackground
+	 * @see #setOpaque
+	 *
+	 */
+	public void setBackground(Color bg) {
+		super.setBackground(bg);
+
+		if (histogram != null)
+			histogram.setBackground(bg);
+		if (rangeSliderPanel != null)
+			rangeSliderPanel.setBackground(bg);
+		if (histogramEastSpacer != null)
+			histogramEastSpacer.setBackground(bg);
+		if (westSpacerYAxisForSlider != null)
+			westSpacerYAxisForSlider.setBackground(bg);
+	}
+
+	/**
+	 * Sets the foreground color of this component. It is up to the look and feel to
+	 * honor this property, some may choose to ignore it.
+	 * 
+	 * The Histogram foreground will also be set, and within the font colors of all
+	 * painters.
+	 *
+	 * @param fg the desired foreground <code>Color</code>
+	 * @see java.awt.Component#getForeground
+	 *
+	 */
+	public void setForeground(Color fg) {
+		super.setForeground(fg);
+
+		if (histogram != null)
+			histogram.setForeground(fg);
+		if (rangeSliderPanel != null)
+			rangeSliderPanel.setForeground(fg);
+	}
+
+	public void setDrawYAxis(boolean drawYAxis) {
+		this.histogram.setDrawYAxis(drawYAxis);
+
+		if (drawYAxis)
+			westSpacerYAxisForSlider.setPreferredSize(
+					new Dimension((int) (Y_AXIS_WIDTH - InfoVisRangeSlider.SLIDER_POINTER_WIDTH * 0.5), 0));
+		else
+			westSpacerYAxisForSlider.setPreferredSize(new Dimension(0, 0));
+
+		revalidate();
+		repaint();
+	}
+
+	/**
+	 * Returns whether the lower thumb is locked.
+	 */
+	public boolean isLowerThumbLocked() {
+		return rangeSlider.isLowerThumbLocked();
+	}
+
+	/**
+	 * Sets whether the lower thumb is locked. Note: Both thumbs cannot be locked
+	 * simultaneously.
+	 */
+	public void setLowerThumbLocked(boolean locked) {
+		rangeSlider.setLowerThumbLocked(locked);
+	}
+
+	/**
+	 * Returns whether the upper thumb is locked.
+	 */
+	public boolean isUpperThumbLocked() {
+		return rangeSlider.isUpperThumbLocked();
+	}
+
+	/**
+	 * Sets whether the upper thumb is locked. Note: Both thumbs cannot be locked
+	 * simultaneously.
+	 */
+	public void setUpperThumbLocked(boolean locked) {
+		rangeSlider.setUpperThumbLocked(locked);
+	}
+
+	@Override
+	public List<T> getElementsAtPoint(Point p) {
+		return histogram.getElementsAtPoint(p);
+	}
+
+	@Override
+	public List<T> getElementsInRectangle(RectangularShape rectangle) {
+		return histogram.getElementsInRectangle(rectangle);
 	}
 }

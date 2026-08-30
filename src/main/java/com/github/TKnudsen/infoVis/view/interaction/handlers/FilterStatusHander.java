@@ -8,17 +8,8 @@ import com.github.TKnudsen.infoVis.view.interaction.event.FilterChangedEvent;
 import com.github.TKnudsen.infoVis.view.interaction.event.FilterStatusListener;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.04
- *
+ * @since 2018
  */
 public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate<T> {
 

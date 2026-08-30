@@ -7,6 +7,7 @@ import com.github.TKnudsen.infoVis.view.chartLayouts.ChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.chartLayouts.XAxisChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 import com.github.TKnudsen.infoVis.view.painters.axis.IXAxis;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
@@ -16,22 +17,14 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.x.IXPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Panel for charts with numerical x-axes
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.06
+ *
+ * @version 2.07
+ * @since 2016
  */
 public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVisChartPanel
-		implements IXAxis<X>, IXPositionEncoder {
+		implements IXAxis<X>, IXPositionEncoder, IAxisLogarithmicScale {
 
 	/**
 	 * 
@@ -49,6 +42,12 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 	}
 
 	@Override
+	/**
+	 * Ensures that the layout or its inherited class matches the panel layout
+	 * requirements.
+	 * 
+	 * @return
+	 */
 	protected ChartRectangleLayout createChartRectangleLayout() {
 		return new XAxisChartRectangleLayout();
 	}
@@ -102,11 +101,41 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 		updateBounds();
 	}
 
+	/**
+	 * @deprecated use setBackground for panels and setBackgroundColor for single
+	 *             painters. Panels overwrite painter's behavior, but not the other
+	 *             way around.
+	 * @param backgroundColor
+	 */
 	public void setBackgroundColor(Color backgroundColor) {
-		super.setBackground(backgroundColor);
+		// super.setBackground(backgroundColor);
 
 		if (this.xAxisPainter != null)
 			xAxisPainter.setBackgroundPaint(backgroundColor);
+	}
+
+	@Override
+	/**
+	 * Sets the background color of this panel and manages chart painter
+	 * backgrounds.
+	 * <p>
+	 * <b>Non-null color:</b> Sets a unified panel background and clears all chart
+	 * painter backgrounds (making them transparent).
+	 * <p>
+	 * <b>Null:</b> Clears the panel background and preserves individual chart
+	 * painter backgrounds.
+	 * <p>
+	 * <b>Note:</b> Painter backgrounds cleared by a non-null color are not restored
+	 * when switching back to null. Manage externally if restoration is needed.
+	 *
+	 * @param backgroundColor the background color for the panel, or null to allow
+	 *                        individual chart painter backgrounds to be visible
+	 */
+	public void setBackground(Color backgroundColor) {
+		super.setBackground(backgroundColor);
+
+		if (this.xAxisPainter != null && backgroundColor != null)
+			xAxisPainter.setBackgroundPaint(null);
 	}
 
 	public void setXAxisPainter(XAxisNumericalPainter<X> yAxisPainter) {
@@ -122,42 +151,18 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 				((IXPositionEncoding) chartPainter)
 						.setXPositionEncodingFunction(xAxisPainter.getPositionEncodingFunction());
 
-		setBackgroundColor(getBackgroundColor());
-
 		updateBounds();
 	}
 
 	/////////// X-AXIS
-
-//	/**
-//	 * 
-//	 * @return
-//	 * @deprecated naming convention. method now called isXAxisOverlay
-//	 */
-//	public boolean isOverlayOfXAxis() {
-//		return isXAxisOverlay();
-//	}
-
-//	/**
-//	 * lets the chart painter(s) begin on top of the x axis, not (only) in the
-//	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
-//	 * Automatically removes background paint of axisPainter.
-//	 * 
-//	 * @param overlayOfXAxis
-//	 * @deprecated naming convention. method now called setXAxisOverlay
-//	 */
-//	public void setOverlayOfXAxis(boolean overlayOfXAxis) {
-//		this.setXAxisOverlay(overlayOfXAxis);
-//	}
-
 	public boolean isXAxisOverlay() {
 		return xAxisChartRectangleLayout.isXAxisOverlay();
 	}
 
 	/**
-	 * lets the chart painter(s) begin on top of the x axis, not (only) in the
-	 * north. Automatically sets the AxisAlignment of the xAxisPainter to BOTTOM.
-	 * Automatically removes background paint of axisPainter.
+	 * Lets the chart painter(s) begin superimposed with the x axis, not (only) in
+	 * its north. Automatically sets the AxisAlignment of the xAxisPainter to
+	 * BOTTOM. Automatically removes background paint of axisPainter.
 	 * 
 	 * @param overlayOfXAxis if overlay
 	 */
@@ -217,10 +222,12 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 		updateBounds();
 	}
 
+	@Override
 	public boolean isLogarithmicScale() {
 		return this.xAxisPainter.isLogarithmicScale();
 	}
 
+	@Override
 	public void setLogarithmicScale(boolean logarithmicScale) {
 		this.xAxisPainter.setLogarithmicScale(logarithmicScale);
 
@@ -230,5 +237,13 @@ public abstract class XAxisNumericalChartPanel<X extends Number> extends InfoVis
 	@Override
 	public IPositionEncodingFunction getXPositionEncodingFunction() {
 		return xAxisPainter.getPositionEncodingFunction();
+	}
+	
+	@Override
+	public void setForeground(Color fg) {
+		super.setForeground(fg);
+
+		if (xAxisPainter != null)
+			xAxisPainter.setFontColor(fg);
 	}
 }

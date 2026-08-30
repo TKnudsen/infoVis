@@ -9,6 +9,14 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ComponentUI;
 
+/**
+ * <p>
+ * Static helper replicating Swing's default table cell renderer color,
+ * font, and focus-border handling for custom renderer components.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class MyTableCellRendererTools {
 
 	private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);

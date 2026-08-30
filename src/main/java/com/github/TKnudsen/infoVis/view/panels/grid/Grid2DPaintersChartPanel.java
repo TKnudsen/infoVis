@@ -11,16 +11,8 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 2.01
+ * @since 2018
  */
 public class Grid2DPaintersChartPanel<P extends ChartPainter> extends InfoVisChartPanel {
 
@@ -43,7 +35,7 @@ public class Grid2DPaintersChartPanel<P extends ChartPainter> extends InfoVisCha
 	protected void updatePainterRectangles() {
 		super.updatePainterRectangles();
 
-		Rectangle2D rectangle = ComponentTools.getCompontentDrawableRectangle(this);
+		Rectangle2D rectangle = ComponentTools.getDrawableRectangle(this);
 
 		if (rectangle == null)
 			return;

@@ -13,18 +13,8 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalSt
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Paints categorical labels along a Y axis.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.05
+ * @since 2016
  */
 public class YAxisCategoricalPainter<T extends List<String>> extends AxisCategoricalPainter<T> {
 

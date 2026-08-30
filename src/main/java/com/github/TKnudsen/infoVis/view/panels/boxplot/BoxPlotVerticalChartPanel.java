@@ -11,16 +11,8 @@ import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotVerticalPainter;
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 2.03
+ * @since 2018
  */
 public class BoxPlotVerticalChartPanel extends YAxisNumericalChartPanel<Double> implements IRectangleSelection<Double> {
 

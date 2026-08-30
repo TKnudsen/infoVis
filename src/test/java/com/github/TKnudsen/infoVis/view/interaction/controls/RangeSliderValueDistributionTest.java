@@ -12,6 +12,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSlider;
+import com.github.TKnudsen.infoVis.view.interaction.controls.rangeSlider.InfoVisRangeSliders;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotHorizontalPainter;
 import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DHorizontalPanel;
 import com.github.TKnudsen.infoVis.view.panels.distribution1D.Distribution1DPanels;

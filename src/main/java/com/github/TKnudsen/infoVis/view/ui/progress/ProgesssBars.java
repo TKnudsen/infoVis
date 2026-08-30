@@ -5,6 +5,14 @@ import java.util.Date;
 
 import javax.swing.JProgressBar;
 
+/**
+ * <p>
+ * Static helpers for resetting a {@link JProgressBar} and updating it with
+ * progress plus an estimated remaining-time string.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class ProgesssBars {
 
 	public static void resetProgressBar(JProgressBar progressBar, long estimatedTime) {

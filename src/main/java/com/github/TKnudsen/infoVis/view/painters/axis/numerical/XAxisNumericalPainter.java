@@ -6,24 +6,22 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.03
+ * @version 2.1 2.1 (re-factored for clarity and efficiency)
+ * @since 2016
  */
 public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
+
+	private transient FontMetrics cachedFontMetrics;
+	private transient java.awt.Font cachedFont;
 
 	public XAxisNumericalPainter(T minValue, T maxValue) {
 		super(minValue, maxValue);
@@ -35,10 +33,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	public void setRectangle(Rectangle2D rectangle) {
 		super.setRectangle(rectangle);
 
-		if (rectangle == null)
-			return;
-
-		if (rectangle.getWidth() == 0)
+		if (rectangle == null || rectangle.getWidth() == 0)
 			return;
 
 		double minPixel = rectangle.getMinX();
@@ -55,142 +50,137 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	 * TODO: generate abstract method that doesn't care for orientation.
 	 */
 	public void drawAxis(Graphics2D g2) {
+		if (rectangle == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
+			return;
+
+		// Make a defensive copy immediately to avoid race conditions
+	    List<Entry<Double, String>> markers = new ArrayList<>(markerPositionsWithLabels);
+	    
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 		Font f = g2.getFont();
 
-		g2.setStroke(stroke);
+		// Cache FontMetrics
+		if (cachedFont != font) {
+			cachedFont = font;
+			cachedFontMetrics = g2.getFontMetrics(font);
+		}
+		FontMetrics fm = cachedFontMetrics;
+
 		g2.setFont(font);
-
-		if (rectangle == null)
-			return;
-
-		// should not be the case any more. delete after verification.
-		if (markerPositionsWithLabels == null)
-			setAxisWorldCoordinates(rectangle.getMinX(), rectangle.getMaxX());
-
-		if (markerPositionsWithLabels.isEmpty())
-			return;
-
-		// draw X-Axis
+		g2.setStroke(stroke);
 		g2.setPaint(getPaint());
-		double x1 = this.rectangle.getMinX();
-		double x2 = this.rectangle.getMaxX();
+
+		// Compute axis line coordinates
+		float y = (float) getAxisAlignmentCoordinate();
+		float x1 = (float) rectangle.getMinX();
+		float x2 = (float) rectangle.getMaxX();
 
 		if (drawAxisBetweenAxeMarkersOnly) {
-			if (markerPositionsWithLabels == null || markerPositionsWithLabels.size() == 0)
+			if (markers == null || markers.size() == 0)
 				System.err.println("markerPositionsWithLabels was null. please validate");
 			else {
-				x1 = markerPositionsWithLabels.get(0).getKey();
-				x2 = markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey();
+				x1 = markers.get(0).getKey().floatValue();
+				x2 = markers.get(markers.size() - 1).getKey().floatValue();
 			}
 		}
 
-		double y = getAxisAlignmentCoordinate();
-
+		// Draw main axis line
 		if (rectangle.getHeight() > 0)
 			DisplayTools.drawLine(g2, x1, y, x2, y);
 
-		drawAxisLabelsAndMarkers(g2);
+		// Draw tick marks and labels
+		drawAxisLabelsAndMarkers(g2, fm);
 
-		if (isDrawOutline())
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (isDrawOutline()) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
+		// Restore state
 		g2.setFont(f);
 		g2.setStroke(s);
 		g2.setColor(c);
 	}
 
 	/**
-	 * general routine to draw labels and markers for every marker position (was
-	 * calculated with every setRectangle()-event).
-	 * 
-	 * @param g2 g2
+	 * Draws tick marks and labels along the X axis.
 	 */
-	protected void drawAxisLabelsAndMarkers(Graphics2D g2) {
-		Color c = g2.getColor();
-		Stroke s = g2.getStroke();
-		Font f = g2.getFont();
-
-		g2.setStroke(stroke);
-		g2.setFont(font);
-		FontMetrics fm = g2.getFontMetrics();
-
-		// should not be the case any more. delete after verification.
+	protected void drawAxisLabelsAndMarkers(Graphics2D g2, FontMetrics fm) {
 		if (markerPositionsWithLabels == null)
-			setAxisWorldCoordinates(rectangle.getMinX(), rectangle.getMaxX());
+			return;
 
-		if (rectangle.getHeight() > 0)
-			for (Entry<Double, String> pair : markerPositionsWithLabels) {
-				double artificialXOffset = 0;
-				if (pair.getKey() > rectangle.getMaxX() - 15)
-					artificialXOffset = -getMarkerDistanceInPixels() * 0.28;
+		float yTop = (float) rectangle.getMinY();
+		float yBottom = (float) rectangle.getMaxY();
+		float tickLen = (float) markerLineWidth;
 
-				g2.setPaint(getPaint());
-				if (axisLineAlignment.equals(AxisLineAlignment.TOP))
-					DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMinY() + markerLineWidth, pair.getKey(),
-							rectangle.getMinY());
-				else
-					DisplayTools.drawLine(g2, pair.getKey(), rectangle.getMaxY() - markerLineWidth, pair.getKey(),
-							rectangle.getMaxY());
+		for (Entry<Double, String> pair : markerPositionsWithLabels) {
+			float x = pair.getKey().floatValue();
+
+			// Draw tick mark
+			if (axisLineAlignment.equals(AxisLineAlignment.TOP))
+				DisplayTools.drawLine(g2, x, yTop + tickLen, x, yTop);
+			else
+				DisplayTools.drawLine(g2, x, yBottom - tickLen, x, yBottom);
+
+			// Draw label
+			if (drawLabels) {
+				String label = pair.getValue();
+				int labelWidth = fm.stringWidth(label);
+				float artificialXOffset = 0f;
+
+				// Avoid clipping at right edge
+				if (x > rectangle.getMaxX() - 15)
+					artificialXOffset = -(float) (getMarkerDistanceInPixels() * 0.28);
+
+				float textX = x + artificialXOffset - labelWidth * 0.4f;
+				float textY = (float) (rectangle.getY() + fm.getHeight() * 1.0 + 4);
+
 				g2.setColor(fontColor);
-
-				if (drawLabels)
-					g2.drawString(pair.getValue(),
-							(int) (pair.getKey().intValue() + 1 + artificialXOffset
-									- fm.stringWidth(pair.getValue()) * 0.4),
-							(int) ((rectangle.getY()) + fm.getHeight() * 1.0) + 4);
+				g2.drawString(label, textX, textY);
+				g2.setColor(color);
 			}
+		}
 
-		g2.setFont(f);
-		g2.setStroke(s);
-		g2.setColor(c);
 	}
 
 	@Override
 	protected void drawPhysU(Graphics2D g2) {
-		if (rectangle == null || physicalUnit == null || physicalUnit.equals(""))
+		if (rectangle == null || physicalUnit == null || physicalUnit.isEmpty())
 			return;
 
-		Color c = g2.getColor();
-
 		g2.setColor(fontColor);
-		FontMetrics m = g2.getFontMetrics();
-		double y_offset = this.rectangle.getY() + m.getHeight() * 2.0 + rectangle.getHeight() * 0.15;
-		double X_offset = (rectangle.getWidth() - m.stringWidth(physicalUnit) * 1.2 - 2);
-		// if (physicalUnit != null && !physicalUnit.equals(""))
-		g2.drawString("[" + physicalUnit + "]", (int) (this.rectangle.getX() + X_offset), (int) y_offset);
+		FontMetrics fm = g2.getFontMetrics(font);
 
-		g2.setColor(c);
+		double yOffset = rectangle.getY() + fm.getHeight() * 2.0 + rectangle.getHeight() * 0.15;
+		double xOffset = rectangle.getWidth() - fm.stringWidth(physicalUnit) * 1.2 - 2;
+
+		g2.drawString("[" + physicalUnit + "]", (int) (rectangle.getX() + xOffset), (int) yOffset);
 	}
 
 	@Override
 	public void setAxisLineAlignment(AxisLineAlignment axisLineAlignment) {
-		if (axisLineAlignment.equals(AxisLineAlignment.TOP) || axisLineAlignment.equals(AxisLineAlignment.BOTTOM)
-				|| axisLineAlignment.equals(AxisLineAlignment.CENTER))
-			super.setAxisLineAlignment(axisLineAlignment);
-		else
-			throw new IllegalArgumentException("YXAxisNumericalPainter: axis alignment must be top or bottom");
+		EnumSet<AxisLineAlignment> allowed = EnumSet.of(AxisLineAlignment.TOP, AxisLineAlignment.BOTTOM,
+				AxisLineAlignment.CENTER);
+
+		if (!allowed.contains(axisLineAlignment))
+			throw new IllegalArgumentException("XAxisNumericalPainter: axis alignment must be TOP, BOTTOM, or CENTER");
+
+		super.setAxisLineAlignment(axisLineAlignment);
 	}
 
 	@Override
 	public double getAxisAlignmentCoordinate() {
 		switch (axisLineAlignment) {
-		case LEFT:
-			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
-		case RIGHT:
-			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
 		case CENTER:
-			return this.rectangle.getCenterY();
+			return rectangle.getCenterY();
 		case TOP:
-			return this.rectangle.getY();
+			return rectangle.getY();
 		case BOTTOM:
-			return this.rectangle.getMaxY();
+			return rectangle.getMaxY();
 		default:
 			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": unknown AxisLineAlignment: " + axisLineAlignment);
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
 		}
 	}
 

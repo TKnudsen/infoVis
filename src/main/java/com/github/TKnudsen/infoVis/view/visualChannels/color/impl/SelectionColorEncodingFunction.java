@@ -5,20 +5,12 @@ import java.util.function.Function;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Provides a constant color for all entities, selected entities are highlighted
  * instead.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2017-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.01
+ * @since 2017
  */
 public class SelectionColorEncodingFunction<T> extends ConstantColorEncodingFunction<T> {
 

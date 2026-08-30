@@ -3,19 +3,8 @@ package com.github.TKnudsen.infoVis.view.chartLayouts;
 import java.awt.geom.Rectangle2D;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * XYAxisChartRectangleLayout that includes a second Y-Axis (typically at the
- * right).
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.03
+ * @since 2016
  */
 public class XYYAxisChartRectangleLayout extends XYAxisChartRectangleLayout {
 

@@ -5,18 +5,8 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.infoVis.view.tools.Rectangle2DTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Creates a grid based on the master chartRectangle
- * 
- * <p>
- * Copyright: (c) 2018-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.04
+ * @since 2018
  */
 public class GridChartRectangleLayout extends ChartRectangleLayout {
 

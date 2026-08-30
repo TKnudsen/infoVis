@@ -8,6 +8,14 @@ import java.awt.geom.Rectangle2D;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
 
+/**
+ * <p>
+ * {@link TableCellChartPanel} that scales its painter's rectangle to an area
+ * proportional to a given relative size, centered within the cell.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class SizeEncodingChartPanel extends TableCellChartPanel {
 
 	/**
@@ -81,7 +89,7 @@ public class SizeEncodingChartPanel extends TableCellChartPanel {
 	 * @return
 	 */
 	private Rectangle2D calculateRectanglePainterRectangle(boolean excludeBorderPixel) {
-		Rectangle2D rect = ComponentTools.getCompontentDrawableRectangle(this);
+		Rectangle2D rect = ComponentTools.getDrawableRectangle(this);
 
 		double area = rect.getWidth() * rect.getHeight() * relativeSize;
 		if (excludeBorderPixel)

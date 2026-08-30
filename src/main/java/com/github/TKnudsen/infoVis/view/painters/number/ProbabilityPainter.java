@@ -13,6 +13,15 @@ import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.painters.primitives.CirclePainter;
 import com.github.TKnudsen.infoVis.view.painters.primitives.RectanglePainter;
 
+/**
+ * <p>
+ * Paints a probability between 0 and 1 as a grid of dots or rectangles
+ * (waffle-chart style), with the filled fraction proportional to the
+ * probability.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class ProbabilityPainter extends ChartPainter {
 
 	private final double probability;

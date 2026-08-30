@@ -7,6 +7,14 @@ import java.util.function.Function;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.table.MyTableCellDefaultRenderer.Glyph;
 
+/**
+ * <p>
+ * Numeric variant of {@link ItemTableColumnData}, adding glyph type, constant
+ * color, and size-encoding configuration for rendering table cells.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class NumericalItemTableColumnData extends ItemTableColumnData {
 
 	private final Glyph glyph;

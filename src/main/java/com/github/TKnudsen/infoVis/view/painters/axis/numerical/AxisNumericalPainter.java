@@ -7,9 +7,9 @@ import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.math.BigDecimal;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
@@ -17,6 +17,7 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisCartTools;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisPainter;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
@@ -26,20 +27,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Abstract basis class for axe drawings.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 2.01
+ * @since 2016
  */
-public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter implements ITooltip, IPositionEncoder {
+public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
+		implements ITooltip, IPositionEncoder, IAxisLogarithmicScale {
 
 	private T minValue;
 	private T maxValue;
@@ -64,7 +56,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	protected String physicalUnit = "";
 
 	// internal
-	protected List<Entry<Double, String>> markerPositionsWithLabels = new ArrayList<Entry<Double, String>>();
+	protected CopyOnWriteArrayList<Entry<Double, String>> markerPositionsWithLabels = new CopyOnWriteArrayList<Entry<Double, String>>();
 
 	/**
 	 * classical constructor for a non-flipped axis
@@ -84,7 +76,8 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		positionEncodingFunction.addPositionEncodingFunctionListener(myPositionEncodingFunctionListener);
 
 		// this was added, due to the many cases where it had to adapted explicitly
-		this.setBackgroundPaint(null);
+		// this.setBackgroundPaint(null);
+		// moved up to AxisPainter
 	}
 
 	@Override
@@ -131,13 +124,34 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 	protected void calculateMarkerPositions(double minPixel, double maxPixel, double markerCount) {
 		// axis markers
-		markerPositionsWithLabels = new ArrayList<Entry<Double, String>>();
+		markerPositionsWithLabels = new CopyOnWriteArrayList<Entry<Double, String>>();
 
 		// internal variables
 		double valueInterval = Math.abs(maxValue.doubleValue() - minValue.doubleValue());
 
 		if (!isLogarithmicScale()) {
 			double quantization = AxisCartTools.suggestMeaningfulValueIntervalLinear(valueInterval / markerCount);
+
+			// The uniform-step walk below stops as soon as the next regularly-spaced
+			// candidate would land on or past maxValue. When the chosen "nice"
+			// quantization does not evenly divide the value range (e.g.
+			// quantization=5 on a range up to ~6.7 yields ticks at {0, 5} only, 1.7 --
+			// over a third of a full step -- left uncovered at the top), prefer a
+			// finer quantization that reaches closer to the true maximum instead,
+			// e.g. quantization=2 covering {0, 2, 4, 6}. Bounded retry (not an open
+			// search) so this can't run away or overcrowd a small panel with ticks;
+			// stops as soon as the wasted top gap is acceptable or the "nice number"
+			// chooser stops offering anything finer.
+			for (int attempt = 1; attempt <= 3; attempt++) {
+				double wastedFraction = wastedTopFraction(quantization, valueInterval);
+				if (wastedFraction <= 0.3)
+					break;
+				double finer = AxisCartTools.suggestMeaningfulValueIntervalLinear(valueInterval / (markerCount + attempt));
+				if (finer >= quantization)
+					break; // no finer option available -- stop trying
+				quantization = finer;
+			}
+
 			double startValue = minValue.doubleValue();
 
 			double d = startValue;
@@ -148,7 +162,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 				startValue += quantization;
 
 			double pixValue = positionEncodingFunction.apply(startValue);
-			addMarkerPosition(pixValue, startValue);
+			addMarkerPosition(pixValue, startValue, maxValue.doubleValue());
 
 			// iterate...
 			double loop = quantization;
@@ -156,7 +170,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 					&& new BigDecimal(loop).doubleValue() <= new BigDecimal(valueInterval).doubleValue()
 					&& new BigDecimal(startValue + loop).doubleValue() < maxValue.doubleValue()) {
 				pixValue = positionEncodingFunction.apply(startValue + loop);
-				addMarkerPosition(pixValue, startValue + loop);
+				addMarkerPosition(pixValue, startValue + loop, maxValue.doubleValue());
 				loop += quantization;
 			}
 		} else {
@@ -166,7 +180,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 			if (meaningfulValuesLogarithmic != null)
 				for (Double value : meaningfulValuesLogarithmic) {
 					Double pixValue = positionEncodingFunction.apply(value);
-					addMarkerPosition(pixValue, value);
+					addMarkerPosition(pixValue, value, maxValue.doubleValue());
 				}
 		}
 
@@ -183,9 +197,36 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		}
 	}
 
-	private void addMarkerPosition(Double pixValue, Double value) {
+	private void addMarkerPosition(double pixValue, double value, double maxValue) {
 		markerPositionsWithLabels.add(new AbstractMap.SimpleEntry<Double, String>(pixValue,
-				AxisCartTools.suggestMeaningfulValueString(value)));
+				AxisCartTools.suggestMeaningfulValueString(value, maxValue)));
+	}
+
+	/**
+	 * Simulates the uniform-step tick walk for a candidate quantization (without
+	 * adding any markers) and returns how much of the top of the value range
+	 * would be left without a tick, expressed as a fraction of one quantization
+	 * step. Used by {@link #calculateMarkerPositions(double, double, double)} to
+	 * decide whether a finer "nice" quantization would cover the range better
+	 * than the one initially suggested.
+	 */
+	private double wastedTopFraction(double quantization, double valueInterval) {
+		double startValue = minValue.doubleValue();
+		double mod = startValue % quantization;
+		startValue = startValue - mod;
+		if (startValue < minValue.doubleValue())
+			startValue += quantization;
+
+		double lastTickValue = startValue;
+		double loop = quantization;
+		while (!Double.isNaN(loop) && !Double.isInfinite(loop)
+				&& new BigDecimal(loop).doubleValue() <= new BigDecimal(valueInterval).doubleValue()
+				&& new BigDecimal(startValue + loop).doubleValue() < maxValue.doubleValue()) {
+			lastTickValue = startValue + loop;
+			loop += quantization;
+		}
+
+		return (maxValue.doubleValue() - lastTickValue) / quantization;
 	}
 
 	@Override
@@ -284,10 +325,12 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		this.drawAxisBetweenAxeMarkersOnly = drawAxisBetweenAxeMarkersOnly;
 	}
 
+	@Override
 	public boolean isLogarithmicScale() {
 		return positionEncodingFunction.isLogarithmicScale();
 	}
 
+	@Override
 	public void setLogarithmicScale(boolean logarithmicScale) {
 		this.positionEncodingFunction.setLogarithmicScale(logarithmicScale);
 	}

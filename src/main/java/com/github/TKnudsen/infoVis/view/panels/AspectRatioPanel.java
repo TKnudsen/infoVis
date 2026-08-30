@@ -5,6 +5,14 @@ import java.awt.GridLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+/**
+ * <p>
+ * Panel that constrains its nested component to a fixed x:y aspect ratio,
+ * centering it within the available bounds.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class AspectRatioPanel extends JPanel {
 
 	/**

@@ -5,7 +5,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.util.EnumSet;
 import java.util.Map.Entry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
@@ -14,21 +16,15 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalSt
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Draws y axes. starts at the bottom with lowest values. Thus, the value domain
- * is mirrored since the swing 0-orientation is at the top.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.02
+ * @version 2.04
+ * @since 2016
  */
 public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
+
+	private transient FontMetrics cachedFontMetrics;
+	private transient java.awt.Font cachedFont;
+
+	private boolean drawLabelsBetweenMarkers = false;
 
 	public YAxisNumericalPainter(T minValue, T maxValue) {
 		this(minValue, maxValue, true);
@@ -36,7 +32,6 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	public YAxisNumericalPainter(T minValue, T maxValue, boolean flipAxisValues) {
 		super(minValue, maxValue, flipAxisValues);
-
 		this.axisLineAlignment = AxisLineAlignment.RIGHT;
 	}
 
@@ -44,10 +39,7 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	public void setRectangle(Rectangle2D rectangle) {
 		super.setRectangle(rectangle);
 
-		if (rectangle == null)
-			return;
-
-		if (rectangle.getHeight() == 0)
+		if (rectangle == null || rectangle.getHeight() == 0)
 			return;
 
 		double minPixel = rectangle.getMinY();
@@ -61,90 +53,85 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	public void drawAxis(Graphics2D g2) {
+		if (rectangle == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
+			return;
+
+		CopyOnWriteArrayList<Entry<Double, String>> markers = markerPositionsWithLabels;
+
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 
-		if (rectangle == null)
-			return;
-
-		// should not be the case any more. delete after verification.
-		if (markerPositionsWithLabels == null)
-			setAxisWorldCoordinates(rectangle.getMinY(), rectangle.getMaxY());
-
-		if (markerPositionsWithLabels.isEmpty())
-			return;
-
-		g2.setFont(font);
-		FontMetrics fm = g2.getFontMetrics();
+		// cache FontMetrics (avoid re-computation)2 %ST&%
+		if (cachedFont != font) {
+			cachedFont = font;
+			cachedFontMetrics = g2.getFontMetrics(font);
+		}
+		FontMetrics fm = cachedFontMetrics;
 
 		// draw Y-Axis
+		g2.setFont(font);
 		g2.setColor(color);
 		g2.setStroke(stroke);
-		double x = getAxisAlignmentCoordinate();
 
-		if (drawAxisBetweenAxeMarkersOnly)
-			DisplayTools.drawLine(g2, x, markerPositionsWithLabels.get(0).getKey(), x,
-					markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
-		else
-			DisplayTools.drawLine(g2, x, rectangle.getMinY(), x, rectangle.getMaxY());
+		// double x = getAxisAlignmentCoordinate();
 
-		double maxStringWidth = 0;
-		for (Entry<Double, String> pair : markerPositionsWithLabels)
-			maxStringWidth = Math.max(maxStringWidth, fm.stringWidth(pair.getValue()));
+		double xAxisCoord = getAxisAlignmentCoordinate();
+		double xAxisTickOffset = getAxisTickOffset();
 
-		double xAxisOffset = getAxisAlignmentCoordinate();
-		double xAxisTickOffset = 0;
-		if (axisLineAlignment.equals(AxisLineAlignment.LEFT)) {
-			xAxisTickOffset = xAxisOffset;
-		} else if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
-			xAxisTickOffset = xAxisOffset - 0.5 * markerLineWidth;
-		} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT)) {
-			xAxisTickOffset = xAxisOffset - markerLineWidth;
-		} else
-			xAxisTickOffset = 0;
+		if (drawAxisBetweenAxeMarkersOnly) {
+			Entry<Double, String> first = markers.get(0);
+			Entry<Double, String> last = markers.get(markers.size() - 1);
+			DisplayTools.drawLine(g2, (float) xAxisCoord, first.getKey().floatValue(), (float) xAxisCoord,
+					last.getKey().floatValue());
+		} else {
+			DisplayTools.drawLine(g2, (float) xAxisCoord, (float) rectangle.getMinY(), (float) xAxisCoord,
+					(float) rectangle.getMaxY());
+		}
 
-		// draw markers
-		for (Entry<Double, String> pair : markerPositionsWithLabels) {
+		// draw tick marks and labels
+		Entry<Double, String> lastMarker = markers.get(markers.size() - 1);
 
-			// invert points for the y-axis
-			double yValue = pair.getKey();
-
-			// draw ticks
-			g2.drawLine((int) (xAxisTickOffset), (int) (yValue), (int) (xAxisTickOffset + markerLineWidth),
-					(int) (yValue));
-
-			if (drawLabels) {
-				double x0 = rectangle.getX() + markerLineWidth + 2;
-				double y0 = (pair.equals(markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1)))
-						? pair.getKey() - 3
-						: pair.getKey() - fm.getHeight() * 0.55;
-				double w = rectangle.getWidth() - markerLineWidth;
-				double h = fm.getHeight();
-				if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
-					x0 = rectangle.getX();
-					w = rectangle.getWidth() * 0.5 - 2;
-				} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT))
-					x0 -= 2;
-
-				StringPainter sp = new StringPainter(pair.getValue());
-				sp.setRectangle(new Rectangle2D.Double(x0, y0, w, h));
-
-				sp.setBackgroundPaint(null);
-				if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
-					sp.setHorizontalStringAlignment(HorizontalStringAlignment.LEFT);
-				else if (axisLineAlignment.equals(AxisLineAlignment.CENTER))
-					sp.setHorizontalStringAlignment(HorizontalStringAlignment.RIGHT);
-				else
-					sp.setHorizontalStringAlignment(HorizontalStringAlignment.RIGHT);
-				sp.setVerticalStringAlignment(VerticalStringAlignment.CENTER);
-				sp.setFont(font);
-				sp.setFontColor(fontColor);
-				sp.draw(g2);
+		double ySpace = 0;
+		if (drawLabelsBetweenMarkers) {
+			if (markers.size() > 1) {
+				ySpace = (markers.get(0).getKey() - markers.get(1).getKey()) * 0.5;
 			}
 		}
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		for (Entry<Double, String> pair : markers) {
+			double yValue = pair.getKey();
+			// tick mark
+			DisplayTools.drawLine(g2, (float) xAxisTickOffset, (float) yValue,
+					(float) (xAxisTickOffset + markerLineWidth), (float) yValue);
+
+			if (!drawLabels)
+				continue;
+
+			double x0 = rectangle.getX() + markerLineWidth + 2;
+			// double y0 = pair.equals(lastMarker) ? yValue - 3 : yValue - fm.getHeight() *
+			// 0.55;
+			double y0 = yValue - fm.getHeight() * 0.55;
+			y0 -= ySpace;
+			y0 = Math.max(3, y0);
+			double w = rectangle.getWidth() - markerLineWidth;
+			double h = fm.getHeight();
+
+			if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
+				x0 = rectangle.getX();
+				w = rectangle.getWidth() * 0.5 - 2;
+			} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT)) {
+				x0 -= 2;
+			}
+
+			StringPainter sp = createLabelPainter(pair.getValue(), x0, y0, w, h);
+			sp.setHorizontalStringAlignment(getHorizontalAlignmentForAxis());
+			sp.draw(g2);
+		}
+
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setStroke(s);
 		g2.setColor(c);
@@ -152,44 +139,83 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	protected void drawPhysU(Graphics2D g2) {
-		if (rectangle == null)
+		if (rectangle == null || physicalUnit == null || physicalUnit.isEmpty())
 			return;
+
 		g2.setColor(fontColor);
-		FontMetrics m = g2.getFontMetrics();
-		double y_offset = (rectangle.getY() + getFontSize() * 2.3);
-		double X_offset = ((rectangle.getWidth() - m.stringWidth(physicalUnit)) / 2.0 - 2);
-		if (physicalUnit != null && !physicalUnit.equals(""))
-			g2.drawString("[" + physicalUnit + "]", (int) ((int) this.rectangle.getX() + X_offset), (int) y_offset);
+		FontMetrics fm = g2.getFontMetrics(font);
+
+		double yOffset = rectangle.getY() + getFontSize() * 2.3;
+		double xOffset = (rectangle.getWidth() - fm.stringWidth(physicalUnit)) / 2.0 - 2;
+
+		g2.drawString("[" + physicalUnit + "]", (int) (rectangle.getX() + xOffset), (int) yOffset);
 	}
 
 	@Override
 	public void setAxisLineAlignment(AxisLineAlignment axisLineAlignment) {
-		if (axisLineAlignment.equals(AxisLineAlignment.LEFT) || axisLineAlignment.equals(AxisLineAlignment.RIGHT)
-				|| axisLineAlignment.equals(AxisLineAlignment.CENTER))
-			super.setAxisLineAlignment(axisLineAlignment);
-		else
-			throw new IllegalArgumentException("YAxisNumericalPainter: axis alignment must be left or right");
+		EnumSet<AxisLineAlignment> allowed = EnumSet.of(AxisLineAlignment.LEFT, AxisLineAlignment.RIGHT,
+				AxisLineAlignment.CENTER);
+
+		if (!allowed.contains(axisLineAlignment))
+			throw new IllegalArgumentException("YAxisNumericalPainter: axis alignment must be LEFT, RIGHT, or CENTER");
+
+		super.setAxisLineAlignment(axisLineAlignment);
 	}
 
 	@Override
 	public double getAxisAlignmentCoordinate() {
 		switch (axisLineAlignment) {
 		case LEFT:
-			return this.rectangle.getMinX();
+			return rectangle.getMinX();
 		case RIGHT:
-			return this.rectangle.getMaxX();
+			return rectangle.getMaxX();
 		case CENTER:
-			return this.rectangle.getCenterX();
-		case TOP:
-			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
-		case BOTTOM:
-			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
+			return rectangle.getCenterX();
 		default:
 			throw new IllegalArgumentException(
-					getClass().getSimpleName() + ": unknown AxisLineAlignment: " + axisLineAlignment);
+					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);
 		}
+	}
+
+	// ---------------------------------------------------------------------
+	// Helper methods
+	// ---------------------------------------------------------------------
+
+	private double getAxisTickOffset() {
+		switch (axisLineAlignment) {
+		case LEFT:
+			return getAxisAlignmentCoordinate();
+		case CENTER:
+			return getAxisAlignmentCoordinate() - 0.5 * markerLineWidth;
+		case RIGHT:
+			return getAxisAlignmentCoordinate() - markerLineWidth;
+		default:
+			return 0;
+		}
+	}
+
+	private StringPainter createLabelPainter(String text, double x, double y, double w, double h) {
+		StringPainter sp = new StringPainter(text);
+		sp.setRectangle(new Rectangle2D.Double(x, y, w, h));
+		sp.setBackgroundPaint(null);
+		sp.setVerticalStringAlignment(VerticalStringAlignment.CENTER);
+		sp.setFont(font);
+		sp.setFontColor(fontColor);
+		return sp;
+	}
+
+	private HorizontalStringAlignment getHorizontalAlignmentForAxis() {
+		if (axisLineAlignment.equals(AxisLineAlignment.LEFT))
+			return HorizontalStringAlignment.LEFT;
+		return HorizontalStringAlignment.RIGHT;
+	}
+
+	public boolean isDrawLabelsBetweenMarkers() {
+		return drawLabelsBetweenMarkers;
+	}
+
+	public void setDrawLabelsBetweenMarkers(boolean drawLabelsBetweenMarkers) {
+		this.drawLabelsBetweenMarkers = drawLabelsBetweenMarkers;
 	}
 
 }

@@ -13,11 +13,19 @@ import javax.swing.JPanel;
 
 import com.github.TKnudsen.infoVis.view.interaction.handlers.FilterStatusHander;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.FilterStatusHanders;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontal;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontalValueBased;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased;
 
 import de.javagl.selection.SelectionModel;
 
+/**
+ * <p>
+ * Panel showing all/filtered/selected item counts as a labeled horizontal
+ * bar chart, refreshing on filter status or selection changes.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class FilterStatusView<T> extends JPanel {
 
 	/**
@@ -65,7 +73,7 @@ public class FilterStatusView<T> extends JPanel {
 		labels.add(new JLabel("Selected"));
 		add(labels, BorderLayout.WEST);
 
-		BarChartHorizontal barChart = createBarChart();
+		BarChartHorizontalValueBased barChart = createBarChart();
 		add(barChart, BorderLayout.CENTER);
 
 		JPanel counts = new JPanel(new GridLayout(0, 1));
@@ -77,7 +85,7 @@ public class FilterStatusView<T> extends JPanel {
 		add(counts, BorderLayout.EAST);
 	}
 
-	private BarChartHorizontal createBarChart() {
+	private BarChartHorizontalValueBased createBarChart() {
 		List<Double> bars = new ArrayList<>();
 		List<Color> colors = new ArrayList<>();
 
@@ -90,8 +98,8 @@ public class FilterStatusView<T> extends JPanel {
 		bars.add((double) selectionModel.getSelection().size());
 		colors.add(selectionColor);
 
-		BarChartHorizontal barChart = BarCharts.createBarChartHorizontal(bars, colors);
-		barChart.setBackgroundColor(null);
+		BarChartHorizontalValueBased barChart = BarChartsValueBased.createBarChartHorizontal(bars, colors);
+		barChart.setBackground(null);
 		barChart.setDrawXAxis(drawAxis);
 
 		return barChart;

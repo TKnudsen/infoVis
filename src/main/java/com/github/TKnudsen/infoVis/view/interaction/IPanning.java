@@ -1,18 +1,8 @@
 package com.github.TKnudsen.infoVis.view.interaction;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Models a shift of the view in x/y direction.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
  * @version 1.02
+ * @since 2016
  */
 public interface IPanning {
 

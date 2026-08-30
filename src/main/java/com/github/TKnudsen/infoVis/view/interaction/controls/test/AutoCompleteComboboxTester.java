@@ -11,6 +11,14 @@ import javax.swing.SwingUtilities;
 
 import com.github.TKnudsen.infoVis.view.interaction.controls.AutoCompleteComboBox;
 
+/**
+ * <p>
+ * Standalone demo frame exercising {@link AutoCompleteComboBox} with a
+ * sample item list.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class AutoCompleteComboboxTester {
 
 	public static void main(String[] args) {

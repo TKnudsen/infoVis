@@ -2,6 +2,13 @@ package com.github.TKnudsen.infoVis.view.panels.axis.sizeCharacteristics;
 
 import java.awt.geom.Rectangle2D;
 
+/**
+ * <p>
+ * Default mutable implementation of {@link IAxisSizeCharacteristics}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class AxisSizeCharacteristics implements IAxisSizeCharacteristics {
 
 	private Rectangle2D axisRectangle = null;

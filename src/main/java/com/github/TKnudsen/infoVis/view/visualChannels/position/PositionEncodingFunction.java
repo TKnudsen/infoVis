@@ -8,24 +8,17 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LogarithmicNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.NormalizationFunction;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Maps a numerical value domain into the screen space.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 1.08
+ * @since 2016
  */
-public final class PositionEncodingFunction implements IPositionEncodingFunction {
+public final class PositionEncodingFunction implements IPositionEncodingFunction, IAxisLogarithmicScale {
 
 	private Number minValue;
 	private Number maxValue;
@@ -164,6 +157,7 @@ public final class PositionEncodingFunction implements IPositionEncodingFunction
 		this.scalingFunction.setGlobalMax(maxValue);
 	}
 
+	@Override
 	public boolean isLogarithmicScale() {
 		return logarithmicScale;
 	}

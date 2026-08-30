@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.tools.VisualMappings;
+import com.github.TKnudsen.infoVis.view.tools.VisualMappingTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.ShapeAttributes;
 import com.github.TKnudsen.infoVis.view.visualChannels.color.impl.ConstantColorEncodingFunction;
 
@@ -16,7 +16,9 @@ import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
 /**
+ * <p>
  * Deprecated use Distribution1DPanels
+ * </p>
  *
  */
 public class Distribution1DHorizontalPanels {
@@ -90,7 +92,7 @@ public class Distribution1DHorizontalPanels {
 		return null;
 	}
 
-	@Deprecated // use VisualMappings.sanityCheckFilter
+	@Deprecated // use VisualMappingTools.sanityCheckFilter
 	/**
 	 * applies a filter operation using a list of data. Returns a new list, only
 	 * containing those elements which can be applied by the position mapping
@@ -103,7 +105,7 @@ public class Distribution1DHorizontalPanels {
 	 */
 	public static <T> List<T> sanityCheckFilter(List<T> data, Function<? super T, Double> worldPositionMapping,
 			boolean warnForQualityLeaks) {
-		return VisualMappings.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
+		return VisualMappingTools.sanityCheckFilter(data, worldPositionMapping, warnForQualityLeaks);
 	}
 
 }

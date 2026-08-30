@@ -11,6 +11,14 @@ import com.github.TKnudsen.ComplexDataObject.model.io.json.JSONLoader;
 import com.github.TKnudsen.ComplexDataObject.model.io.json.JSONWriter;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.BooleanParser;
 
+/**
+ * <p>
+ * Static helpers for filtering collections by predicate, and for
+ * loading/saving per-element filter status to/from JSON.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class FilterStatusHanders {
 
 	public static <T> FilterStatusHander<T> create() {

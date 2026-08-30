@@ -8,6 +8,7 @@ import com.github.TKnudsen.infoVis.view.chartLayouts.ChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.chartLayouts.XYAxisChartRectangleLayout;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
+import com.github.TKnudsen.infoVis.view.painters.axis.IAxisLogarithmicScale;
 import com.github.TKnudsen.infoVis.view.painters.axis.IXAxisCategorical;
 import com.github.TKnudsen.infoVis.view.painters.axis.IYAxis;
 import com.github.TKnudsen.infoVis.view.painters.axis.categorical.XAxisCategoricalPainter;
@@ -19,22 +20,14 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Panel for charts with categorical x axes and numerical y
  * </p>
- * 
- * <p>
- * Copyright: (c) 2018-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.02
+ *
+ * @version 2.03
+ * @since 2018
  */
 public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends Number> extends InfoVisChartPanel
-		implements IXAxisCategorical<X>, IYAxis<Y>, IYPositionEncoder {
+		implements IXAxisCategorical<X>, IYAxis<Y>, IYPositionEncoder, IAxisLogarithmicScale {
 
 	/**
 	 * 
@@ -115,6 +108,12 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 		updateBounds();
 	}
 
+	/**
+	 * @deprecated use setBackground for panels and setBackgroundColor for single
+	 *             painters. Panels overwrite painter's behavior, but not the other
+	 *             way around.
+	 * @param backgroundColor
+	 */
 	public void setBackgroundColor(Color backgroundColor) {
 		super.setBackground(backgroundColor);
 
@@ -125,10 +124,37 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 			yAxisPainter.setBackgroundPaint(backgroundColor);
 	}
 
+	@Override
+	/**
+	 * Sets the background color of this panel and manages chart painter
+	 * backgrounds.
+	 * <p>
+	 * <b>Non-null color:</b> Sets a unified panel background and clears all chart
+	 * painter backgrounds (making them transparent).
+	 * <p>
+	 * <b>Null:</b> Clears the panel background and preserves individual chart
+	 * painter backgrounds.
+	 * <p>
+	 * <b>Note:</b> Painter backgrounds cleared by a non-null color are not restored
+	 * when switching back to null. Manage externally if restoration is needed.
+	 *
+	 * @param backgroundColor the background color for the panel, or null to allow
+	 *                        individual chart painter backgrounds to be visible
+	 */
+	public void setBackground(Color backgroundColor) {
+		super.setBackground(backgroundColor);
+
+		if (this.xAxisPainter != null && backgroundColor != null)
+			xAxisPainter.setBackgroundPaint(null);
+
+		if (this.yAxisPainter != null && backgroundColor != null)
+			yAxisPainter.setBackgroundPaint(null);
+	}
+
 	public void setXAxisPainter(XAxisCategoricalPainter<X> xAxisPainter) {
 		this.xAxisPainter = xAxisPainter;
 
-		setBackgroundColor(getBackgroundColor());
+		//setBackgroundColor(getBackgroundColor());
 
 		updateBounds();
 	}
@@ -146,7 +172,7 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 				((IYPositionEncoding) chartPainter)
 						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
 
-		setBackgroundColor(getBackgroundColor());
+		//setBackgroundColor(getBackgroundColor());
 
 		updateBounds();
 	}
@@ -277,6 +303,12 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 		updateBounds();
 	}
 
+	@Override
+	public boolean isLogarithmicScale() {
+		return this.yAxisPainter.isLogarithmicScale();
+	}
+
+	@Override
 	public void setLogarithmicScale(boolean logarithmicScale) {
 		this.yAxisPainter.setLogarithmicScale(logarithmicScale);
 
@@ -286,5 +318,15 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	@Override
 	public IPositionEncodingFunction getYPositionEncodingFunction() {
 		return yAxisPainter.getPositionEncodingFunction();
+	}
+	
+	@Override
+	public void setForeground(Color fg) {
+		super.setForeground(fg);
+
+		if (xAxisPainter != null)
+			xAxisPainter.setFontColor(fg);
+		if (yAxisPainter != null)
+			yAxisPainter.setFontColor(fg);
 	}
 }

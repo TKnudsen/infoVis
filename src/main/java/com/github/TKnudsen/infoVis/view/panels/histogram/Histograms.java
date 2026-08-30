@@ -14,6 +14,15 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
+/**
+ * <p>
+ * Static factory and interaction helpers for {@link Histogram}: creation
+ * from raw data with automatic binning, click/rectangle selection wiring, and
+ * default aggregation (binning) functions.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Histograms {
 
 	public static final Color DEFAULT_COLOR = Color.GRAY;

@@ -16,8 +16,9 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontal;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarCharts;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontalValueBased;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased;
+import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
@@ -73,13 +74,14 @@ public class BarChartHorizontalPanelTester {
 		}
 
 		// BARCHART
-		BarChartHorizontal barChart = BarCharts.createBarChartHorizontal(points, colors);
+		BarChartHorizontalValueBased barChart = BarChartsValueBased.createBarChartHorizontal(points, colors);
 		barChart.setBackground(null);
-		BarCharts.addLegend(barChart, labels, HorizontalStringAlignment.LEFT);
+		BarChartsValueBased.setSelectionPaint(barChart, InfoVisColors.SELECTION_COLOR);
+		BarChartsValueBased.addLegend(barChart, labels, HorizontalStringAlignment.LEFT);
 
 		// SELECTION MODEL, INTERACTION
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
-		BarCharts.addInteraction(barChart, true, true, selectionModel);
+		BarChartsValueBased.addInteraction(barChart, true, true, selectionModel);
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 

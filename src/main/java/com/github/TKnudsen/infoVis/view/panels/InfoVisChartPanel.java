@@ -24,19 +24,11 @@ import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Basic chart functionality to maintain, layout, and draw painters.
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2020 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
+ *
  * @version 2.07
+ * @since 2016
  */
 public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
@@ -90,7 +82,7 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 			}
 		});
 
-		updateBounds();
+		// updateBounds();
 
 		setShowingTooltips(true);
 	}
@@ -101,6 +93,12 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		addChartPainter(chartPainter);
 	}
 
+	/**
+	 * Ensures that the layout or its inherited class matches the panel layout
+	 * requirements.
+	 * 
+	 * @return
+	 */
 	protected ChartRectangleLayout createChartRectangleLayout() {
 		return new ChartRectangleLayout();
 	}
@@ -114,7 +112,7 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 		Color color = g2.getColor();
 
-		Rectangle2D rect = ComponentTools.getCompontentDrawableRectangle(this);
+		Rectangle2D rect = ComponentTools.getDrawableRectangle(this);
 
 		drawChart(g2);
 
@@ -131,9 +129,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 
 	protected void drawChart(Graphics2D g2) {
 		for (ChartPainter chartPainter : chartPainters) {
-			chartPainter.setFont(this.getFont());
-			// chartPainter.setRectangle(new Rectangle2D.Double(0, 0, getWidth() - 1,
-			// getHeight() - 1)); //no! destroys the chart layout
 			chartPainter.draw(g2);
 		}
 	}
@@ -144,41 +139,65 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		repaint();
 	}
 
+	/**
+	 * Updates the chart bounds, margins, and layout when the component is resized.
+	 * 
+	 * <p>
+	 * Recalculates the drawable area accounting for insets, applies appropriate
+	 * margins, and updates all chart painters with the new bounds.
+	 * </p>
+	 */
 	protected final void updateBounds() {
-		Rectangle2D rectangle = ComponentTools.getCompontentDrawableRectangle(this);
+		// Component readiness check
+		if (!isDisplayable() || getWidth() <= 0 || getHeight() <= 0) {
+			return;
+		}
 
+		Rectangle2D rectangle = ComponentTools.getDrawableRectangle(this);
 		if (rectangle == null)
 			return;
 
-		double border = 0;
-		double min = Math.min(rectangle.getWidth(), rectangle.getHeight());
-		if (autoMargin) {
-			border = Math.max(1, min * borderSpaceRatio);
-		} else if (!Double.isNaN(margin)) {
-			border = Math.min(min * 0.5, margin);
-		}
+		// Calculate margin based on settings
+		double calculatedMargin = calculateMargin(rectangle);
 
-		chartRectangleLayout.setMargin(border);
-
+		// Apply updates
+		chartRectangleLayout.setMargin(calculatedMargin);
 		chartRectangleLayout.setRectangle(rectangle);
-
 		updatePainterRectangles();
 
 		repaint();
 		revalidate();
 	}
 
+	/**
+	 * Calculates the margin for the chart based on auto-margin settings.
+	 * 
+	 * @param rectangle the drawable rectangle
+	 * @return the calculated margin in pixels
+	 */
+	private double calculateMargin(Rectangle2D rectangle) {
+		double minDimension = Math.min(rectangle.getWidth(), rectangle.getHeight());
+
+		if (autoMargin)
+			return Math.max(1.0, Math.min(3.0, minDimension * borderSpaceRatio));
+
+		if (!Double.isNaN(margin))
+			return Math.min(minDimension * 0.5, margin);
+
+		return 0.0;
+	}
+
 	@Override
 	public void setBounds(int x, int y, int width, int height) {
 		if (quadraticBounds) {
-			int min = (width > height) ? height : width;
+			int min = Math.min(width, height);
 			super.setBounds(x, y, min, min);
 		} else
 			super.setBounds(x, y, width, height);
 	}
 
 	/**
-	 * uses the rectangle information provided with the layout and assigns it to the
+	 * Uses the rectangle information provided with the layout and assigns it to the
 	 * painters
 	 */
 	protected void updatePainterRectangles() {
@@ -201,6 +220,8 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	}
 
 	public void addChartPainter(ChartPainter chartPainter) {
+		Objects.requireNonNull(chartPainter, "InfoVisChartPanel.addChartPainter: ChartPainter may not be null");
+
 		addChartPainter(getChartPainters().size(), chartPainter);
 	}
 
@@ -217,12 +238,19 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	 * @param chartPainter the chart painter
 	 */
 	public void addChartPainter(int index, ChartPainter chartPainter) {
-		Objects.requireNonNull(chartPainter, "The ChartPainter may not be null");
+		Objects.requireNonNull(chartPainter, "InfoVisChartPanel.addChartPainter: ChartPainter may not be null");
 
 		// because it is not guaranteed that updateBounds will be triggered implicitly
 		chartPainter.setRectangle(chartRectangleLayout.getChartRectangle());
 
+		// Apply panel font once
+		if (getFont() != null)
+			chartPainter.setFont(getFont());
+
 		this.chartPainters.add(index, chartPainter);
+
+		if (isDisplayable())
+			updateBounds();
 	}
 
 	public void removeChartPainters() {
@@ -235,17 +263,50 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 		return this.chartPainters.remove(chartPainter);
 	}
 
+	/**
+	 * @deprecated This color is ill-defined. It may be expected to be from the
+	 *             panel, or the primary chart painter. Avoid usage, find a better
+	 *             implementation solution.
+	 * @return
+	 */
 	public Color getBackgroundColor() {
 		return this.getBackground();
 	}
 
+	@Override
+	/**
+	 * Sets the background color of this panel and manages chart painter
+	 * backgrounds.
+	 * <p>
+	 * <b>Non-null color:</b> Sets a unified panel background and clears all chart
+	 * painter backgrounds (making them transparent).
+	 * <p>
+	 * <b>Null:</b> Clears the panel background and preserves individual chart
+	 * painter backgrounds.
+	 * <p>
+	 * <b>Note:</b> Painter backgrounds cleared by a non-null color are not restored
+	 * when switching back to null. Manage externally if restoration is needed.
+	 *
+	 * @param backgroundColor the background color for the panel, or null to allow
+	 *                        individual chart painter backgrounds to be visible
+	 */
 	public void setBackground(Color backgroundColor) {
 		super.setBackground(backgroundColor);
 
-		if (chartPainters != null)
+		if (chartPainters != null && backgroundColor != null) {
 			for (ChartPainter chartPainter : chartPainters) {
 				chartPainter.setBackgroundPaint(null);
 			}
+		}
+	}
+
+	@Override
+	public void setForeground(Color fg) {
+		super.setForeground(fg);
+
+		if (chartPainters != null && fg != null)
+			for (ChartPainter chartPainter : chartPainters)
+				chartPainter.setFontColor(fg);
 	}
 
 	public boolean isShowingTooltips() {

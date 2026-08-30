@@ -9,6 +9,14 @@ import de.javagl.selection.SelectionEvent;
 import de.javagl.selection.SelectionListener;
 import de.javagl.selection.SelectionModel;
 
+/**
+ * <p>
+ * Static helper wiring click-selection interaction into a
+ * {@link Grid2DAggregationPanel}.
+ * </p>
+ *
+ * @version 1.0
+ */
 public class Grid2DAggregationPanels {
 
 	public static <T> void addInteraction(Grid2DAggregationPanel<T> grid2DAggregationPanel, SelectionModel<T> selectionModel) {

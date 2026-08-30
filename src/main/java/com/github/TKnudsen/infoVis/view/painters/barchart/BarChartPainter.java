@@ -28,19 +28,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
 
 /**
  * <p>
- * InfoVis
- * </p>
- * 
- * <p>
  * Basic bar chart painter
  * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2023 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.09
+ *
+ * @version 2.11
+ * @since 2016
  */
 public abstract class BarChartPainter extends ChartPainter
 		implements IClickSelection<Integer>, IRectangleSelection<Integer>, ISelectionVisualizer<Integer>, ITooltip {
@@ -72,8 +64,7 @@ public abstract class BarChartPainter extends ChartPainter
 	private Function<? super Integer, Boolean> selectedFunction;
 
 	public BarChartPainter(double[] data, Color[] colors) {
-		this.data = DataConversion.doublePrimitivesToList(data);
-		this.colors = DataConversion.arrayToList(colors);
+		assignFilteredDataAndColors(DataConversion.doubleToList(data), DataConversion.arrayToList(colors));
 
 		initializePositionEncodingFunction();
 
@@ -81,8 +72,7 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public BarChartPainter(Number[] data, Color[] colors) {
-		this.data = DataConversion.arrayToList(data);
-		this.colors = DataConversion.arrayToList(colors);
+		assignFilteredDataAndColors(DataConversion.arrayToList(data), DataConversion.arrayToList(colors));
 
 		initializePositionEncodingFunction();
 
@@ -90,11 +80,11 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public BarChartPainter(Collection<? extends Number> data) {
-		this.data = new ArrayList<>(data);
-
-		this.colors = new ArrayList<>();
+		List<Color> defaultColors = new ArrayList<>();
 		for (int i = 0; i < data.size(); i++)
-			colors.add(getColor());
+			defaultColors.add((Color) getPaint());
+
+		assignFilteredDataAndColors(new ArrayList<>(data), defaultColors);
 
 		initializePositionEncodingFunction();
 
@@ -102,12 +92,39 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public BarChartPainter(Collection<? extends Number> data, List<Color> colors) {
-		this.data = new ArrayList<>(data);
-		this.colors = Collections.unmodifiableList(colors);
+		assignFilteredDataAndColors(new ArrayList<>(data), new ArrayList<>(colors));
 
 		initializePositionEncodingFunction();
 
 		initialize();
+	}
+
+	/**
+	 * Sanity check, mirroring VisualMappingTools.sanityCheckFilter's null/NaN
+	 * policy (see also BoxPlotPainter). Not implemented via
+	 * VisualMappingTools.sanityCheckFilter directly: unlike the other painters in
+	 * this package, a bar chart's data IS the value (no separate
+	 * Function&lt;T, Double&gt; mapping) and colors is a second list
+	 * positionally tied to it index-for-index -- a plain sanityCheckFilter
+	 * call on data alone would silently desynchronize colors from the bars
+	 * they used to belong to for every dropped entry after the first.
+	 */
+	private void assignFilteredDataAndColors(List<? extends Number> rawData, List<Color> rawColors) {
+		List<Number> filteredData = new ArrayList<>();
+		List<Color> filteredColors = new ArrayList<>();
+
+		for (int i = 0; i < rawData.size(); i++) {
+			Number value = rawData.get(i);
+			if (value != null && !Double.isNaN(value.doubleValue())) {
+				filteredData.add(value);
+				filteredColors.add(rawColors.get(i));
+			} else
+				System.err.println(
+						"BarChartPainter: bar value " + value + " did not pass the sanity check and was ignored");
+		}
+
+		this.data = filteredData;
+		this.colors = filteredColors;
 	}
 
 	protected void initializePositionEncodingFunction() {
@@ -126,6 +143,10 @@ public abstract class BarChartPainter extends ChartPainter
 			throw new ArrayIndexOutOfBoundsException("Data and Colors of unequal length!");
 
 		initializeBarPainters();
+
+		this.setBackgroundPaint(null);
+		for (BarPainter barPainter : barPainters)
+			barPainter.setBackgroundPaint(null);
 	}
 
 	protected abstract void initializeBarPainters();
@@ -156,6 +177,7 @@ public abstract class BarChartPainter extends ChartPainter
 
 				if (selected) {
 					if (selectionPaint == null) {
+						System.err.println("BarChartPainter: no selection paint defined, using border color");
 						g2.setStroke(DisplayTools.thickStroke);
 						g2.setPaint(getBorderPaint());
 					} else
@@ -163,6 +185,15 @@ public abstract class BarChartPainter extends ChartPainter
 					g2.draw(barPainter.getBarRectangle());
 				}
 			}
+	}
+
+	/**
+	 * convenient method, for tool tips, etc.
+	 * 
+	 * @return
+	 */
+	public List<? extends Number> getData() {
+		return Collections.unmodifiableList(data);
 	}
 
 	@Override
@@ -237,10 +268,20 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public void setColors(Color[] colors) {
-		if (colors != null && barPainters != null && colors.length != barPainters.size())
+		setColors(DataConversion.arrayToList(colors));
+	}
+
+	public void setColors(List<Color> colors) {
+		if (colors == null) {
+			this.colors = new ArrayList<>();
+			for (int i = 0; i < data.size(); i++)
+				this.colors.add(null);
+		}
+
+		if (colors != null && barPainters != null && colors.size() != barPainters.size())
 			throw new IllegalArgumentException("InfoVisBarChartPainter: set colors would cause indexing problems");
 
-		this.colors = DataConversion.arrayToList(colors);
+		this.colors = colors;
 
 		if (barPainters != null)
 			for (int i = 0; i < barPainters.size(); i++)
@@ -306,7 +347,7 @@ public abstract class BarChartPainter extends ChartPainter
 			for (BarPainter barPainter : barPainters)
 				barPainter.setBackgroundPaint(backgroundColor);
 	}
-	
+
 	@Override
 	public void setBorderPaint(Paint backgroundColor) {
 		super.setBorderPaint(backgroundColor);

@@ -13,16 +13,8 @@ import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPa
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 1.05
+ * @version 1.06
+ * @since 2016
  */
 public abstract class YCatXnumChartPainter<X extends Number, Y extends List<String>> extends AxisPainter
 		implements IXAxis<X>, IYAxisCategorical<Y> {
@@ -67,8 +59,10 @@ public abstract class YCatXnumChartPainter<X extends Number, Y extends List<Stri
 
 		g2.setColor(color);
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (drawOutline) {
+			g2.setPaint(getBorderPaint());
+			DisplayTools.drawRectangle(g2, rectangle);
+		}
 
 		g2.setColor(c);
 	}

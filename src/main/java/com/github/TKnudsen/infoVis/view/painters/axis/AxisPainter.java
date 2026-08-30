@@ -5,29 +5,26 @@ import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Point;
 import java.lang.reflect.Field;
-import java.util.List;
 
-import com.github.TKnudsen.ComplexDataObject.model.tools.ReflectionTools;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 
 /**
- * <p>
- * InfoVis
- * </p>
- * 
- * Baseline functionality for all Axis Painters.
- * 
- * <p>
- * Copyright: (c) 2016-2019 Juergen Bernard, https://github.com/TKnudsen/infoVis
- * </p>
- * 
- * @author Juergen Bernard
- * @version 2.01
+ * Base class for axis painters. Adds tooltip support on top of
+ * {@link ChartPainter}: {@link #getTooltip(Point)} reflectively scans this
+ * painter's own fields for embedded {@link ITooltip}-typed sub-painters and
+ * forwards to the first one that returns a tooltip for the given point.
+ *
+ * @version 2.02
+ * @since 2016
  */
 public abstract class AxisPainter extends ChartPainter implements ITooltip {
 
 	private boolean toolTipping = true;
+
+	public AxisPainter() {
+		this.setBackgroundPaint(null);
+	}
 
 	@Override
 	public boolean isToolTipping() {
@@ -67,53 +64,51 @@ public abstract class AxisPainter extends ChartPainter implements ITooltip {
 	public void setBackgroundPaint(Paint backgroundColor) {
 		super.setBackgroundPaint(backgroundColor);
 
-		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
-				true, true);
-		for (ChartPainter painter : painters)
-			if (painter != null)
-				painter.setBackgroundPaint(null);
+		// TODO validate that this reflection-based approach is really not needed
+
+//		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
+//				true, true);
+//		for (ChartPainter painter : painters)
+//			if (painter != null && painter != this)
+//				painter.setBackgroundPaint(null);
 	}
 
 	@Override
 	public void setFontColor(Color fontColor) {
 		super.setFontColor(fontColor);
 
-		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
-				true, true);
-		for (ChartPainter painter : painters)
-			if (painter != null)
-				painter.setFontColor(fontColor);
+		// TODO validate that this reflection-based approach is really not needed
+
+//		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
+//				true, true);
+//		for (ChartPainter painter : painters)
+//			if (painter != null && painter != this)
+//				painter.setFontColor(fontColor);
 	}
 
 	@Override
 	public void setFontSize(int fontSize) {
 		super.setFontSize(fontSize);
 
-		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
-				true, true);
-		for (ChartPainter painter : painters)
-			if (painter != null)
-				painter.setFontSize(fontSize);
-
-		// if (labelPainters != null)
-		// for (StringPainter stringPainter : labelPainters)
-		// if (stringPainter != null)
-		// stringPainter.setFontSize(fontSize);
+		// TODO validate that this reflection-based approach is really not needed
+//
+//		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
+//				true, true);
+//		for (ChartPainter painter : painters)
+//			if (painter != null && painter != this)
+//				painter.setFontSize(fontSize);
 	}
 
 	@Override
 	public void setFont(Font font) {
 		super.setFont(font);
 
-		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
-				true, true);
-		for (ChartPainter painter : painters)
-			if (painter != null)
-				painter.setFont(font);
-
-		// if (labelPainters != null)
-		// for (StringPainter stringPainter : labelPainters)
-		// if (stringPainter != null)
-		// stringPainter.setFont(font);
+		// TODO validate that this reflection-based approach is really not needed
+//
+//		List<ChartPainter> painters = ReflectionTools.getAllFieldsObjectsOfInstance(null, this, ChartPainter.class,
+//				true, true);
+//		for (ChartPainter painter : painters)
+//			if (painter != null)
+//				painter.setFont(font);
 	}
 }
