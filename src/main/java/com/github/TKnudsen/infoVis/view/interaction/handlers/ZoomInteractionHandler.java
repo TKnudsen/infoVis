@@ -112,14 +112,20 @@ public class ZoomInteractionHandler extends InteractionHandler {
 
 	@Override
 	public void attachTo(Component newComponent) {
-		if (component != null) {
-			component.removeMouseListener(mouseListener);
-			component.removeMouseWheelListener(mouseWheelListener);
+		// Snapshot into a local instead of re-reading the volatile field across
+		// this whole sequence -- if attachTo() were ever called concurrently from
+		// two threads on the same handler, re-reading "component" between the
+		// detach and attach halves could see the OTHER thread's newComponent
+		// partway through, detaching/attaching listeners on the wrong object.
+		Component oldComponent = this.component;
+		if (oldComponent != null) {
+			oldComponent.removeMouseListener(mouseListener);
+			oldComponent.removeMouseWheelListener(mouseWheelListener);
 		}
 		this.component = newComponent;
-		if (component != null) {
-			component.addMouseListener(mouseListener);
-			component.addMouseWheelListener(mouseWheelListener);
+		if (newComponent != null) {
+			newComponent.addMouseListener(mouseListener);
+			newComponent.addMouseWheelListener(mouseWheelListener);
 		}
 	}
 }

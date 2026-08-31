@@ -101,8 +101,11 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	}
 
 	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
-		super.addChartPainter(index, chartPainter);
-
+		// Axis registration only touches chartPainter itself, not the panel's
+		// painter list, so it can safely happen before adding it -- doing so
+		// lets super.addChartPainter()'s own single updateBounds() pass already
+		// see the correct position-encoding functions, instead of needing a
+		// second, otherwise-redundant updateBounds() call after registering them.
 		if (registerXAsis) {
 			if (chartPainter instanceof IXPositionEncoding)
 				((IXPositionEncoding) chartPainter)
@@ -114,7 +117,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
 		}
 
-		updateBounds();
+		super.addChartPainter(index, chartPainter);
 	}
 
 	@Override

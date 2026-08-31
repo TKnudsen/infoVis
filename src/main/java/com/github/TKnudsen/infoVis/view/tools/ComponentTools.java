@@ -85,14 +85,31 @@ public final class ComponentTools {
 	}
 
 	/**
-	 * Backward-compatible alias for {@link #getDrawableRectangle(Component)}.
+	 * Returns the component's own bounds as seen by its parent -- the position
+	 * and size Swing's layout manager assigned it, with no inset adjustment.
 	 *
-	 * @param component the component
-	 * @return the drawable rectangle, or null if the component is null or invalid
-	 * @deprecated Use {@link #getDrawableRectangle(Component)}.
+	 * <p>
+	 * This is NOT an alias for {@link #getDrawableRectangle(Component)} despite
+	 * having briefly been documented as one during a refactor -- the two return
+	 * geometrically different rectangles: this one is parent-relative and full
+	 * size, {@link #getDrawableRectangle(Component)} is local-origin (starts
+	 * after the insets) and inset-shrunk. Restored to its original, pre-refactor
+	 * behavior.
+	 * </p>
+	 *
+	 * @param component the component; may be null
+	 * @return the component's bounds, or null if the component is null
+	 * @deprecated Use {@link Component#getBounds()} directly, or
+	 *             {@link #getDrawableRectangle(Component)} if what you actually
+	 *             want is the inset-adjusted drawable area.
 	 */
 	@Deprecated
 	public static Rectangle2D getBoundsRectangle(Component component) {
-		return getDrawableRectangle(component);
+		if (component == null) {
+			return null;
+		}
+
+		return new Rectangle2D.Double(component.getX(), component.getY(), component.getWidth(),
+				component.getHeight());
 	}
 }

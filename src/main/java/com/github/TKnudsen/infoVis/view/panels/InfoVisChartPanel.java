@@ -48,6 +48,11 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	private boolean autoMargin = true;
 	private double margin = Double.NaN;
 
+	// See suspendLayoutUpdates()/resumeLayoutUpdates(): lets a subclass batch
+	// several addChartPainter() calls into a single layout pass instead of one
+	// per call.
+	private boolean layoutUpdatesSuspended = false;
+
 	private final List<ChartPainter> chartPainters = new CopyOnWriteArrayList<>();
 
 	/**
@@ -147,7 +152,32 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	 * margins, and updates all chart painters with the new bounds.
 	 * </p>
 	 */
+	/**
+	 * Batches several {@link #addChartPainter(int, ChartPainter)} calls (or any
+	 * other code path that would otherwise trigger {@link #updateBounds()}
+	 * once per call) into a single layout pass. Must be paired with
+	 * {@link #resumeLayoutUpdates()} -- typically in a try/finally -- which
+	 * performs the one deferred {@code updateBounds()} call.
+	 */
+	protected final void suspendLayoutUpdates() {
+		layoutUpdatesSuspended = true;
+	}
+
+	/**
+	 * Ends a batch started by {@link #suspendLayoutUpdates()} and performs the
+	 * single deferred layout pass.
+	 */
+	protected final void resumeLayoutUpdates() {
+		layoutUpdatesSuspended = false;
+		updateBounds();
+	}
+
 	protected final void updateBounds() {
+		// Deferred until resumeLayoutUpdates() -- see suspendLayoutUpdates().
+		if (layoutUpdatesSuspended) {
+			return;
+		}
+
 		// Component readiness check
 		if (!isDisplayable() || getWidth() <= 0 || getHeight() <= 0) {
 			return;

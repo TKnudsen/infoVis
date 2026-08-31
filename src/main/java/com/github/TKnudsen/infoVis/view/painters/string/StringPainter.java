@@ -8,7 +8,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+import java.util.Objects;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.StringTools;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
@@ -63,6 +65,13 @@ public class StringPainter extends ChartPainter implements ITooltip {
 	// ==================== PERFORMANCE CACHE ====================
 	private String cachedTruncatedString = null;
 	private FontMetrics cachedFontMetrics = null;
+	// FontMetrics (and, transitively, truncation computed from it) depends on
+	// more than just the Font -- the same Font renders differently under a
+	// different transform/antialiasing/fractional-metrics setup (e.g. screen
+	// vs. export/print Graphics2D). FontRenderContext (not Graphics2D identity
+	// -- Swing hands out a new Graphics2D per repaint even for the same
+	// on-screen panel) captures exactly that, with proper value-based equals().
+	private FontRenderContext cachedFontRenderContext = null;
 
 	// Cache keys (primitive + minimal object)
 	private double cachedX, cachedY, cachedWidth, cachedHeight;
@@ -95,9 +104,6 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		if (g2 == null || rectangle == null)
 			return;
 
-		if (string == null || string.isEmpty())
-			return;
-
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		Color originalColor = g2.getColor();
@@ -114,7 +120,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 				return;
 
 			String displayString = getTruncatedString(fm);
-			if (displayString == null || displayString.isEmpty())
+			if (displayString == null)
 				return;
 
 			if (!verticalOrientation) {
@@ -148,22 +154,25 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		if (g2 == null || font == null)
 			return null;
 
-		if (cachedFontMetrics == null || !isCacheValid()) {
+		FontRenderContext frc = g2.getFontRenderContext();
+		if (cachedFontMetrics == null || !isCacheValid(frc)) {
 			cachedFontMetrics = g2.getFontMetrics(font);
+			cachedFontRenderContext = frc;
 		}
 
 		return cachedFontMetrics;
 	}
 
-	private boolean isCacheValid() {
+	private boolean isCacheValid(FontRenderContext frc) {
 		return cachedTruncatedString != null && rectangle != null && font != null && rectangle.getX() == cachedX
 				&& rectangle.getY() == cachedY && rectangle.getWidth() == cachedWidth
 				&& rectangle.getHeight() == cachedHeight && font.getSize() == cachedFontSize
 				&& font.getStyle() == cachedFontStyle && font.getName().equals(cachedFontName)
-				&& verticalOrientation == cachedVerticalOrientation && offset == cachedOffset;
+				&& verticalOrientation == cachedVerticalOrientation && offset == cachedOffset
+				&& Objects.equals(frc, cachedFontRenderContext);
 	}
 
-	private void updateCacheKeys() {
+	private void updateCacheKeys(FontRenderContext frc) {
 		if (rectangle != null) {
 			cachedX = rectangle.getX();
 			cachedY = rectangle.getY();
@@ -177,6 +186,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		}
 		cachedVerticalOrientation = verticalOrientation;
 		cachedOffset = offset;
+		cachedFontRenderContext = frc;
 	}
 
 	private void invalidateCache() {
@@ -190,12 +200,14 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		if (string == null)
 			string = "";
 
-		if (isCacheValid())
+		FontRenderContext frc = fm != null ? fm.getFontRenderContext() : null;
+
+		if (isCacheValid(frc))
 			return cachedTruncatedString;
 
 		if (fm == null || rectangle == null) {
 			cachedTruncatedString = "";
-			updateCacheKeys();
+			updateCacheKeys(frc);
 			return cachedTruncatedString;
 		}
 
@@ -218,7 +230,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 			truncated = "";
 
 		cachedTruncatedString = truncated;
-		updateCacheKeys();
+		updateCacheKeys(frc);
 
 		return cachedTruncatedString;
 	}
@@ -394,7 +406,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 	}
 
 	private void drawVerticalString(Graphics2D g2, FontMetrics fm, String displayString) {
-		if (g2 == null || fm == null || displayString == null || displayString.isEmpty())
+		if (g2 == null || fm == null || displayString == null)
 			return;
 
 		int stringWidth = fm.stringWidth(displayString);

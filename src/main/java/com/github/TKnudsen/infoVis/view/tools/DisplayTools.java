@@ -310,7 +310,8 @@ public class DisplayTools {
 	 *
 	 * @param g2    the Graphics2D context (non-null)
 	 * @param shape the shape to render (non-null)
-	 * @param fill  if {@code true}, fills the shape; otherwise, draws its outline
+	 * @param fill  if {@code true}, additionally fills the shape; the outline is
+	 *              always stroked either way
 	 */
 	public static void drawShape(Graphics2D g2, Shape shape, boolean fill) {
 		if (g2 == null || shape == null)
@@ -318,8 +319,7 @@ public class DisplayTools {
 
 		if (fill)
 			g2.fill(shape);
-		else
-			g2.draw(shape);
+		g2.draw(shape);
 	}
 
 	/**
@@ -717,21 +717,21 @@ public class DisplayTools {
 			g2.fill(rr);
 		}
 
-		// Draw border if requested
-		if (surroundColor != null && surroundStroke != null) {
-			// Set stroke if needed
-			if (!oldStroke.equals(surroundStroke)) {
-				g2.setStroke(surroundStroke);
-				strokeChanged = true;
-			}
-
-			if (surroundColor != oldPaint) {
-				g2.setPaint(surroundColor);
-				paintChanged = true;
-			}
-
-			g2.draw(rr);
+		// The border is always drawn -- surroundStroke/surroundColor being null
+		// means "use whatever stroke/paint g2 already has", not "skip the border"
+		// (matches the pre-refactor behavior kept above in the commented-out
+		// old version).
+		if (surroundStroke != null && !oldStroke.equals(surroundStroke)) {
+			g2.setStroke(surroundStroke);
+			strokeChanged = true;
 		}
+
+		if (surroundColor != null && surroundColor != oldPaint) {
+			g2.setPaint(surroundColor);
+			paintChanged = true;
+		}
+
+		g2.draw(rr);
 
 		// Restore only if changed
 		if (paintChanged)

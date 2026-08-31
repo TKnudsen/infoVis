@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -22,6 +23,13 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	private transient FontMetrics cachedFontMetrics;
 	private transient java.awt.Font cachedFont;
+	// FontMetrics depends on more than just the Font -- the same Font renders
+	// differently under a different transform/antialiasing/fractional-metrics
+	// setup (e.g. screen vs. export/print Graphics2D). FontRenderContext (not
+	// Graphics2D identity -- Swing hands out a new Graphics2D per repaint even
+	// for the same on-screen panel) captures exactly that, with proper
+	// value-based equals().
+	private transient FontRenderContext cachedFontRenderContext;
 
 	public XAxisNumericalPainter(T minValue, T maxValue) {
 		super(minValue, maxValue);
@@ -61,8 +69,10 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		Font f = g2.getFont();
 
 		// Cache FontMetrics
-		if (cachedFont != font) {
+		FontRenderContext frc = g2.getFontRenderContext();
+		if (cachedFont != font || !frc.equals(cachedFontRenderContext)) {
 			cachedFont = font;
+			cachedFontRenderContext = frc;
 			cachedFontMetrics = g2.getFontMetrics(font);
 		}
 		FontMetrics fm = cachedFontMetrics;
@@ -138,7 +148,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 				g2.setColor(fontColor);
 				g2.drawString(label, textX, textY);
-				g2.setColor(color);
+				g2.setPaint(getPaint());
 			}
 		}
 

@@ -29,10 +29,20 @@ public class ListenerHandler {
 		/**
 		 * Can be null, such as in classical addListener scenarios where the owner does
 		 * not matter.
-		 * 
-		 * Wrapped in a WeakReference so that the GC can do its job in case the owner is
-		 * supposed to be GC-ed.
-		 * 
+		 *
+		 * Wrapped in a WeakReference so the GC CAN reclaim the owner once nothing else
+		 * references it -- but this registry cannot make that happen by itself:
+		 * {@code listener} below is a strong reference, and in the common case where
+		 * the listener IS the owner or is a lambda/inner class that closes over it,
+		 * the owner stays reachable through its own listener for as long as this
+		 * registration exists, regardless of this WeakReference. In that (typical)
+		 * case {@link #isOwnerCollected()} never returns true and
+		 * {@link ListenerHandler#cleanupCollectedOwners()} cannot remove it -- the
+		 * owner must call {@link ListenerHandler#removeAllListenersOfOwner(Object)}
+		 * itself at end-of-life. This WeakReference only helps the narrower case of a
+		 * listener registered on the owner's behalf by some other, unrelated object
+		 * that does not itself retain the owner.
+		 *
 		 * The class that triggers adding the listener. This class may also want to
 		 * remove this listener at the end-of-life of the listener, or the entire class
 		 * itself.
@@ -129,8 +139,19 @@ public class ListenerHandler {
 		Registration r = new Registration(listenerType, listener, owner,
 				remover != null ? o -> remover.accept(listenerType.cast(o)) : null);
 
-		if (debugMode)
+		if (debugMode) {
 			System.out.println("ListenerHandler: adding " + r);
+			// Cheap, detectable instance of the pattern documented on Registration.ownerRef:
+			// if the listener IS the owner, cleanupCollectedOwners()'s weak-reference
+			// cleanup can never fire for this registration -- removeAllListenersOfOwner(owner)
+			// is the only way it ever gets removed. Can't detect the equally common
+			// "listener closes over owner" case (a lambda/inner class) this cheaply.
+			if (owner != null && listener == owner)
+				System.out.println("ListenerHandler: warning -- listener IS its own owner ("
+						+ owner.getClass().getSimpleName()
+						+ "); cleanupCollectedOwners() cannot reclaim this registration, "
+						+ "call removeAllListenersOfOwner(owner) explicitly at end-of-life");
+		}
 
 		registrations.add(r);
 	}
@@ -186,7 +207,15 @@ public class ListenerHandler {
 		}
 	}
 
-	/** Removes all listeners whose owner has been GC-collected. */
+	/**
+	 * Removes all listeners whose owner has been GC-collected. Best-effort only:
+	 * a listener that IS its owner, or that closes over it (the common case for a
+	 * lambda or anonymous inner class registered by the owner itself), keeps the
+	 * owner strongly reachable through this handler's own registration, so it can
+	 * never actually be collected and this method will never find it. Call
+	 * {@link #removeAllListenersOfOwner(Object)} explicitly at the owner's
+	 * end-of-life instead -- that is the reliable removal path.
+	 */
 	public void cleanupCollectedOwners() {
 		synchronized (registrations) {
 			Iterator<Registration> it = registrations.iterator();

@@ -63,7 +63,7 @@ public class Rectangle2DTools {
 	 * @return
 	 */
 	public static double calculateSpacingValue(double width, double height, int xCount, int yCount, double ratio) {
-		return Math.floor(Math.min(width / (double) xCount, height / (double) yCount))
-				* Math.max(0.01, Math.min(0.5, ratio));
+		return Math.floor(Math.min(width / (double) xCount, height / (double) yCount)
+				* Math.max(0.01, Math.min(0.5, ratio)));
 	}
 }

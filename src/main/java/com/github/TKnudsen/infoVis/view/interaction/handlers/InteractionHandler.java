@@ -11,7 +11,11 @@ import javax.swing.SwingUtilities;
  */
 public abstract class InteractionHandler {
 
-	protected Component component;
+	// volatile: attachTo() may run on a different thread than the AWT event
+	// thread that reads this field from mouse/wheel callbacks (PanInteractionHandler,
+	// ZoomingHandler, ZoomInteractionHandler) -- without it, a component swapped in
+	// off the EDT has no guarantee of being visible to already-dispatching events.
+	protected volatile Component component;
 
 	private MouseButton mouseButton = MouseButton.LEFT;
 

@@ -268,17 +268,17 @@ public abstract class BarChartPainter extends ChartPainter
 	}
 
 	public void setColors(Color[] colors) {
-		setColors(DataConversion.arrayToList(colors));
+		setColors(colors == null ? null : DataConversion.arrayToList(colors));
 	}
 
 	public void setColors(List<Color> colors) {
 		if (colors == null) {
-			this.colors = new ArrayList<>();
+			colors = new ArrayList<>();
 			for (int i = 0; i < data.size(); i++)
-				this.colors.add(null);
+				colors.add(null);
 		}
 
-		if (colors != null && barPainters != null && colors.size() != barPainters.size())
+		if (barPainters != null && colors.size() != barPainters.size())
 			throw new IllegalArgumentException("InfoVisBarChartPainter: set colors would cause indexing problems");
 
 		this.colors = colors;

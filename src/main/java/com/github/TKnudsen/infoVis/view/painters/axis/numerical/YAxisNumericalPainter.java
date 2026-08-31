@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.util.EnumSet;
 import java.util.Map.Entry;
@@ -23,6 +24,13 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	private transient FontMetrics cachedFontMetrics;
 	private transient java.awt.Font cachedFont;
+	// FontMetrics depends on more than just the Font -- the same Font renders
+	// differently under a different transform/antialiasing/fractional-metrics
+	// setup (e.g. screen vs. export/print Graphics2D). FontRenderContext (not
+	// Graphics2D identity -- Swing hands out a new Graphics2D per repaint even
+	// for the same on-screen panel) captures exactly that, with proper
+	// value-based equals().
+	private transient FontRenderContext cachedFontRenderContext;
 
 	private boolean drawLabelsBetweenMarkers = false;
 
@@ -62,8 +70,10 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		Stroke s = g2.getStroke();
 
 		// cache FontMetrics (avoid re-computation)2 %ST&%
-		if (cachedFont != font) {
+		FontRenderContext frc = g2.getFontRenderContext();
+		if (cachedFont != font || !frc.equals(cachedFontRenderContext)) {
 			cachedFont = font;
+			cachedFontRenderContext = frc;
 			cachedFontMetrics = g2.getFontMetrics(font);
 		}
 		FontMetrics fm = cachedFontMetrics;
@@ -108,9 +118,13 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 				continue;
 
 			double x0 = rectangle.getX() + markerLineWidth + 2;
-			// double y0 = pair.equals(lastMarker) ? yValue - 3 : yValue - fm.getHeight() *
-			// 0.55;
-			double y0 = yValue - fm.getHeight() * 0.55;
+			// The topmost marker is special-cased to a small, tick-relative offset
+			// instead of the generic centering offset -- otherwise its label centers
+			// on the tick like every other marker, floating well above it with
+			// nothing to visually anchor it to. Math.max(3, y0) below is a separate,
+			// last-resort safety net for a rectangle embedded near global y=0; it does
+			// NOT substitute for this per-marker positioning.
+			double y0 = pair.equals(lastMarker) ? yValue - 3 : yValue - fm.getHeight() * 0.55;
 			y0 -= ySpace;
 			y0 = Math.max(3, y0);
 			double w = rectangle.getWidth() - markerLineWidth;

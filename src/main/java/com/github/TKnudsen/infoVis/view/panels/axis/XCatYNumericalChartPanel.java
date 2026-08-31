@@ -92,11 +92,14 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 	}
 
 	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerXAsis, boolean registerYAsis) {
-		super.addChartPainter(index, chartPainter);
-
 		System.err.println(
 				"XCatYNumericalChartPanel.addChartPainter: warning - registering xAxis (categorical) not supported yet - categorical position encoding needed first");
 
+		// Axis registration only touches chartPainter itself, not the panel's
+		// painter list, so it can safely happen before adding it -- doing so
+		// lets super.addChartPainter()'s own single updateBounds() pass already
+		// see the correct position-encoding function, instead of needing a
+		// second, otherwise-redundant updateBounds() call after registering it.
 		if (chartPainter != null) {
 			if (registerYAsis) {
 				if (chartPainter instanceof IYPositionEncoding)
@@ -105,7 +108,7 @@ public abstract class XCatYNumericalChartPanel<X extends List<String>, Y extends
 			}
 		}
 
-		updateBounds();
+		super.addChartPainter(index, chartPainter);
 	}
 
 	/**

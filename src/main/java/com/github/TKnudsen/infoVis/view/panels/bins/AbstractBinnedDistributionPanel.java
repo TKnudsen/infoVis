@@ -154,26 +154,33 @@ public abstract class AbstractBinnedDistributionPanel<T> extends XYNumericalChar
 
 		initializeAxisPainters(globalCounts);
 
-		// global painter
-		globalDistributionBarchartPainter = createDistributionPainter(globalCounts, globalColor);
-		addChartPainter(globalDistributionBarchartPainterIndex, globalDistributionBarchartPainter, false, true);
+		// Batch the two addChartPainter() calls below into one layout pass instead
+		// of two -- each would otherwise trigger its own full updateBounds().
+		suspendLayoutUpdates();
+		try {
+			// global painter
+			globalDistributionBarchartPainter = createDistributionPainter(globalCounts, globalColor);
+			addChartPainter(globalDistributionBarchartPainterIndex, globalDistributionBarchartPainter, false, true);
 
-		// filter painter
-		List<? extends Number> filterCounts = computeCounts(filterStatusData);
-		validateCounts(filterCounts, bins);
+			// filter painter
+			List<? extends Number> filterCounts = computeCounts(filterStatusData);
+			validateCounts(filterCounts, bins);
 
-		filterDistributionBarchartPainter = createDistributionPainter(filterCounts, filterColor);
+			filterDistributionBarchartPainter = createDistributionPainter(filterCounts, filterColor);
 
-		// Ensure consistent scaling against global distribution
-		if (filterDistributionBarchartPainter.getPositionEncodingFunction() != null
-				&& globalDistributionBarchartPainter.getPositionEncodingFunction() != null) {
-			filterDistributionBarchartPainter.getPositionEncodingFunction().setMaxWorldValue(
-					globalDistributionBarchartPainter.getPositionEncodingFunction().getMaxWorldValue());
+			// Ensure consistent scaling against global distribution
+			if (filterDistributionBarchartPainter.getPositionEncodingFunction() != null
+					&& globalDistributionBarchartPainter.getPositionEncodingFunction() != null) {
+				filterDistributionBarchartPainter.getPositionEncodingFunction().setMaxWorldValue(
+						globalDistributionBarchartPainter.getPositionEncodingFunction().getMaxWorldValue());
+			}
+
+			// filterDistributionBarchartPainter.setBorderPaint(selectionColor);
+
+			addChartPainter(filterDistributionBarchartPainterIndex, filterDistributionBarchartPainter, false, true);
+		} finally {
+			resumeLayoutUpdates();
 		}
-
-		// filterDistributionBarchartPainter.setBorderPaint(selectionColor);
-
-		addChartPainter(filterDistributionBarchartPainterIndex, filterDistributionBarchartPainter, false, true);
 
 		// build bin mapping
 		rebuildBinIndexToItems(filterStatusData);
@@ -484,7 +491,7 @@ public abstract class AbstractBinnedDistributionPanel<T> extends XYNumericalChar
 	}
 
 	public double getGridSpacing() {
-		return globalDistributionBarchartPainter.getGridSpacing();
+		return getGlobalPainter() != null ? getGlobalPainter().getGridSpacing() : Double.NaN;
 	}
 
 	public void setGridSpacing(double gridSpacing) {

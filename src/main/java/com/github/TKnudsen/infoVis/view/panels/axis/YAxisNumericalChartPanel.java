@@ -84,15 +84,18 @@ public abstract class YAxisNumericalChartPanel<Y extends Number> extends InfoVis
 	}
 
 	public void addChartPainter(int index, ChartPainter chartPainter, boolean registerYAsis) {
-		super.addChartPainter(index, chartPainter);
-
+		// Axis registration only touches chartPainter itself, not the panel's
+		// painter list, so it can safely happen before adding it -- doing so
+		// lets super.addChartPainter()'s own single updateBounds() pass already
+		// see the correct position-encoding function, instead of needing a
+		// second, otherwise-redundant updateBounds() call after registering it.
 		if (registerYAsis) {
 			if (chartPainter instanceof IYPositionEncoding)
 				((IYPositionEncoding) chartPainter)
 						.setYPositionEncodingFunction(yAxisPainter.getPositionEncodingFunction());
 		}
 
-		updateBounds();
+		super.addChartPainter(index, chartPainter);
 	}
 
 	/**

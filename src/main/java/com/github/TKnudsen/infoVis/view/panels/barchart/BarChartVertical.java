@@ -146,5 +146,18 @@ public class BarChartVertical<T> extends BarChart<T> {
 
 	public void setxAxisLabelsPainter(XAxisCategoricalPainter<List<String>> xAxisLabelsPainter) {
 		this.xAxisLabelsPainter = xAxisLabelsPainter;
+
+		// A painter built via initializeXAxisPainter() only gets its rectangle/font
+		// wired up on the next layout pass (updatePainterRectangles) and repaint
+		// (drawChart); applying the same wiring immediately here avoids a painter
+		// swapped in through this setter rendering mis-sized/mis-fonted in the
+		// meantime.
+		if (xAxisLabelsPainter != null) {
+			xAxisLabelsPainter.setFont(getFont());
+			if (xyAxisChartRectangleLayout != null)
+				xAxisLabelsPainter.setRectangle(xyAxisChartRectangleLayout.getXAxisRectangle());
+		}
+
+		repaint();
 	}
 }
