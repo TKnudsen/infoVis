@@ -590,8 +590,15 @@ public class GPURendererJOGLWorking {
 
 	// ==================== CLEANUP ====================
 
-	public void dispose() {
-		if (initialized && gl != null) {
+	/**
+	 * Frees GL resources using a live drawable's GL context, rather than a
+	 * cached reference -- must only be called from a context guaranteed to be
+	 * current (e.g. JOGL's own {@code GLEventListener.dispose(GLAutoDrawable)}
+	 * callback), never from ordinary application cleanup code.
+	 */
+	public void dispose(GLAutoDrawable drawable) {
+		if (initialized) {
+			GL3 gl = drawable.getGL().getGL3();
 			gl.glDeleteBuffers(1, new int[] { vboId }, 0);
 			gl.glDeleteBuffers(1, new int[] { iboId }, 0);
 			gl.glDeleteVertexArrays(1, new int[] { vaoId }, 0);
