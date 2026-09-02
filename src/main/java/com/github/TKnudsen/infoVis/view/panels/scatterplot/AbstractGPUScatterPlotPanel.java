@@ -596,14 +596,21 @@ public abstract class AbstractGPUScatterPlotPanel<T> extends AbstractScatterPlot
 		// the painter computes each point's position from its own copy of these
 		// mappings, not from the panel's -- without pushing the update here, the
 		// axis would rescale to the new mapping's range while every plotted point
-		// kept using the old (now stale) mapping.
-		getScatterPlotPainter().setWorldPositionMappingX(worldPositionMappingX);
-		getScatterPlotPainter().setWorldPositionMappingY(worldPositionMappingY);
+		// kept using the old (now stale) mapping. Null-guarded like both concrete
+		// panels' pre-extraction versions were, even though scatterPlotPainter is
+		// in practice always assigned before this method becomes reachable.
+		AbstractGPUScatterPlotPainter<T> painter = getScatterPlotPainter();
+		if (painter != null) {
+			painter.setWorldPositionMappingX(worldPositionMappingX);
+			painter.setWorldPositionMappingY(worldPositionMappingY);
+		}
 
 		initializeData(getData());
 
-		getScatterPlotPainter().setXPositionEncodingFunction(getXPositionEncodingFunction());
-		getScatterPlotPainter().setYPositionEncodingFunction(getYPositionEncodingFunction());
+		if (painter != null) {
+			painter.setXPositionEncodingFunction(getXPositionEncodingFunction());
+			painter.setYPositionEncodingFunction(getYPositionEncodingFunction());
+		}
 
 		repaint();
 	}

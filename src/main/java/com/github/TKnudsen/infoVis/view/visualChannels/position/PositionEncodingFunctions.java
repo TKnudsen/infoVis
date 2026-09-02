@@ -64,6 +64,38 @@ public final class PositionEncodingFunctions {
 	}
 
 	/**
+	 * Same as {@link #computeRange(Collection, Function, String)}, except a
+	 * degenerate (min == max) range does not throw {@link DegenerateRangeException}
+	 * -- it re-derives the single repeated (finite) mapped value and returns a
+	 * {@code [value, value]} range instead. A scatterplot/axis is expected to
+	 * render single-value/filtered/strip-style data just fine: the underlying
+	 * {@code LinearNormalizationFunction} already maps a degenerate range without
+	 * dividing by zero (see {@code MathFunctions.linearScale}'s {@code max == min}
+	 * branch), so the strict rejection in {@link #computeRange} is a caller-side
+	 * policy choice, not something the downstream math actually requires.
+	 * <p>
+	 * Previously duplicated across three call sites (a scatterplot painter's
+	 * position-encoding setup, a GPU scatterplot painter's world-bounds
+	 * computation, and a scatterplot panel's axis initialization) before being
+	 * consolidated here.
+	 *
+	 * @param context short label identifying what this range is for, passed
+	 *                through to {@link #computeRange} (and thus only surfaces if
+	 *                data has no finite mapped value at all, since a degenerate
+	 *                range itself no longer throws here)
+	 */
+	public static <T> NumericRange computeRangeTolerant(Collection<? extends T> data,
+			Function<? super T, ? extends Number> mapping, String context) {
+		try {
+			return computeRange(data, mapping, context);
+		} catch (DegenerateRangeException e) {
+			double value = data.stream().map(mapping).filter(v -> v != null && !Double.isNaN(v.doubleValue())
+					&& !Double.isInfinite(v.doubleValue())).map(Number::doubleValue).findFirst().orElse(0d);
+			return new NumericRange(value, value, data.size());
+		}
+	}
+
+	/**
 	 * Convenience wrapper: computes the range via {@link #computeRange} and
 	 * wraps it directly into a non-inverted {@link PositionEncodingFunction}.
 	 *
@@ -84,6 +116,20 @@ public final class PositionEncodingFunctions {
 			Function<? super T, ? extends Number> mapping, Double minPixel, Double maxPixel,
 			boolean flipAxisValues, String context) {
 		NumericRange range = computeRange(data, mapping, context);
+		return new PositionEncodingFunction(range.getMin(), range.getMax(), minPixel, maxPixel, flipAxisValues);
+	}
+
+	/**
+	 * Same as {@link #createPositionEncodingFunction(Collection, Function, Double,
+	 * Double, boolean, String)}, except the underlying range comes from
+	 * {@link #computeRangeTolerant(Collection, Function, String)} -- a degenerate
+	 * (min == max) dataset does not throw, it builds a {@code [value, value]}
+	 * position encoding function instead.
+	 */
+	public static <T> PositionEncodingFunction createPositionEncodingFunctionTolerant(Collection<? extends T> data,
+			Function<? super T, ? extends Number> mapping, Double minPixel, Double maxPixel,
+			boolean flipAxisValues, String context) {
+		NumericRange range = computeRangeTolerant(data, mapping, context);
 		return new PositionEncodingFunction(range.getMin(), range.getMax(), minPixel, maxPixel, flipAxisValues);
 	}
 }
