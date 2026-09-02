@@ -1,6 +1,7 @@
 package com.github.TKnudsen.infoVis.view.painters.axis.numerical;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -27,7 +28,11 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
- * @version 2.01
+ * @version 2.04 -- fixed tooltip sizing (font tied to the axis's own font, not
+ *          the enclosing rectangle's height) and honored isToolTipping() in
+ *          September 2026; removed the dead pruneMinValue field/getter/setter
+ *          (never read by calculateMarkerPositions() or anything else) in
+ *          September 2026
  * @since 2016
  */
 public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
@@ -38,7 +43,6 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 	protected int markerDistanceInPixels = 45;
 	protected double markerLineWidth = 3.0;
-	protected boolean pruneMinValue = true;
 	protected boolean drawAxisBetweenAxeMarkersOnly = true;
 	protected boolean enableToolTipping = true;
 
@@ -232,23 +236,50 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 	@Override
 	public ChartPainter getTooltip(Point p) {
 
+		if (!isToolTipping())
+			return null;
+
 		Number worldX = positionEncodingFunction.inverseMapping(p.getX());
 
-		String text = String.format("%.2f", MathFunctions.round(worldX.doubleValue(), 4));
+		String text = formatTooltipValue(worldX);
 		StringPainter stringPainter = new StringPainter(text);
-		stringPainter.setFontSize((int) Math.max(12, this.rectangle.getHeight() * 0.66));
-		stringPainter.setBackgroundPaint(null);
+
+		// Sized off this axis's own configured font, not the enclosing rectangle's
+		// height -- an x-axis strip can be a handful of pixels or the whole panel's
+		// height depending on how it's embedded, and scaling the tooltip font off
+		// that produced wildly oversized tooltips in the latter case.
+		int fontSize = Math.max(11, getFont().getSize());
+		stringPainter.setFontSize(fontSize);
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
 		stringPainter.setFontColor(getFontColor());
 
-		int width = Toolkit.getDefaultToolkit().getFontMetrics(getFont()).stringWidth(text);
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, width * 2.0,
-				stringPainter.getFontSize() * 1.5);
+		// Measured with the SAME font size the tooltip actually renders at --
+		// previously measured with getFont()'s own (unrelated) size while the
+		// tooltip rendered at a different, rectangle-derived size, so the box
+		// width and the text it was sized for didn't correspond to one another.
+		Font tooltipFont = getFont().deriveFont((float) fontSize);
+		int width = Toolkit.getDefaultToolkit().getFontMetrics(tooltipFont).stringWidth(text);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, width + 16, fontSize * 1.8);
 
-//		sr.setRectangle(new Rectangle2D.Double(p.getX() - 80, p.getY() - 40, 80, 40));
 		stringPainter.setRectangle(rect);
 
 		return stringPainter;
+	}
+
+	/**
+	 * Formats the world value under the cursor for this axis's tooltip.
+	 *
+	 * <p>
+	 * Default: plain numeric, rounded to 4 decimals. Override when a subclass's
+	 * axis labels use a different notation (e.g. calendar dates, elapsed
+	 * durations) so the tooltip stays consistent with what the axis itself
+	 * draws, instead of showing a raw number a viewer has to decode by hand.
+	 *
+	 * @param worldValue the world-space value under the cursor
+	 * @return the tooltip text
+	 */
+	protected String formatTooltipValue(Number worldValue) {
+		return String.format("%.2f", MathFunctions.round(worldValue.doubleValue(), 4));
 	}
 
 	public abstract double getAxisAlignmentCoordinate();
@@ -307,14 +338,6 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		markerPositionsWithLabels = null;
 
 		this.positionEncodingFunction.setMaxWorldValue(maxValue);
-	}
-
-	public boolean isPruneMinValue() {
-		return pruneMinValue;
-	}
-
-	public void setPruneMinValue(boolean pruneMinValue) {
-		this.pruneMinValue = pruneMinValue;
 	}
 
 	public boolean isDrawAxisBetweenAxeMarkersOnly() {

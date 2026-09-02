@@ -138,8 +138,8 @@ public class ScatterPlotPainterHierarchyCharacterizationTest {
 
 	/**
 	 * Records the color passed to the last {@code addPointSprite} call instead of
-	 * touching any real GL state -- both {@code GPURendererJOGLWorking} and
-	 * {@code GPURendererJOGLGLJPanel} allocate only CPU-side NIO buffers in their
+	 * touching any real GL state -- both {@code GPURendererJOGLIndexed} and
+	 * {@code GPURendererJOGLSprite} allocate only CPU-side NIO buffers in their
 	 * no-arg constructors, so subclassing them and overriding just this one method
 	 * keeps the test free of any real OpenGL/JOGL context.
 	 */
@@ -164,12 +164,15 @@ public class ScatterPlotPainterHierarchyCharacterizationTest {
 		// fixed by Phase 3 (code review finding #28): addPointToGPU used to build
 		// `paint = colorMapping != null ? colorMapping.apply(t) : null`, so a null
 		// colorMapping reached extractColor(null) -> Color.GRAY. Now falls back to
-		// getPaint() instead, matching the sprite/CPU painters (ChartPainter's
-		// default paint is Color.BLACK).
+		// getPaint() instead, matching the sprite/CPU painters. Compared against
+		// painter.getPaint() itself, not a hardcoded Color.BLACK -- ChartPainter's
+		// default paint is resolved from the active look-and-feel (UIManager's
+		// "Label.foreground") since it's not necessarily literal black on every
+		// L&F/platform this test runs under.
 		ScatterPlotIndexedGPUPainter<double[]> painter = new ScatterPlotIndexedGPUPainter<>(TWO_POINTS, null, WORLD_X,
 				WORLD_Y);
 
-		class RecordingRenderer extends com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLWorking {
+		class RecordingRenderer extends com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLIndexed {
 			Color captured;
 
 			@Override
@@ -179,18 +182,20 @@ public class ScatterPlotPainterHierarchyCharacterizationTest {
 		}
 
 		Color color = captureAddPointToGPUColor(painter, new RecordingRenderer(), "gpuRenderer");
-		assertEquals(Color.BLACK, color);
+		assertEquals(painter.getPaint(), color);
 	}
 
 	@Test
 	public void nullColorMapping_spriteGpuPainterFallsBackToPainterPaint() throws ReflectiveOperationException {
 		// ScatterPlotSpriteGPUPainter.addPointToGPU already fell back to getPaint()
-		// (ChartPainter's default black) even before Phase 3 -- this was the
-		// "correct" side of finding #28's divergence, unaffected by the fix above.
+		// even before Phase 3 -- this was the "correct" side of finding #28's
+		// divergence, unaffected by the fix above. See the comment in the indexed
+		// test above for why this compares against painter.getPaint() rather than a
+		// hardcoded Color.BLACK.
 		ScatterPlotSpriteGPUPainter<double[]> painter = new ScatterPlotSpriteGPUPainter<>(TWO_POINTS, null, WORLD_X,
 				WORLD_Y);
 
-		class RecordingRenderer extends com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLGLJPanel {
+		class RecordingRenderer extends com.github.TKnudsen.infoVis.view.gpu.GPURendererJOGLSprite {
 			Color captured;
 
 			@Override
@@ -200,7 +205,7 @@ public class ScatterPlotPainterHierarchyCharacterizationTest {
 		}
 
 		Color color = captureAddPointToGPUColor(painter, new RecordingRenderer(), "gpuRenderer");
-		assertEquals(Color.BLACK, color);
+		assertEquals(painter.getPaint(), color);
 		assertTrue(painter.getPaint() instanceof Color);
 	}
 }

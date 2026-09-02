@@ -33,8 +33,8 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
  *
  * <p>
  * Deliberately NOT hoisted here (each concrete subclass keeps its own): the
- * {@code gpuRenderer} field itself -- {@code GPURendererJOGLWorking} (used by
- * the indexed painter) and {@code GPURendererJOGLGLJPanel} (used by the sprite
+ * {@code gpuRenderer} field itself -- {@code GPURendererJOGLIndexed} (used by
+ * the indexed painter) and {@code GPURendererJOGLSprite} (used by the sprite
  * painter) share no common supertype and have diverging method signatures --
  * and everything that touches it directly ({@code initGL}, {@code disposeGL},
  * {@code displayGL}, {@code reshapeGL}, {@code addPointToGPU}, {@code dispose},

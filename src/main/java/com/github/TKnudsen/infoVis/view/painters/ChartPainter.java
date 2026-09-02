@@ -11,6 +11,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import javax.swing.UIManager;
+
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
@@ -35,33 +37,42 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * ensure proper background rendering and anti-aliasing setup.
  * </p>
  *
- * @version 2.03
+ * @version 2.04 -- default border/paint/fontColor now resolved from the active
+ *          look-and-feel via UIManager instead of fixed light-theme literals,
+ *          in September 2026
  * @since 2016
  */
 public abstract class ChartPainter {
 
 	/**
-	 * Background paint for the chart
+	 * Background paint for the chart. Left as a plain literal, unlike the fields
+	 * below -- the constructor immediately overwrites it via
+	 * {@code setBackgroundPaint(null)} (transparent, so a hosting panel's own
+	 * background shows through), so this initial value is never actually
+	 * observed.
 	 */
 	protected Paint backgroundPaint = Color.WHITE;
 
 	/**
-	 * Border paint for the chart
+	 * Border paint for the chart. Resolved from the active look-and-feel (see
+	 * {@link #uiColor(String, Color)}) so a painter constructed under e.g. a dark
+	 * Nimbus theme doesn't come out with a fixed light-theme literal.
 	 */
-	private Paint borderPaint = Color.DARK_GRAY;
+	private Paint borderPaint = uiColor("controlDkShadow", Color.DARK_GRAY);
 
 	/**
 	 * Legacy color field for backward compatibility
-	 * 
+	 *
 	 * @deprecated use {@link #paint} instead
 	 */
 	@Deprecated
-	protected Color color = Color.BLACK;
+	protected Color color = uiColor("Label.foreground", Color.BLACK);
 
 	/**
-	 * Default paint, e.g., used for linking objects
+	 * Default paint, e.g., used for linking objects. Resolved from the active
+	 * look-and-feel, see {@link #uiColor(String, Color)}.
 	 */
-	private Paint paint = Color.BLACK;
+	private Paint paint = uiColor("Label.foreground", Color.BLACK);
 
 	/**
 	 * Stroke for drawing borders and outlines
@@ -97,12 +108,36 @@ public abstract class ChartPainter {
 	protected Font font = new Font("Tahoma", Font.PLAIN, 9);
 
 	/**
-	 * Color for text rendering
+	 * Color for text rendering. Resolved from the active look-and-feel, see
+	 * {@link #uiColor(String, Color)}.
 	 */
-	protected Color fontColor = Color.BLACK;
+	protected Color fontColor = uiColor("Label.foreground", Color.BLACK);
 
 	public ChartPainter() {
 		setBackgroundPaint(null);
+	}
+
+	/**
+	 * Resolves a look-and-feel-defined color for {@code key}, so a painter's
+	 * default colors match whatever L&F is active when it is constructed (e.g. a
+	 * dark Nimbus theme) instead of being frozen at a fixed literal -- the same
+	 * way a {@link javax.swing.JLabel}'s foreground would. Falls back to
+	 * {@code fallback} when {@code key} isn't defined by the current L&F, or no
+	 * L&F has been installed yet (e.g. a headless context).
+	 *
+	 * <p>
+	 * This is a construction-time snapshot, not a live binding: a painter built
+	 * before a later {@code UIManager.setLookAndFeel(...)} call keeps the colors
+	 * it was given. Rebuild the painter (or call the color setters explicitly)
+	 * after switching L&F if you need it to pick up the new theme.
+	 *
+	 * @param key      a {@code UIManager} defaults key, e.g. {@code "Label.foreground"}
+	 * @param fallback used when the key resolves to {@code null}
+	 * @return the resolved color
+	 */
+	protected static Color uiColor(String key, Color fallback) {
+		Color c = UIManager.getColor(key);
+		return c != null ? c : fallback;
 	}
 
 	/**
@@ -527,16 +562,19 @@ public abstract class ChartPainter {
 	}
 
 	/**
-	 * Resets all visual properties to their defaults.
+	 * Resets all visual properties to their defaults -- the same
+	 * look-and-feel-aware colors the constructor would produce if called now
+	 * (see {@link #uiColor(String, Color)}), not the fixed literals a
+	 * newly-constructed painter might have gotten under a different, earlier L&F.
 	 */
 	public void resetToDefaults() {
-		this.backgroundPaint = Color.WHITE;
-		this.borderPaint = Color.DARK_GRAY;
-		this.paint = Color.BLACK;
-		this.color = Color.BLACK;
+		this.backgroundPaint = uiColor("Panel.background", Color.WHITE);
+		this.borderPaint = uiColor("controlDkShadow", Color.DARK_GRAY);
+		this.paint = uiColor("Label.foreground", Color.BLACK);
+		this.color = uiColor("Label.foreground", Color.BLACK);
 		this.stroke = DisplayTools.standardStroke;
 		this.font = new Font("Tahoma", Font.PLAIN, 9);
-		this.fontColor = Color.BLACK;
+		this.fontColor = uiColor("Label.foreground", Color.BLACK);
 		this.drawOutline = false;
 		this.highlighted = false;
 	}

@@ -16,7 +16,7 @@ import com.github.TKnudsen.infoVis.view.painters.axis.AxisLineAlignment;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * @version 2.1 2.1 (re-factored for clarity and efficiency)
+ * @version 2.1 (re-factored for clarity and efficiency)
  * @since 2016
  */
 public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainter<T> {
@@ -62,8 +62,8 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			return;
 
 		// Make a defensive copy immediately to avoid race conditions
-	    List<Entry<Double, String>> markers = new ArrayList<>(markerPositionsWithLabels);
-	    
+		List<Entry<Double, String>> markers = new ArrayList<>(markerPositionsWithLabels);
+
 		Color c = g2.getColor();
 		Stroke s = g2.getStroke();
 		Font f = g2.getFont();

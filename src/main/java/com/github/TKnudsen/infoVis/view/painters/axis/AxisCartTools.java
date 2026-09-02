@@ -9,7 +9,9 @@ import java.util.TreeSet;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 
 /**
- * @version 1.05
+ * @version 1.06 -- suggestMeaningfulValueString no longer returns a blank
+ *          label past 1 trillion; added a "T" tier and a scientific-notation
+ *          fallback beyond that, in September 2026
  * @since 2016
  */
 public class AxisCartTools {
@@ -39,7 +41,13 @@ public class AxisCartTools {
 			return String.valueOf(MathFunctions.round(value / 1000000.0, 1)) + "M";
 		if (maxValue < 1000000000000L)
 			return String.valueOf(MathFunctions.round(value / 1000000000.0, 1)) + "G";
-		return "";
+		if (maxValue < 1000000000000000L)
+			return String.valueOf(MathFunctions.round(value / 1000000000000.0, 1)) + "T";
+		// Beyond trillions (e.g. raw epoch-millisecond values fed straight into a
+		// generic numeric axis, unrelated to calendar-aware axis painters like
+		// ImportantTimeStampsPainter): a plain scientific-notation label, not a
+		// silently blank one -- every axis marker should carry SOME visible value.
+		return String.format(java.util.Locale.ROOT, "%.2e", value);
 	}
 
 	public static List<Double> suggestMeaningfulValueIntervalLogarithmic(double minValue, double maxValue,
