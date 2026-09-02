@@ -336,7 +336,7 @@ public class BarChartsValueBased {
 	}
 
 	public static double getGridSpacing(IBarChartValueBased barChart) {
-		return barChart.getBarChartPainter().getGridSpacing();
+		return BarChartStylingSupport.getGridSpacing(barChart.getBarChartPainter());
 	}
 
 	public static void setGridSpacing(IBarChartValueBased barChart, double gridSpacing) {
@@ -344,21 +344,15 @@ public class BarChartsValueBased {
 	}
 
 	public static boolean isToolTipping(IBarChartValueBased barChart) {
-		if (barChart instanceof InfoVisChartPanel)
-			return ((InfoVisChartPanel) barChart).isShowingTooltips();
-		else
-			return barChart.getBarChartPainter().isToolTipping();
+		return BarChartStylingSupport.isToolTipping(barChart, barChart.getBarChartPainter());
 	}
 
 	public static void setToolTipping(IBarChartValueBased barChart, boolean toolTipping) {
-		if (barChart instanceof InfoVisChartPanel)
-			((InfoVisChartPanel) barChart).setShowingTooltips(toolTipping);
-		else
-			barChart.getBarChartPainter().setToolTipping(toolTipping);
+		BarChartStylingSupport.setToolTipping(barChart, toolTipping, barChart.getBarChartPainter());
 	}
 
 	public static Paint getBorderPaint(IBarChartValueBased barChart) {
-		return barChart.getBarChartPainter().getBorderPaint();
+		return BarChartStylingSupport.getBorderPaint(barChart.getBarChartPainter());
 	}
 
 	public static void setBorderPaint(IBarChartValueBased barChart, Paint borderPaint) {

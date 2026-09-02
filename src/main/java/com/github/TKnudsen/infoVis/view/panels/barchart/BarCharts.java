@@ -267,8 +267,7 @@ public final class BarCharts {
 
 	public static double getGridSpacing(BarChart<?> barChart) {
 		Objects.requireNonNull(barChart, "barChart must not be null");
-		BarChartPainter p = barChart.getBarChartPainter();
-		return (p != null) ? p.getGridSpacing() : 0.0;
+		return BarChartStylingSupport.getGridSpacing(barChart.getBarChartPainter());
 	}
 
 	public static void setGridSpacing(BarChart<?> barChart, double gridSpacing) {
@@ -279,24 +278,19 @@ public final class BarCharts {
 	public static boolean isToolTipping(BarChart<?> barChart) {
 		Objects.requireNonNull(barChart, "barChart must not be null");
 
-		if (barChart instanceof InfoVisChartPanel)
-			return ((InfoVisChartPanel) barChart).isShowingTooltips();
-
-		BarChartPainter p = barChart.getBarChartPainter();
-		return p != null && p.isToolTipping();
+		return BarChartStylingSupport.isToolTipping(barChart, barChart.getBarChartPainter());
 	}
 
 	public static void setToolTipping(BarChart<?> barChart, boolean toolTipping) {
 		Objects.requireNonNull(barChart, "barChart must not be null");
 
-		barChart.setShowingTooltips(toolTipping);
+		BarChartStylingSupport.setToolTipping(barChart, toolTipping, barChart.getBarChartPainter());
 	}
 
 	public static Paint getBorderPaint(BarChart<?> barChart) {
 		Objects.requireNonNull(barChart, "barChart must not be null");
 
-		BarChartPainter p = barChart.getBarChartPainter();
-		return (p != null) ? p.getBorderPaint() : null;
+		return BarChartStylingSupport.getBorderPaint(barChart.getBarChartPainter());
 	}
 
 	public static void setBorderPaint(BarChart<?> barChart, Paint borderPaint) {
