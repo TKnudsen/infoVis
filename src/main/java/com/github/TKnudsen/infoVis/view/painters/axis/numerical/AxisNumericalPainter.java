@@ -28,11 +28,18 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncoding
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctionListener;
 
 /**
- * @version 2.04 -- fixed tooltip sizing (font tied to the axis's own font, not
- *          the enclosing rectangle's height) and honored isToolTipping() in
- *          September 2026; removed the dead pruneMinValue field/getter/setter
- *          (never read by calculateMarkerPositions() or anything else) in
- *          September 2026
+ * @version 2.05 -- fixed a narrow-value-range case (e.g. min=49.5, max=50.5)
+ *          where tick label precision was chosen from maxValue's magnitude
+ *          alone, ignoring how fine the computed quantization actually was;
+ *          adjacent ticks rounded to the same label text, got collapsed by
+ *          the redundant-label removal below, and left just one marker --
+ *          which draws no visible axis line at all (drawAxisBetweenAxeMarkersOnly
+ *          has nothing to span between), just a single floating label, in
+ *          September 2026; fixed tooltip sizing (font tied to the axis's own
+ *          font, not the enclosing rectangle's height) and honored
+ *          isToolTipping() in September 2026; removed the dead pruneMinValue
+ *          field/getter/setter (never read by calculateMarkerPositions() or
+ *          anything else) in September 2026
  * @since 2016
  */
 public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
@@ -165,8 +172,24 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 			if (startValue < minValue.doubleValue())
 				startValue += quantization;
 
+			// suggestMeaningfulValueString() picks its decimal precision purely from
+			// this "maxValue" magnitude (e.g. anything >50 gets whole-number
+			// formatting), with no idea how fine the ticks it's about to label
+			// actually are. When quantization is small relative to maxValue's own
+			// tier (e.g. maxValue=50.5 -- just over the >50 whole-number cutoff --
+			// but quantization=0.5), adjacent ticks round to the identical label
+			// text, and the redundant-label removal below then collapses them to
+			// one -- which leaves drawAxisBetweenAxeMarkersOnly with a single
+			// marker and nothing to draw a line between. Clamping down to whichever
+			// of the two is smaller only ever pushes toward finer precision, never
+			// toward a coarser one or an inappropriate unit suffix (those only
+			// trigger on much larger values than any sane quantization*100 here), so
+			// it's a safe correction rather than a behavior change for the normal
+			// case where quantization is already proportionate to maxValue.
+			double formattingScale = Math.min(Math.abs(maxValue.doubleValue()), Math.abs(quantization) * 100);
+
 			double pixValue = positionEncodingFunction.apply(startValue);
-			addMarkerPosition(pixValue, startValue, maxValue.doubleValue());
+			addMarkerPosition(pixValue, startValue, formattingScale);
 
 			// iterate...
 			double loop = quantization;
@@ -174,7 +197,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 					&& new BigDecimal(loop).doubleValue() <= new BigDecimal(valueInterval).doubleValue()
 					&& new BigDecimal(startValue + loop).doubleValue() < maxValue.doubleValue()) {
 				pixValue = positionEncodingFunction.apply(startValue + loop);
-				addMarkerPosition(pixValue, startValue + loop, maxValue.doubleValue());
+				addMarkerPosition(pixValue, startValue + loop, formattingScale);
 				loop += quantization;
 			}
 		} else {

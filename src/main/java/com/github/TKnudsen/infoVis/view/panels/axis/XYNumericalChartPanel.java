@@ -210,7 +210,7 @@ public abstract class XYNumericalChartPanel<X extends Number, Y extends Number> 
 	 * Sets both axis painters' line/marker paint and font (label) color in one
 	 * call -- e.g. white, for readability on a dark look-and-feel background
 	 * where the default black axis label text is illegible. Mirrors
-	 * {@code TimeSeriesBundleChartWithoutSelectionModel.setAxisPaintersColor}
+	 * {@code TimeSeriesBundleChart.setAxisPaintersColor}
 	 * but lives here so every {@code XYNumericalChartPanel} subclass (including
 	 * {@code ScatterPlot}) gets it, not just time series bundle charts.
 	 */
