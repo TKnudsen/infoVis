@@ -16,7 +16,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
-import com.github.TKnudsen.ComplexDataObject.model.tools.DegenerateRangeException;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -173,26 +172,13 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 	}
 
 	/**
-	 * Same as {@link PositionEncodingFunctions#createPositionEncodingFunction},
-	 * except a degenerate (min == max) range does not abort construction. Unlike
-	 * most callers of that shared utility, a scatterplot is expected to render
-	 * single-value/filtered/strip-style data just fine -- the underlying
-	 * {@code LinearNormalizationFunction} already maps a degenerate range without
-	 * dividing by zero (see {@code MathFunctions.linearScale}'s {@code max == min}
-	 * branch). Re-derives the single repeated value directly, bypassing the
-	 * strict range check {@code createPositionEncodingFunction} uses internally.
+	 * Thin wrapper around {@link PositionEncodingFunctions#createPositionEncodingFunctionTolerant},
+	 * fixing {@code data} to this painter's own field.
 	 */
 	private PositionEncodingFunction createPositionEncodingFunctionTolerant(Function<? super T, Double> mapping,
 			Double minPixel, Double maxPixel, boolean flipAxisValues, String context) {
-		try {
-			return PositionEncodingFunctions.createPositionEncodingFunction(data, mapping, minPixel, maxPixel,
-					flipAxisValues, context);
-		} catch (DegenerateRangeException e) {
-			double value = data.stream().map(mapping)
-					.filter(v -> v != null && !v.isNaN() && !v.isInfinite())
-					.findFirst().orElse(0d);
-			return new PositionEncodingFunction(value, value, minPixel, maxPixel, flipAxisValues);
-		}
+		return PositionEncodingFunctions.createPositionEncodingFunctionTolerant(data, mapping, minPixel, maxPixel,
+				flipAxisValues, context);
 	}
 
 	/**

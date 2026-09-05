@@ -87,12 +87,29 @@ public abstract class AbstractScatterPlotPanel<T> extends XYNumericalChartPanel<
 	 * {@code super}) with the correct world ranges, since those set up axis
 	 * rendering.
 	 *
+	 * Tolerates a degenerate (single-value) dataset -- e.g. all elements sharing
+	 * the same x or y value -- via
+	 * {@link PositionEncodingFunctions#computeRangeTolerant(java.util.Collection,
+	 * java.util.function.Function, String)} rather than throwing
+	 * {@link com.github.TKnudsen.ComplexDataObject.model.tools.DegenerateRangeException
+	 * DegenerateRangeException}: {@link #zoom}/{@link #pan} already no-op safely
+	 * on a degenerate {@link #globalRangeX}/{@link #globalRangeY} (see
+	 * {@code PositionEncodingRangeTools.computeZoomedRange}/{@code
+	 * computePannedRange}, which return {@code null} whenever the current or
+	 * global interval collapses to zero), and the axis painters constructed from
+	 * a {@code [value, value]} range render fine (same tolerant math as
+	 * {@link com.github.TKnudsen.infoVis.view.painters.scatterplot.AbstractScatterPlotPainter
+	 * AbstractScatterPlotPainter}'s position-encoding setup). Without this, even
+	 * the CPU-only {@code ScatterPlot} panel threw here -- before ever reaching
+	 * {@code initializePainter(List)} -- for exactly the degenerate dataset the
+	 * painter layer was already fixed to tolerate (code review finding #10/#28).
+	 *
 	 * @param data the data to plot
 	 */
 	protected void initializeData(List<T> data) {
-		NumericRange rangeX = PositionEncodingFunctions.computeRange(data, worldPositionMappingX,
+		NumericRange rangeX = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingX,
 				getClass().getSimpleName() + " (x-axis)");
-		NumericRange rangeY = PositionEncodingFunctions.computeRange(data, worldPositionMappingY,
+		NumericRange rangeY = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingY,
 				getClass().getSimpleName() + " (y-axis)");
 
 		this.globalRangeX = rangeX;

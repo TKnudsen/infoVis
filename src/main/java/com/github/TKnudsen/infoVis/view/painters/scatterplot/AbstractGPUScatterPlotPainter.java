@@ -112,23 +112,15 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 	 * (already-tolerant) position-encoding setup in the super constructor.
 	 */
 	protected void computeWorldBounds() {
-		NumericRange rangeX = computeRangeTolerant(getWorldPositionMappingX(), "world bounds, x");
-		NumericRange rangeY = computeRangeTolerant(getWorldPositionMappingY(), "world bounds, y");
+		NumericRange rangeX = PositionEncodingFunctions.computeRangeTolerant(data, getWorldPositionMappingX(),
+				getClass().getSimpleName() + " (world bounds, x)");
+		NumericRange rangeY = PositionEncodingFunctions.computeRangeTolerant(data, getWorldPositionMappingY(),
+				getClass().getSimpleName() + " (world bounds, y)");
 
 		worldMinX = rangeX.getMin();
 		worldMaxX = rangeX.getMax();
 		worldMinY = rangeY.getMin();
 		worldMaxY = rangeY.getMax();
-	}
-
-	private NumericRange computeRangeTolerant(Function<? super T, Double> mapping, String context) {
-		try {
-			return PositionEncodingFunctions.computeRange(data, mapping, getClass().getSimpleName() + " (" + context + ")");
-		} catch (DegenerateRangeException e) {
-			double value = data.stream().map(mapping).filter(v -> v != null && !v.isNaN() && !v.isInfinite())
-					.findFirst().orElse(0d);
-			return new NumericRange(value, value, data.size());
-		}
 	}
 
 	/**
