@@ -30,6 +30,12 @@ public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate
 		handleFilterStatusChange();
 	}
 
+	public void removeFilter(Predicate<T> predicate) {
+		this.filters.remove(predicate);
+
+		handleFilterStatusChange();
+	}
+
 	public void addFilterStatusListener(FilterStatusListener<T> listener) {
 		this.filterStatusListeners.remove(listener);
 
@@ -48,6 +54,16 @@ public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate
 		Predicate<T> predicate = filterChangedEvent.getFilterStatus();
 		if (filters.contains(predicate))
 			handleFilterStatusChange();
+	}
+
+	/**
+	 * Forces a re-broadcast of the current combined filter status, without
+	 * changing which predicates are registered -- useful when a registered
+	 * predicate's own evaluation criteria changed in place (e.g. a slider
+	 * moved) without going through {@link #addFilter(Predicate)}.
+	 */
+	public void notifyFilterStatusChanged() {
+		handleFilterStatusChange();
 	}
 
 	private void handleFilterStatusChange() {
