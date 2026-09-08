@@ -36,6 +36,10 @@ public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate
 		this.filterStatusListeners.add(listener);
 	}
 
+	public void removeFilterStatusListener(FilterStatusListener<T> listener) {
+		this.filterStatusListeners.remove(listener);
+	}
+
 	@Override
 	public void filterStatusChanged(FilterChangedEvent<T> filterChangedEvent) {
 		if (filterChangedEvent == null)
