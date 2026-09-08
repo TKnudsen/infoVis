@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.tknudsen</groupId>
 	<artifactId>info-vis</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>infoVis</name>
 	<description>A library that provides InfoVis functionality.</description>
