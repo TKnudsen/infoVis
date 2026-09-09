@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
+import com.github.TKnudsen.ComplexDataObject.model.tools.DegenerateRangeException;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRange;
 import com.github.TKnudsen.ComplexDataObject.model.tools.NumericRangeTools;
@@ -67,8 +68,23 @@ public abstract class Histogram<T> extends AbstractBinnedDistributionPanel<T> {
 			throw new IllegalArgumentException("binCount must be > 0, but was " + this.binCount);
 		}
 
-		NumericRange range = NumericRangeTools.computeFiniteRangeStrict(getData(), worldToNumberMapping, minGlobal,
-				maxGlobal);
+		// tolerant: a filterable attribute can legitimately have zero variance in
+		// the current data (e.g. every item is 0% for a given category) -- a
+		// histogram of such data is a single, degenerate bin, not a crash
+		NumericRange range;
+		try {
+			range = NumericRangeTools.computeFiniteRangeStrict(getData(), worldToNumberMapping, minGlobal, maxGlobal);
+		} catch (DegenerateRangeException e) {
+			double value = 0;
+			for (T t : getData()) {
+				Number n = worldToNumberMapping.apply(t);
+				if (n != null && !Double.isNaN(n.doubleValue()) && !Double.isInfinite(n.doubleValue())) {
+					value = n.doubleValue();
+					break;
+				}
+			}
+			range = new NumericRange(value, value, getData().size());
+		}
 
 		this.min = range.getMin();
 		this.max = range.getMax();

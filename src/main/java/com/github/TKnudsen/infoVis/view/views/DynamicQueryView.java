@@ -244,15 +244,30 @@ public class DynamicQueryView<T> extends JPanel
 	private InfoVisRangeSliderPanel createRangeSliderPanel(Collection<T> data, Function<T, Number> toNumberFunction,
 			double largeValueMitigator) {
 
-		NumericRange range = PositionEncodingFunctions.computeRange(data, toNumberFunction,
+		// tolerant: a filterable attribute can legitimately have zero variance in
+		// the current data (e.g. every item is 0% for a given category) -- the
+		// slider should render as a degenerate single-point range, not prevent the
+		// whole view from being constructed
+		NumericRange range = PositionEncodingFunctions.computeRangeTolerant(data, toNumberFunction,
 				getClass().getSimpleName() + " range slider");
 
+		double worldMin = range.getMin();
+		double worldMax = range.getMax();
+		if (worldMin == worldMax) {
+			// InfoVisRangeSliderPanel itself requires min < max (a slider needs a
+			// draggable range to render). Widen by an epsilon relative to the int
+			// scale below so the floored/ceiled slider bounds always end up distinct,
+			// regardless of the value's magnitude.
+			double epsilon = 1.0 / (largeValueMitigator * INTEGER_MULTIPLIER);
+			worldMin -= epsilon;
+			worldMax += epsilon;
+		}
+
 		return new InfoVisRangeSliderPanel(
-				(int) Math.floor(range.getMin() * (largeValueMitigator * INTEGER_MULTIPLIER)),
-				(int) Math.ceil(range.getMax() * (largeValueMitigator * INTEGER_MULTIPLIER)),
-				(int) Math.floor(range.getMin() * (largeValueMitigator * INTEGER_MULTIPLIER)),
-				(int) Math.ceil(range.getMax() * (largeValueMitigator * INTEGER_MULTIPLIER)), range.getMin(),
-				range.getMax());
+				(int) Math.floor(worldMin * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(worldMax * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.floor(worldMin * (largeValueMitigator * INTEGER_MULTIPLIER)),
+				(int) Math.ceil(worldMax * (largeValueMitigator * INTEGER_MULTIPLIER)), worldMin, worldMax);
 	}
 
 	/**
