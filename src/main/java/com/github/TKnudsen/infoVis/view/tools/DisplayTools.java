@@ -20,17 +20,13 @@ import java.util.Objects;
  */
 public class DisplayTools {
 
-	private static Font font = new Font("Tahoma", java.awt.Font.PLAIN, 12);
+	private static final Font font = new Font("Tahoma", java.awt.Font.PLAIN, 12);
 
-	private static float[] dashPattern = { 3, 3 };
+	private static final float[] dashPattern = { 3, 3 };
 	static float[] lightDashPattern = { 2, 4 };
 
 	public static Font getFont() {
 		return font;
-	}
-
-	public static void setFont(Font font) {
-		DisplayTools.font = Objects.requireNonNull(font, "font must not be null");
 	}
 
 	/**
@@ -39,11 +35,6 @@ public class DisplayTools {
 	 */
 	public static float[] getDashPattern() {
 		return dashPattern.clone();
-	}
-
-	public static void setDashPattern(float[] dashPattern) {
-		Objects.requireNonNull(dashPattern, "dashPattern must not be null");
-		DisplayTools.dashPattern = dashPattern.clone();
 	}
 
 	public final static BasicStroke dashedStroke = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
