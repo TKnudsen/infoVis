@@ -36,7 +36,7 @@ public class DragTooltipPainterPanel<T extends ChartPainter & ITooltip> extends 
 
 	private static final long serialVersionUID = 1L;
 
-	protected Point lastPos = new Point(0, 0);
+	protected volatile Point lastPos = new Point(0, 0);
 	private JLabel tooltipLabel;
 
 	private final Consumer<String> rightClickConsumer;
@@ -64,9 +64,9 @@ public class DragTooltipPainterPanel<T extends ChartPainter & ITooltip> extends 
 					}
 				} else if (SwingUtilities.isRightMouseButton(e)) {
 					if (rightClickConsumer != null) {
-						StringPainter sp = (StringPainter) painter.getTooltip(e.getPoint());
-						if (sp != null)
-							rightClickConsumer.accept(sp.getData().toString());
+						String text = tooltipText(e.getPoint());
+						if (text != null)
+							rightClickConsumer.accept(text);
 					}
 				}
 			}
@@ -88,14 +88,14 @@ public class DragTooltipPainterPanel<T extends ChartPainter & ITooltip> extends 
 
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				if (tooltipLabel != null) {
-					StringPainter sp = (StringPainter) painter.getTooltip(e.getPoint());
-					if (sp != null) {
-						String text = sp.getData();
-						if (text != null && !text.equals("")) {
-							tooltipLabel.setText(text);
-							tooltipLabel.getParent().revalidate();
-							tooltipLabel.getParent().repaint();
+				JLabel label = tooltipLabel;
+				if (label != null) {
+					String text = tooltipText(e.getPoint());
+					if (text != null && !text.isEmpty()) {
+						label.setText(text);
+						if (label.getParent() != null) {
+							label.getParent().revalidate();
+							label.getParent().repaint();
 						}
 					}
 				}
@@ -120,10 +120,26 @@ public class DragTooltipPainterPanel<T extends ChartPainter & ITooltip> extends 
 	@Override
 	public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
 		if (flavor != null && flavor.equals(getTransferDataFlavors()[0])) {
-			StringPainter sp = (StringPainter) painter.getTooltip(lastPos);
-			return sp != null ? sp.getData().toString() : "";
+			String text = tooltipText(lastPos);
+			return text != null ? text : "";
 		}
 		return "";
+	}
+
+	/**
+	 * @return the wrapped painter's tooltip text at {@code p}, or null if there
+	 *         is none or the painter's {@link ITooltip#getTooltip(Point)} does
+	 *         not return a {@link StringPainter} (e.g. a custom tooltip
+	 *         renderer) -- drag export and the right-click callback only make
+	 *         sense for plain text tooltips.
+	 */
+	private String tooltipText(Point p) {
+		ChartPainter tooltip = painter.getTooltip(p);
+		if (!(tooltip instanceof StringPainter))
+			return null;
+
+		String data = ((StringPainter) tooltip).getData();
+		return data != null ? data : "";
 	}
 
 	public JLabel getTooltipLabel() {

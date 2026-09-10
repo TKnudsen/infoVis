@@ -52,7 +52,7 @@ public class ButterflyShapeGenerator {
 		if (points == null)
 			return null;
 
-		List<Point2D> pointList = new ArrayList<>(points);
+		List<Point2D> pointList = distinctFinitePoints(points);
 		List<Point2D> hull = ConvexHullTools.computeConvexHull(pointList);
 		if (hull.size() < 3)
 			return null;
@@ -187,6 +187,15 @@ public class ButterflyShapeGenerator {
 		return best;
 	}
 
+	/** drops null points and points with non-finite coordinates, matching {@code ConvexHullTools}' own input contract */
+	private static List<Point2D> distinctFinitePoints(List<? extends Point2D> points) {
+		List<Point2D> result = new ArrayList<>();
+		for (Point2D p : points)
+			if (p != null && Double.isFinite(p.getX()) && Double.isFinite(p.getY()))
+				result.add(p);
+		return result;
+	}
+
 	private static Point2D centroid(List<Point2D> points) {
 		double x = 0;
 		double y = 0;
@@ -218,7 +227,14 @@ public class ButterflyShapeGenerator {
 		return rasterArea(path);
 	}
 
-	/** rasterized area of a shape, matching the legacy pixel-counting approach (robust for self-touching curves) */
+	/**
+	 * Rasterized area of a shape, matching the legacy pixel-counting approach
+	 * (robust for self-touching curves). Cost is proportional to the shape's
+	 * pixel-space bounding box, which can span most of the chart in sparse
+	 * regions (where the control point falls back to the global centroid) --
+	 * called once per recursion candidate, so a high {@code depth} on a large,
+	 * sparse point cloud is noticeably more expensive than on a dense one.
+	 */
 	private static double rasterArea(GeneralPath path) {
 		Rectangle2D bounds = path.getBounds2D();
 		int width = (int) Math.ceil(bounds.getWidth()) + 1;

@@ -69,7 +69,8 @@ public class FilterStatusHander<T> implements FilterStatusListener<T>, Predicate
 	private void handleFilterStatusChange() {
 		FilterChangedEvent<T> filterChangedEvent = new FilterChangedEvent<>(this, this);
 
-		for (FilterStatusListener<T> filterStatusListener : filterStatusListeners)
+		// snapshot: a listener may add/remove listeners in response to this event
+		for (FilterStatusListener<T> filterStatusListener : new ArrayList<>(filterStatusListeners))
 			filterStatusListener.filterStatusChanged(filterChangedEvent);
 	}
 

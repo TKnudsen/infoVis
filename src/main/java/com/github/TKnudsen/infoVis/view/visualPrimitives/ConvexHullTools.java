@@ -3,6 +3,7 @@ package com.github.TKnudsen.infoVis.view.visualPrimitives;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -68,17 +69,16 @@ public class ConvexHullTools {
 	}
 
 	private static List<Point2D> distinctFinitePoints(List<Point2D> points) {
-		List<Point2D> result = new ArrayList<>();
 		if (points == null)
-			return result;
+			return new ArrayList<>();
 
+		LinkedHashSet<Point2D> result = new LinkedHashSet<>();
 		for (Point2D p : points) {
-			if (p == null || Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
+			if (p == null || !Double.isFinite(p.getX()) || !Double.isFinite(p.getY()))
 				continue;
-			if (!result.contains(p))
-				result.add(p);
+			result.add(p);
 		}
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	private static Point2D lowestPoint(List<Point2D> points) {

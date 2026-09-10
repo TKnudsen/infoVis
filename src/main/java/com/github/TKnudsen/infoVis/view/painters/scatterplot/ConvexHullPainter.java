@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -171,9 +172,9 @@ public class ConvexHullPainter<T, G> extends ChartPainter {
 		g2.setStroke(oldStroke);
 	}
 
-	/** @return the current per-group computed hulls (unmodifiable view semantics not enforced; read-only by convention) */
+	/** @return the current per-group computed hulls, as an unmodifiable view */
 	public Map<G, List<Point2D>> getHullsByGroup() {
-		return hullsByGroup;
+		return Collections.unmodifiableMap(hullsByGroup);
 	}
 
 	/** @return the alpha used to fill each hull, or null if fill is disabled */

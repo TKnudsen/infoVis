@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -181,9 +182,9 @@ public class ButterflyHullsPainter<T, G> extends ChartPainter {
 		g2.setStroke(oldStroke);
 	}
 
-	/** @return the current per-group computed butterfly hulls */
+	/** @return the current per-group computed butterfly hulls, as an unmodifiable view */
 	public Map<G, Path2D> getHullsByGroup() {
-		return hullsByGroup;
+		return Collections.unmodifiableMap(hullsByGroup);
 	}
 
 	public int getDepth() {

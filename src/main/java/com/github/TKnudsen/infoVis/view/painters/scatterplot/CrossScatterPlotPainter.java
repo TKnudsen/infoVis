@@ -33,6 +33,11 @@ public class CrossScatterPlotPainter<T> extends ScatterPlotPainter<T> {
 
 	@Override
 	protected void drawPoint(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint, boolean selected) {
+		if (selected) {
+			g2.setPaint(getSelectionPaint());
+			DisplayTools.drawCross(g2, (float) point.getX(), (float) point.getY(), pointSize * 1.66f);
+		}
+
 		g2.setPaint(pointPaint);
 		DisplayTools.drawCross(g2, (float) point.getX(), (float) point.getY(), pointSize);
 	}
