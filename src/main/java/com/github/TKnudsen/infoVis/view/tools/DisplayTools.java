@@ -8,6 +8,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -129,14 +130,17 @@ public class DisplayTools {
 		if (radius <= 0)
 			radius = 1.0;
 
-		final int diameter = (int) Math.round(radius * 2.0);
-		final int topLeftX = (int) Math.round(centerX - radius);
-		final int topLeftY = (int) Math.round(centerY - radius);
+		// Ellipse2D.Double keeps center and radius consistent in double precision;
+		// rounding centerX-radius and radius*2 to int separately (as g2.fillOval
+		// requires) can shift the rendered center off centerX/centerY by up to
+		// half a pixel independently on each axis.
+		Ellipse2D.Double ellipse = new Ellipse2D.Double(centerX - radius, centerY - radius, radius * 2.0,
+				radius * 2.0);
 
 		if (fill)
-			g2.fillOval(topLeftX, topLeftY, diameter, diameter);
+			g2.fill(ellipse);
 		else
-			g2.drawOval(topLeftX, topLeftY, diameter, diameter);
+			g2.draw(ellipse);
 	}
 
 	/**
