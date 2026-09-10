@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-
 import java.util.Objects;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
@@ -103,13 +102,14 @@ public class HashCodePainter extends ChartPainter {
 		for (int i = 0; i < numberOfPeaks; i++) {
 			double orbitX = rectangle.getCenterX();
 			double orbitY = rectangle.getCenterY() - orbitDistance * half;
-			DisplayTools.drawLine(g2, rectangle.getCenterX(), rectangle.getCenterY(), orbitX, orbitY);
+			DisplayTools.drawLine(g2, (float) rectangle.getCenterX(), (float) rectangle.getCenterY(), (float) orbitX,
+					(float) orbitY);
 
 			double offshotPointX1 = orbitX - Math.sin(Math.toRadians(offshotAngle)) * offshotDistance * half;
 			double offshotPointX2 = orbitX + Math.sin(Math.toRadians(offshotAngle)) * offshotDistance * half;
 			double offshotPointY = orbitY - Math.cos(Math.toRadians(offshotAngle)) * offshotDistance * half;
-			DisplayTools.drawLine(g2, orbitX, orbitY, offshotPointX1, offshotPointY);
-			DisplayTools.drawLine(g2, orbitX, orbitY, offshotPointX2, offshotPointY);
+			DisplayTools.drawLine(g2, (float) orbitX, (float) orbitY, (float) offshotPointX1, (float) offshotPointY);
+			DisplayTools.drawLine(g2, (float) orbitX, (float) orbitY, (float) offshotPointX2, (float) offshotPointY);
 
 			// spline towards the border and back
 			double curveScaleX = rectangle.getCenterX();
@@ -119,8 +119,8 @@ public class HashCodePainter extends ChartPainter {
 			path.quadTo(curveScaleX + 0.1 * half, rectangle.getMinY(), offshotPointX2, offshotPointY);
 			g2.draw(path);
 
-			DisplayTools.drawPoint(g2, rectangle.getCenterX(), rectangle.getCenterY(), centerDotSize * half, color,
-					false);
+			// g2's paint is already `color` (set at the top of this method)
+			DisplayTools.drawPoint(g2, rectangle.getCenterX(), rectangle.getCenterY(), centerDotSize * half, false);
 
 			g2.transform(rotate);
 		}
