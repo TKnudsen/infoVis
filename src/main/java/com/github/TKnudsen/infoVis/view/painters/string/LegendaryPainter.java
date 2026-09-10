@@ -53,12 +53,12 @@ public class LegendaryPainter extends ChartPainter {
 		double xStart = alignLeft ? rectangle.getMinX() + OFFSET_HORIZONTAL
 				: rectangle.getMinX() + rectangle.getWidth() - width - OFFSET_HORIZONTAL;
 
-		Rectangle2D.Double legendBox = new Rectangle2D.Double(xStart, OFFSET_VERTICAL, width,
+		Rectangle2D.Double legendBox = new Rectangle2D.Double(xStart, rectangle.getMinY() + OFFSET_VERTICAL, width,
 				entries.size() * (FONT_SIZE + LINE_OFFSET) + 2 * LINE_OFFSET);
 
 		float textX = (float) (legendBox.getX() + SWATCH_TEXT_GAP + SWATCH_WIDTH + SWATCH_TEXT_GAP);
 		float lineX = textX - SWATCH_WIDTH - SWATCH_TEXT_GAP;
-		float textY = OFFSET_VERTICAL + FONT_SIZE + LINE_OFFSET;
+		float textY = (float) (legendBox.getY() + FONT_SIZE + LINE_OFFSET);
 		float lineY = textY - 0.33f * FONT_SIZE;
 
 		Shape oldClip = g2.getClip();
