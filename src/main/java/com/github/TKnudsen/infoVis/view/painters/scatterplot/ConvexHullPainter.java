@@ -16,7 +16,7 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.IPositionEncodingFunction;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctions;
-import com.github.TKnudsen.infoVis.view.visualPrimitives.convexHull.ConvexHullTools;
+import com.github.TKnudsen.infoVis.view.visualPrimitives.ConvexHullTools;
 
 /**
  * <p>

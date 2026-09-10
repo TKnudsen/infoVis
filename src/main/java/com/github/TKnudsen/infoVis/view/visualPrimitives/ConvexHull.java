@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.view.visualPrimitives.convexHull;
+package com.github.TKnudsen.infoVis.view.visualPrimitives;
 
 import java.awt.geom.Point2D;
 import java.util.List;

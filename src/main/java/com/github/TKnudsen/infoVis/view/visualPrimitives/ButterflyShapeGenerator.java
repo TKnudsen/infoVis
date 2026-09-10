@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.view.visualPrimitives.convexHull;
+package com.github.TKnudsen.infoVis.view.visualPrimitives;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
@@ -32,8 +32,8 @@ import java.util.List;
  * more tightly than the plain straight-edged convex hull.
  * </p>
  *
- * @version 1.0
- * @since 2026
+ * @version 1.1
+ * @since 2017
  */
 public class ButterflyShapeGenerator {
 

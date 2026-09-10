@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.view.visualPrimitives.convexHull;
+package com.github.TKnudsen.infoVis.view.visualPrimitives;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
  * with no auxiliary point-wrapper type.
  * </p>
  *
- * @since 2026
+ * @since 2017
  * @version 1.1
  * 
  */
