@@ -7,13 +7,14 @@ import java.util.List;
 
 /**
  * <p>
- * Computes the convex hull of a 2D point set via the Graham scan algorithm
- * (O(n log n), dominated by the angular sort). Operates directly on
- * {@link Point2D}, with no auxiliary point-wrapper type.
+ * Computes the convex hull of a 2D point set via the Graham scan algorithm (O(n
+ * log n), dominated by the angular sort). Operates directly on {@link Point2D},
+ * with no auxiliary point-wrapper type.
  * </p>
  *
- * @version 1.0
  * @since 2026
+ * @version 1.1
+ * 
  */
 public class ConvexHullTools {
 
@@ -26,8 +27,7 @@ public class ConvexHullTools {
 	 * {@link ConvexHull#setConvexHull(List)}, reading the input from
 	 * {@link ConvexHull#getCoordinatesInPixels()}.
 	 *
-	 * @throws NullPointerException if convexHull or its pixel coordinates are
-	 *                               null
+	 * @throws NullPointerException if convexHull or its pixel coordinates are null
 	 */
 	public static void compute(ConvexHull convexHull) {
 		convexHull.setConvexHull(computeConvexHull(convexHull.getCoordinatesInPixels()));
@@ -38,10 +38,10 @@ public class ConvexHullTools {
 	 *
 	 * @param points the point set; not modified
 	 * @return the hull vertices in counter-clockwise order, starting from the
-	 *         lowest (then leftmost) point. Fewer than 3 distinct, non-null,
-	 *         finite input points yield those points back unchanged (a
-	 *         degenerate "hull" -- a point or a segment -- rather than an
-	 *         exception, since callers typically just want something to draw).
+	 *         lowest (then leftmost) point. Fewer than 3 distinct, non-null, finite
+	 *         input points yield those points back unchanged (a degenerate "hull"
+	 *         -- a point or a segment -- rather than an exception, since callers
+	 *         typically just want something to draw).
 	 */
 	public static List<Point2D> computeConvexHull(List<Point2D> points) {
 		List<Point2D> distinct = distinctFinitePoints(points);
@@ -90,9 +90,9 @@ public class ConvexHullTools {
 	}
 
 	/**
-	 * Orders points by polar angle around {@code pivot}; points at the same
-	 * angle are ordered by increasing distance from the pivot, so the Graham
-	 * scan loop naturally keeps only the farthest of any collinear run.
+	 * Orders points by polar angle around {@code pivot}; points at the same angle
+	 * are ordered by increasing distance from the pivot, so the Graham scan loop
+	 * naturally keeps only the farthest of any collinear run.
 	 */
 	private static Comparator<Point2D> byPolarAngle(Point2D pivot) {
 		return (a, b) -> {
