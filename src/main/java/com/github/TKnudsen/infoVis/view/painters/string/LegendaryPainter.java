@@ -44,7 +44,7 @@ public class LegendaryPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (entries == null || entries.isEmpty())
+		if (rectangle == null || entries == null || entries.isEmpty())
 			return;
 
 		double width = SWATCH_TEXT_GAP + SWATCH_WIDTH + SWATCH_TEXT_GAP + determineLabelWidth(g2) + TEXT_RIGHT_MARGIN
