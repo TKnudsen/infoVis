@@ -6,22 +6,31 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
+import java.util.Objects;
+
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * Renders a snowflake-like glyph deterministically derived from a hash code
- * -- the same hash always produces the same glyph (peak count, rotation,
- * spike shape all derive from arithmetic on the hash value), making it
- * useful as a compact per-object visual identifier (an "identicon" for
- * arbitrary hashable data).
+ * Renders a snowflake-like glyph deterministically derived from an
+ * {@link Object#hashCode()} -- the same hash always produces the same glyph
+ * (peak count, rotation, spike shape all derive from arithmetic on the hash
+ * value), making it useful as a compact per-object visual identifier (an
+ * "identicon" for arbitrary objects).
+ *
+ * <p>
+ * The derivation constants were tuned against the 32-bit range of
+ * {@code Object.hashCode()}; that is why the constructor takes an
+ * {@code int}, not a {@code long} -- feeding it a wider value defeats the
+ * tuning and tends to push the glyph's spikes outside its own rectangle.
+ * </p>
  *
  * @version 1.1
  * @since 2013
  */
 public class HashCodePainter extends ChartPainter {
 
-	private final long hashcode;
+	private final int hashcode;
 	private final int maxPeakCount;
 
 	// derived rendering parameters, computed once from the hash code
@@ -32,11 +41,16 @@ public class HashCodePainter extends ChartPainter {
 	private double offshotDistance;
 	private double centerDotSize;
 
-	public HashCodePainter(long hashcode, int maxPeakCount) {
+	public HashCodePainter(int hashcode, int maxPeakCount) {
 		this.hashcode = hashcode;
 		this.maxPeakCount = maxPeakCount;
 
 		initialize();
+	}
+
+	/** @param object the object whose {@link Object#hashCode()} is used to derive the glyph; null is treated as hash code 0 */
+	public HashCodePainter(Object object, int maxPeakCount) {
+		this(Objects.hashCode(object), maxPeakCount);
 	}
 
 	private void initialize() {
@@ -117,7 +131,7 @@ public class HashCodePainter extends ChartPainter {
 		g2.setColor(oldColor);
 	}
 
-	public long getHashcode() {
+	public int getHashcode() {
 		return hashcode;
 	}
 

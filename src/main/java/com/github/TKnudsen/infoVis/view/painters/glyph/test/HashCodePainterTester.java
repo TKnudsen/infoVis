@@ -2,6 +2,7 @@ package com.github.TKnudsen.infoVis.view.painters.glyph.test;
 
 import java.awt.GridLayout;
 import java.util.Random;
+import java.util.UUID;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -11,7 +12,9 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * Standalone interactive demo: a grid of {@link HashCodePainter} glyphs, one
- * per random hash code, showing the variety of shapes the technique produces.
+ * per random object (here, a random {@link UUID}), showing the variety of
+ * shapes the technique produces -- the same object always yields the same
+ * glyph, since the glyph is derived from {@link Object#hashCode()}.
  *
  * @version 1.0
  * @since 2026
@@ -29,7 +32,8 @@ public class HashCodePainterTester {
 		frame.setLayout(new GridLayout(numbers, numbers));
 
 		for (int i = 0; i < numbers * numbers; i++) {
-			HashCodePainter painter = new HashCodePainter(random.nextLong(), 7);
+			UUID object = new UUID(random.nextLong(), random.nextLong());
+			HashCodePainter painter = new HashCodePainter(object, 7);
 			frame.add(new InfoVisChartPanel(painter));
 		}
 
