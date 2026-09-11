@@ -43,6 +43,7 @@ public class AggregationColoredSignificanceBarChartPainter<O> extends BarChartSe
 			String s : labeling)
 				pseudoBars.add(al);
 		significanceDotsBarsRenderer = new BarsPainter<O>(pseudoBars, null);
+		significanceDotsBarsRenderer.setVerticalOrientation(isVerticalOrientation());
 	}
 
 	@Override

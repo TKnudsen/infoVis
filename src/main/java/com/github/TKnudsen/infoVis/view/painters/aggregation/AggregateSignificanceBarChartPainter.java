@@ -36,6 +36,7 @@ public class AggregateSignificanceBarChartPainter<O> extends BarChartSelectableP
 		String s : labels)
 			pseudoBars.add(al);
 		significanceDotsBarsRenderer = new BarsPainter<O>(pseudoBars, null);
+		significanceDotsBarsRenderer.setVerticalOrientation(isVerticalOrientation());
 	}
 
 	@Override
