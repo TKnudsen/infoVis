@@ -12,24 +12,17 @@ import java.awt.geom.Rectangle2D;
  * locked-aspect circle can only ever be as large as a cell's shorter side.
  *
  * <p>
- * Sized by actual filled area rather than bounding-box area: an ellipse
- * inscribed in a box covers only {@code pi/4 (~78.5%)} of that box, so at
- * {@code relativeSize == 1} its ink area matches a same-size
- * {@link Grid2DRectangleSizePainter} cell exactly -- which means the
- * bounding box itself overflows the cell by a fixed ~13% per side at that
- * point. If cells must never be overflown, the fraction is worth revisiting.
+ * Sized by bounding-box area, like {@link Grid2DRectangleSizePainter}: at
+ * {@code relativeSize == 1} the ellipse's bounding box exactly fills the
+ * cell, so it never overflows. Since an ellipse inscribed in a box covers
+ * only {@code pi/4 (~78.5%)} of that box, its ink area is visibly smaller
+ * than a same-size rectangle painter's even at maximum size -- that is an
+ * unavoidable property of drawing an ellipse, not a sizing bug.
  * </p>
  *
  * @since 2026
  */
 public class Grid2DEllipsisPainter extends Grid2DShapeSizePainter {
-
-	/**
-	 * An ellipse's area is {@code pi/4} of its bounding box's area; this is that
-	 * ratio inverted, i.e. the bounding-box area needed so the ellipse's own
-	 * filled area equals the target area.
-	 */
-	private static final double BOUNDING_BOX_AREA_CORRECTION = 4.0 / Math.PI;
 
 	public Grid2DEllipsisPainter(double[][] relativeSizes, Color[][] gridColors) {
 		super(relativeSizes, gridColors);
@@ -37,8 +30,7 @@ public class Grid2DEllipsisPainter extends Grid2DShapeSizePainter {
 
 	@Override
 	protected void drawShape(Graphics2D g2, Rectangle2D cell, double relativeSize) {
-		double targetArea = cell.getWidth() * cell.getHeight() * relativeSize;
-		double boundingBoxArea = targetArea * BOUNDING_BOX_AREA_CORRECTION;
+		double boundingBoxArea = cell.getWidth() * cell.getHeight() * relativeSize;
 
 		double width = Math.sqrt(boundingBoxArea * (cell.getWidth() / cell.getHeight()));
 		double height = Math.sqrt(boundingBoxArea * (cell.getHeight() / cell.getWidth()));

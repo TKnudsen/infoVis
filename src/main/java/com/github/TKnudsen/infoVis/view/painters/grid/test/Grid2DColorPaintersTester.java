@@ -71,7 +71,7 @@ public class Grid2DColorPaintersTester {
 		for (int i = 0; i < 3; i++)
 			for (int j = 0; j < GRID_SIZE; j++) {
 				wideColors[i][j] = colors[i][j];
-				wideSizes[i][j] = sizes[i][j];
+				wideSizes[i][j] = Math.max(0.05, (i + 1) * (j + 1) / (double) (3 * GRID_SIZE));
 			}
 
 		Grid2DCircularPainter circularOnWideCells = new Grid2DCircularPainter(wideSizes, wideColors);
