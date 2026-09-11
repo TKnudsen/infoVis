@@ -13,6 +13,7 @@ import javax.swing.SwingConstants;
 import javax.swing.BoxLayout;
 
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
+import com.github.TKnudsen.infoVis.view.painters.aggregation.AggregateSignificanceBarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.aggregation.AggregationBarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.aggregation.AggregationColoredSignificanceBarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.aggregation.BarChartSelectablePainter;
@@ -24,8 +25,10 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * one layer over the previous: {@link BarsPainter} (bars sized by bucket
  * element count), {@link AggregationBarChartPainter} (adds headline and
  * legend), {@link BarChartSelectablePainter} (adds an element-selection
- * overlay), and {@link AggregationColoredSignificanceBarChartPainter} (adds
- * an independently-colored significance-dots strip).
+ * overlay), {@link AggregateSignificanceBarChartPainter} (adds a
+ * single-color significance-dots strip), and
+ * {@link AggregationColoredSignificanceBarChartPainter} (the same strip,
+ * but independently colored per bar).
  *
  * @since 2026
  */
@@ -39,6 +42,7 @@ public class BarChartSelectablePainterTester {
 		panels.add(labeled("BarsPainter", createBarsPainterPanel()));
 		panels.add(labeled("AggregationBarChartPainter", createAggregationBarChartPanel()));
 		panels.add(labeled("BarChartSelectablePainter", createSelectablePanel()));
+		panels.add(labeled("AggregateSignificanceBarChartPainter", createSignificancePanel()));
 		panels.add(labeled("AggregationColoredSignificanceBarChartPainter", createColoredSignificancePanel()));
 
 		SVGFrameTools.dropSVGFrameHorizontal(panels, "Bucket-based bar chart family");
@@ -93,6 +97,18 @@ public class BarChartSelectablePainterTester {
 		// overlay visibly a fraction of each bar rather than all-or-nothing
 		Set<Long> selected = new HashSet<>(Arrays.asList(1L, 3L, 5L));
 		painter.setSelectedStatus(selected);
+
+		return new InfoVisChartPanel(painter);
+	}
+
+	private static JPanel createSignificancePanel() {
+		AggregateSignificanceBarChartPainter<Long> painter = new AggregateSignificanceBarChartPainter<>(createElementMapping(), LABELS,
+				"AggregateSignificanceBarChartPainter");
+		painter.setColors(COLORS);
+		painter.setDrawOutline(true);
+		// unlike AggregationColoredSignificanceBarChartPainter, the dots here all
+		// share one color via setColorsForSelection
+		painter.setColorsForSelection(Arrays.asList(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK));
 
 		return new InfoVisChartPanel(painter);
 	}
