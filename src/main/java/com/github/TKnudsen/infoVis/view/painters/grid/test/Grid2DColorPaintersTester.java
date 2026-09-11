@@ -14,14 +14,15 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DCircularPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DColorPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DColorTransparencyPainter;
+import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DRectangleSizePainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * Interactive demo of {@link Grid2DColorPainter},
- * {@link Grid2DColorTransparencyPainter}, and {@link Grid2DCircularPainter}
- * side by side on the same color grid.
+ * {@link Grid2DColorTransparencyPainter}, {@link Grid2DCircularPainter}, and
+ * {@link Grid2DRectangleSizePainter} side by side on the same color grid.
  *
- * @version 1.0
+ * @version 1.1
  * @since 2026
  */
 public class Grid2DColorPaintersTester {
@@ -55,10 +56,16 @@ public class Grid2DColorPaintersTester {
 		circularPainter.setBorderPaint(Color.DARK_GRAY);
 		circularPainter.setDrawOutline(true);
 
+		Grid2DRectangleSizePainter sizePainter = new Grid2DRectangleSizePainter(sizes);
+		sizePainter.setColor(Color.DARK_GRAY.brighter());
+		sizePainter.setBorderPaint(Color.DARK_GRAY);
+		sizePainter.setDrawOutline(true);
+
 		List<JPanel> panels = new ArrayList<>();
 		panels.add(labeled("Grid2DColorPainter", colorPainter));
 		panels.add(labeled("Grid2DColorTransparencyPainter", transparencyPainter));
 		panels.add(labeled("Grid2DCircularPainter", circularPainter));
+		panels.add(labeled("Grid2DRectangleSizePainter", sizePainter));
 
 		SwingUtilities.invokeLater(() -> SVGFrameTools.dropSVGFrameHorizontal(panels, "Grid2D color painters"));
 	}
