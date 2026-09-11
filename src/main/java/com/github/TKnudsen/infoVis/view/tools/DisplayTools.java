@@ -16,7 +16,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.Objects;
 
 /**
- * @version 2.03
+ * @version 2.04
  * @since 2016
  */
 public class DisplayTools {
@@ -1024,6 +1024,134 @@ public class DisplayTools {
 		diamond.closePath();
 
 		return diamond;
+	}
+
+	/**
+	 * Draws a solid, filled arrowhead-shaped glyph whose tip sits at
+	 * {@code (x, y)}.
+	 *
+	 * <p>
+	 * The shape is built pointing in the negative-x direction (left) and then
+	 * rotated in place around its tip by {@code angleDegrees} (clockwise, screen
+	 * coordinates). Fills using the current paint of {@code g2}.
+	 * </p>
+	 *
+	 * @param g2           the Graphics2D context (non-null)
+	 * @param x            x-coordinate of the arrow's tip
+	 * @param y            y-coordinate of the arrow's tip
+	 * @param arrowLength  length of the arrow from tip to tail
+	 * @param arrowRatio   ratio of arrow breadth to length; 0.5 is a reasonable
+	 *                     starting point
+	 * @param angleDegrees rotation of the arrow around its tip, in degrees
+	 */
+	public static void drawArrow(Graphics2D g2, float x, float y, float arrowLength, float arrowRatio,
+			float angleDegrees) {
+		if (g2 == null)
+			return;
+
+		final float waistFactor = 0.5f;
+
+		BasicStroke stroke = (BasicStroke) g2.getStroke();
+		float tipInset = x - stroke.getLineWidth() * 0.5f / arrowRatio;
+
+		float waistX = x - arrowLength * 0.5f;
+		float waistOffsetY = arrowRatio * arrowLength * 0.5f * waistFactor;
+		float arrowWidth = arrowRatio * arrowLength;
+
+		float tailX = tipInset - arrowLength;
+		float tailTopY = y - arrowWidth;
+		float tailBottomY = y + arrowWidth;
+		float pinchX = tipInset - arrowLength * 0.75f;
+
+		double[] tailTop = rotateAroundPoint(tailX, tailTopY, x, y, angleDegrees);
+		double[] tip = rotateAroundPoint(x, y, x, y, angleDegrees);
+		double[] waistTop = rotateAroundPoint(waistX, y - waistOffsetY, x, y, angleDegrees);
+		double[] tailBottom = rotateAroundPoint(tailX, tailBottomY, x, y, angleDegrees);
+		double[] waistBottom = rotateAroundPoint(waistX, y + waistOffsetY, x, y, angleDegrees);
+		double[] pinch = rotateAroundPoint(pinchX, y, x, y, angleDegrees);
+
+		Path2D.Float path = new Path2D.Float();
+		path.moveTo(tailTop[0], tailTop[1]);
+		path.quadTo(waistTop[0], waistTop[1], tip[0], tip[1]);
+		path.quadTo(waistBottom[0], waistBottom[1], tailBottom[0], tailBottom[1]);
+		path.lineTo(pinch[0], pinch[1]);
+		path.lineTo(tailTop[0], tailTop[1]);
+
+		g2.fill(path);
+	}
+
+	/**
+	 * Draws a quadratic-curve arrow from {@code (x1, y1)} to {@code (x2, y2)},
+	 * bowed sideways by {@code curveRate}, with a filled {@link #drawArrow}
+	 * arrowhead at the end point. Optionally labels the curve at its control
+	 * point.
+	 *
+	 * @param g2               the Graphics2D context (non-null)
+	 * @param x1               x-coordinate of the curve's start
+	 * @param y1               y-coordinate of the curve's start
+	 * @param x2               x-coordinate of the curve's end (and the
+	 *                         arrowhead's tip)
+	 * @param y2               y-coordinate of the curve's end (and the
+	 *                         arrowhead's tip)
+	 * @param curveRate        how far the curve bows away from the straight line
+	 *                         between the two points, as a fraction of their
+	 *                         distance; 0 draws a straight line
+	 * @param arrowLength      length of the arrowhead
+	 * @param arrowBreadthRatio ratio of arrowhead breadth to length; 0.5 is a
+	 *                         reasonable starting point
+	 * @param label            optional label drawn at the curve's control point
+	 *                         (may be {@code null})
+	 */
+	public static void drawCurvedArrow(Graphics2D g2, float x1, float y1, float x2, float y2, float curveRate,
+			float arrowLength, float arrowBreadthRatio, String label) {
+		if (g2 == null)
+			return;
+
+		// Filling (not stroking) the curve's own outline below, so butt caps and
+		// bevel joins avoid overshoot artifacts at the path's sharp turns.
+		Stroke oldStroke = g2.getStroke();
+		BasicStroke s = (BasicStroke) oldStroke;
+		g2.setStroke(new BasicStroke(s.getLineWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, s.getMiterLimit(),
+				s.getDashArray(), s.getDashPhase()));
+
+		float distance = (float) Math.hypot(x2 - x1, y2 - y1);
+		float midX = (x1 + x2) * 0.5f;
+		float midY = (y1 + y2) * 0.5f;
+
+		// Direction from p1 to p2, then rotated 90 degrees to bow the control
+		// point sideways by curveRate * distance.
+		float direction = (float) Math.atan2(y2 - y1, x2 - x1);
+		float controlX = (float) (midX + Math.cos(direction - Math.PI * 0.5) * distance * curveRate);
+		float controlY = (float) (midY + Math.sin(direction - Math.PI * 0.5) * distance * curveRate);
+
+		if (label != null)
+			g2.drawString(label, controlX, controlY);
+
+		float endDirection = (float) Math.atan2(controlY - y2, controlX - x2);
+		float endDirectionDegrees = endDirection * 180f / (float) Math.PI;
+		drawArrow(g2, x2, y2, arrowLength, arrowBreadthRatio, -(180 - endDirectionDegrees));
+
+		// Shorten the curve's own end point by arrowLength so it doesn't poke
+		// out past the arrowhead drawn on top of it.
+		float curveEndX = (float) (x2 + Math.cos(endDirection) * arrowLength);
+		float curveEndY = (float) (y2 + Math.sin(endDirection) * arrowLength);
+
+		Path2D.Float path = new Path2D.Float();
+		path.moveTo(x1, y1);
+		path.quadTo(controlX, controlY, curveEndX, curveEndY);
+		g2.draw(path);
+
+		g2.setStroke(oldStroke);
+	}
+
+	/**
+	 * Rotates the point {@code (px, py)} around the center {@code (cx, cy)} by
+	 * {@code angleDegrees}, preserving the distance between the two points.
+	 */
+	private static double[] rotateAroundPoint(double px, double py, double cx, double cy, double angleDegrees) {
+		double radius = Math.hypot(px - cx, py - cy);
+		double angle = Math.toRadians(angleDegrees) + Math.atan2(py - cy, px - cx);
+		return new double[] { cx + radius * Math.cos(angle), cy + radius * Math.sin(angle) };
 	}
 
 }
