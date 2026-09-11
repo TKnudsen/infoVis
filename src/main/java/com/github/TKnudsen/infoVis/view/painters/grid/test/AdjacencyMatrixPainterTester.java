@@ -1,6 +1,9 @@
 package com.github.TKnudsen.infoVis.view.painters.grid.test;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -9,9 +12,10 @@ import com.github.TKnudsen.infoVis.view.painters.grid.AdjacencyMatrixPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
- * Interactive demo of {@link AdjacencyMatrixPainter}: an unhighlighted
- * matrix, one with a single row highlighted, and one with a pair of rows
- * highlighted.
+ * Interactive demo of {@link AdjacencyMatrixPainter}: a click-to-highlight
+ * panel (clicking a label or a cell selects that row, or that pair, via
+ * {@link AdjacencyMatrixPainter#getElementsAtPoint(java.awt.Point)}), next
+ * to two statically pre-highlighted panels for reference.
  *
  * @since 2026
  */
@@ -20,18 +24,32 @@ public class AdjacencyMatrixPainterTester {
 	private static final String[] LABELS = { "Apple", "Banana", "Cherry", "Date", "Elderberry", "Fig" };
 
 	public static void main(String[] args) {
-		JPanel plain = createPanel(null);
-		JPanel singleHighlight = createPanel(new int[] { 2 });
-		JPanel pairHighlight = createPanel(new int[] { 1, 4 });
+		JPanel clickToHighlight = createClickToHighlightPanel();
+		JPanel singleHighlight = createStaticPanel(new int[] { 2 });
+		JPanel pairHighlight = createStaticPanel(new int[] { 1, 4 });
 
-		SVGFrameTools.dropSVGFrameHorizontal(java.util.Arrays.asList(plain, singleHighlight, pairHighlight),
+		SVGFrameTools.dropSVGFrameHorizontal(java.util.Arrays.asList(clickToHighlight, singleHighlight, pairHighlight),
 				"AdjacencyMatrixPainter");
 	}
 
-	private static JPanel createPanel(int[] highlightedCoordinate) {
-		Color[][] data = createSymmetricColorMatrix(LABELS.length);
+	private static JPanel createClickToHighlightPanel() {
+		AdjacencyMatrixPainter painter = new AdjacencyMatrixPainter(createSymmetricColorMatrix(LABELS.length), LABELS);
+		InfoVisChartPanel panel = new InfoVisChartPanel(painter);
 
-		AdjacencyMatrixPainter painter = new AdjacencyMatrixPainter(data, LABELS);
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				List<Integer> clicked = painter.getElementsAtPoint(e.getPoint());
+				painter.setHighLightedCoordinate(clicked == null ? null : clicked.stream().mapToInt(Integer::intValue).toArray());
+				panel.repaint();
+			}
+		});
+
+		return panel;
+	}
+
+	private static JPanel createStaticPanel(int[] highlightedCoordinate) {
+		AdjacencyMatrixPainter painter = new AdjacencyMatrixPainter(createSymmetricColorMatrix(LABELS.length), LABELS);
 		painter.setHighLightedCoordinate(highlightedCoordinate);
 
 		return new InfoVisChartPanel(painter);

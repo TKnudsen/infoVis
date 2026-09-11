@@ -7,8 +7,13 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Stroke;
+import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 
 /**
@@ -18,9 +23,19 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
  * A single coordinate or a pair of coordinates can be highlighted, which
  * traces an outline along that row/column of diamonds.
  *
+ * <p>
+ * Implements {@link IClickSelection} for hit testing: clicking a row label
+ * returns that single index, clicking a diagonal cell also returns a single
+ * index, and clicking an off-diagonal cell returns the pair of indices it
+ * represents. This only reports what was clicked -- it does not update
+ * {@link #getHighLightedCoordinate()} itself, so a caller wanting
+ * click-to-highlight behavior should feed the result back via
+ * {@link #setHighLightedCoordinate(int[])} and repaint.
+ * </p>
+ *
  * @since 2011
  */
-public class AdjacencyMatrixPainter extends ChartPainter {
+public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelection<Integer> {
 
 	private Color[][] data;
 	private String[] labels;
@@ -33,6 +48,11 @@ public class AdjacencyMatrixPainter extends ChartPainter {
 
 	private BasicStroke highLightingStroke;
 	private int[] highLightedCoordinate;
+
+	// cached hit-test geometry, rebuilt on every draw() once localLegendWidth is
+	// known from actual font metrics
+	private Rectangle2D[] labelRectangles;
+	private Polygon[][] cellPolygons;
 
 	public AdjacencyMatrixPainter(Color[][] data, String[] labels) {
 		this.data = data;
@@ -64,6 +84,9 @@ public class AdjacencyMatrixPainter extends ChartPainter {
 
 		g2.setStroke(stroke);
 
+		labelRectangles = new Rectangle2D[labels.length];
+		cellPolygons = new Polygon[labels.length][labels.length];
+
 		for (int x = 0; x < labels.length; x++) {
 			String s = labels[x];
 			while (m.stringWidth(s) > localLegendWidth)
@@ -76,7 +99,11 @@ public class AdjacencyMatrixPainter extends ChartPainter {
 
 			g2.setColor(Color.black);
 			g2.drawString(s, (int) rectangle.getX() + 8, (int) (rectangle.getY() + 2 + gridHeight * x) + m.getHeight() / 3 + (int) (gridHeight / 2));
-			g2.drawRect((int) rectangle.getX() + 2, (int) (rectangle.getY() + 2 + gridHeight * x), (int) localLegendWidth, (int) gridHeight);
+
+			Rectangle2D labelRect = new Rectangle2D.Double(rectangle.getX() + 2, rectangle.getY() + 2 + gridHeight * x, localLegendWidth,
+					gridHeight);
+			g2.draw(labelRect);
+			labelRectangles[x] = labelRect;
 
 			for (int y = x; y < labels.length; y++) {
 				double firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
@@ -92,8 +119,10 @@ public class AdjacencyMatrixPainter extends ChartPainter {
 					yCoords = new int[] { (int) (firstY + gridHeight / 2), (int) firstY, (int) (firstY + gridHeight / 2), (int) (firstY + gridHeight) };
 				}
 
+				Polygon cellPolygon = new Polygon(xCoords, yCoords, xCoords.length);
 				g2.setColor(data[x][y]);
-				g2.fill(new Polygon(xCoords, yCoords, xCoords.length));
+				g2.fill(cellPolygon);
+				cellPolygons[x][y] = cellPolygon;
 			}
 		}
 
@@ -245,6 +274,28 @@ public class AdjacencyMatrixPainter extends ChartPainter {
 
 		stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 		highLightingStroke = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+	}
+
+	/**
+	 * Hit-tests a screen point against the label rows first, then the diamond
+	 * cells (checked in the order drawn, so on-diagonal before off-diagonal).
+	 * A label or a diagonal cell returns a single-element list with that row's
+	 * index; an off-diagonal cell returns both of its indices.
+	 */
+	@Override
+	public List<Integer> getElementsAtPoint(Point p) {
+		if (labelRectangles != null)
+			for (int x = 0; x < labelRectangles.length; x++)
+				if (labelRectangles[x] != null && labelRectangles[x].contains(p))
+					return Collections.singletonList(x);
+
+		if (cellPolygons != null)
+			for (int x = 0; x < cellPolygons.length; x++)
+				for (int y = x; y < cellPolygons[x].length; y++)
+					if (cellPolygons[x][y] != null && cellPolygons[x][y].contains(p))
+						return x == y ? Collections.singletonList(x) : Arrays.asList(x, y);
+
+		return null;
 	}
 
 	public Color[][] getData() {
