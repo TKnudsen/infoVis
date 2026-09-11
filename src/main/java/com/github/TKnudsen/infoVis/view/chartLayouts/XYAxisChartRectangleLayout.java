@@ -70,8 +70,10 @@ public class XYAxisChartRectangleLayout extends ChartRectangleLayout {
 			chartWidth = width - border;
 
 		if (!drawYAxis)
-			// chartWidth -= border; // +=?!
-			chartWidth = width - border;
+			// symmetric with the chartHeight computation below: chartMinX already
+			// consumed one border, so the right edge needs a second one subtracted
+			// to land at maxX - border instead of maxX
+			chartWidth = width - 2 * border;
 
 		double chartHeight = height - xAxisLegendHeight - 2 * border;
 		if (xAxisOverlay)
