@@ -36,9 +36,12 @@ public class AdjacencyMatrixPainterTester {
 		AdjacencyMatrixPainter painter = new AdjacencyMatrixPainter(createSymmetricColorMatrix(LABELS.length), LABELS);
 		InfoVisChartPanel panel = new InfoVisChartPanel(painter);
 
+		// mousePressed rather than mouseClicked: mouseClicked only fires if the
+		// pointer doesn't move at all between press and release, which makes it
+		// unreliable for real mouse/trackpad input
 		panel.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				List<Integer> clicked = painter.getElementsAtPoint(e.getPoint());
 				painter.setHighLightedCoordinate(clicked == null ? null : clicked.stream().mapToInt(Integer::intValue).toArray());
 				panel.repaint();
