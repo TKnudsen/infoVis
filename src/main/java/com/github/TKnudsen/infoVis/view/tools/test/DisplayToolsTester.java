@@ -1,38 +1,39 @@
 package com.github.TKnudsen.infoVis.view.tools.test;
 
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import javax.imageio.ImageIO;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
+import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 
 /**
- * Renders one grid cell per drawing method of {@link DisplayTools}, each
- * showing what that method draws. Writes the result to a PNG file rather than
- * opening a Swing window, so it can be inspected without a display.
+ * Interactive demo showing what every drawing method of {@link DisplayTools}
+ * draws, one grid cell per method.
  *
+ * @version 1.0
  * @since 2026
  */
 public class DisplayToolsTester {
 
-	private static final int CELL_SIZE = 160;
-	private static final int COLUMNS = 4;
-	private static final int LABEL_HEIGHT = 18;
-	private static final int PADDING = 10;
-
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Map<String, BiConsumer<Graphics2D, Rectangle2D>> demos = new LinkedHashMap<>();
 
 		demos.put("drawPoint", DisplayToolsTester::demoDrawPoint);
@@ -50,47 +51,41 @@ public class DisplayToolsTester {
 		demos.put("drawArrow", DisplayToolsTester::demoDrawArrow);
 		demos.put("drawCurvedArrow", DisplayToolsTester::demoDrawCurvedArrow);
 
-		int rows = (int) Math.ceil(demos.size() / (double) COLUMNS);
-		int width = COLUMNS * CELL_SIZE;
-		int height = rows * (CELL_SIZE + LABEL_HEIGHT);
+		List<JPanel> panels = new ArrayList<>();
+		for (Map.Entry<String, BiConsumer<Graphics2D, Rectangle2D>> entry : demos.entrySet())
+			panels.add(labeled(entry.getKey(), entry.getValue()));
 
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2 = image.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.WHITE);
-		g2.fillRect(0, 0, width, height);
+		SwingUtilities.invokeLater(() -> SVGFrameTools.dropSVGFramePanelMatrix(panels, "DisplayTools methods"));
+	}
 
-		int index = 0;
-		for (Map.Entry<String, BiConsumer<Graphics2D, Rectangle2D>> entry : demos.entrySet()) {
-			int col = index % COLUMNS;
-			int row = index / COLUMNS;
+	private static JPanel labeled(String title, BiConsumer<Graphics2D, Rectangle2D> demo) {
+		JPanel wrapper = new JPanel(new BorderLayout());
 
-			int cellX = col * CELL_SIZE;
-			int cellY = row * (CELL_SIZE + LABEL_HEIGHT);
+		JLabel label = new JLabel(title, SwingConstants.CENTER);
+		wrapper.add(label, BorderLayout.NORTH);
 
-			g2.setColor(Color.BLACK);
-			g2.setFont(new Font("SansSerif", Font.PLAIN, 11));
-			g2.drawString(entry.getKey(), cellX + 4, cellY + 13);
+		JPanel canvas = new JPanel() {
+			private static final long serialVersionUID = 1L;
 
-			g2.setColor(Color.LIGHT_GRAY);
-			g2.setStroke(new BasicStroke(1));
-			g2.drawRect(cellX, cellY + LABEL_HEIGHT, CELL_SIZE - 1, CELL_SIZE - 1);
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
 
-			Rectangle2D cellBounds = new Rectangle2D.Double(cellX + PADDING, cellY + LABEL_HEIGHT + PADDING,
-					CELL_SIZE - 2 * PADDING, CELL_SIZE - 2 * PADDING);
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g2.setColor(Color.DARK_GRAY);
+				g2.setStroke(new BasicStroke(1.5f));
 
-			g2.setColor(Color.DARK_GRAY);
-			g2.setStroke(new BasicStroke(1.5f));
-			entry.getValue().accept(g2, cellBounds);
+				int padding = 12;
+				Rectangle2D bounds = new Rectangle2D.Double(padding, padding, getWidth() - 2 * padding,
+						getHeight() - 2 * padding);
+				demo.accept(g2, bounds);
+			}
+		};
+		canvas.setPreferredSize(new Dimension(160, 160));
+		wrapper.add(canvas, BorderLayout.CENTER);
 
-			index++;
-		}
-
-		g2.dispose();
-
-		File outFile = new File(System.getProperty("java.io.tmpdir"), "DisplayToolsTester.png");
-		ImageIO.write(image, "png", outFile);
-		System.out.println("Wrote " + outFile.getAbsolutePath());
+		return wrapper;
 	}
 
 	private static void demoDrawPoint(Graphics2D g2, Rectangle2D r) {
@@ -155,10 +150,10 @@ public class DisplayToolsTester {
 	}
 
 	private static void demoDrawArrow(Graphics2D g2, Rectangle2D r) {
-		DisplayTools.drawArrow(g2, (float) r.getCenterX(), (float) r.getCenterY(), (float) r.getWidth() * 0.7f, 0.5f,
-				0f);
-		DisplayTools.drawArrow(g2, (float) r.getCenterX(), (float) r.getCenterY(), (float) r.getWidth() * 0.7f, 0.5f,
-				90f);
+		float length = (float) r.getWidth() * 0.35f;
+
+		DisplayTools.drawArrow(g2, (float) r.getMinX() + length, (float) r.getMinY() + length, length, 0.35f, 0f);
+		DisplayTools.drawArrow(g2, (float) r.getMaxX() - length, (float) r.getMaxY() - length, length, 0.35f, 180f);
 	}
 
 	private static void demoDrawCurvedArrow(Graphics2D g2, Rectangle2D r) {
