@@ -14,15 +14,18 @@ import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DCircularPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DColorPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DColorTransparencyPainter;
+import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DEllipsisPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DRectangleSizePainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * Interactive demo of {@link Grid2DColorPainter},
- * {@link Grid2DColorTransparencyPainter}, {@link Grid2DCircularPainter}, and
- * {@link Grid2DRectangleSizePainter} side by side on the same color grid.
+ * {@link Grid2DColorTransparencyPainter}, {@link Grid2DCircularPainter},
+ * {@link Grid2DRectangleSizePainter}, and {@link Grid2DEllipsisPainter} side
+ * by side on the same color grid -- the last two also shown on a
+ * non-square grid to highlight why the ellipsis variant exists.
  *
- * @version 1.1
+ * @version 1.2
  * @since 2026
  */
 public class Grid2DColorPaintersTester {
@@ -61,13 +64,33 @@ public class Grid2DColorPaintersTester {
 		sizePainter.setBorderPaint(Color.DARK_GRAY);
 		sizePainter.setDrawOutline(true);
 
+		// non-square grid: 3 columns x 6 rows, so cells are wider than tall --
+		// shows why a locked-aspect circle can't fill a cell the way an ellipse can
+		Color[][] wideColors = new Color[3][GRID_SIZE];
+		double[][] wideSizes = new double[3][GRID_SIZE];
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < GRID_SIZE; j++) {
+				wideColors[i][j] = colors[i][j];
+				wideSizes[i][j] = sizes[i][j];
+			}
+
+		Grid2DCircularPainter circularOnWideCells = new Grid2DCircularPainter(wideSizes, wideColors);
+		circularOnWideCells.setBorderPaint(Color.DARK_GRAY);
+		circularOnWideCells.setDrawOutline(true);
+
+		Grid2DEllipsisPainter ellipsisPainter = new Grid2DEllipsisPainter(wideSizes, wideColors);
+		ellipsisPainter.setBorderPaint(Color.DARK_GRAY);
+		ellipsisPainter.setDrawOutline(true);
+
 		List<JPanel> panels = new ArrayList<>();
 		panels.add(labeled("Grid2DColorPainter", colorPainter));
 		panels.add(labeled("Grid2DColorTransparencyPainter", transparencyPainter));
 		panels.add(labeled("Grid2DCircularPainter", circularPainter));
 		panels.add(labeled("Grid2DRectangleSizePainter", sizePainter));
+		panels.add(labeled("Grid2DCircularPainter (wide cells)", circularOnWideCells));
+		panels.add(labeled("Grid2DEllipsisPainter (wide cells)", ellipsisPainter));
 
-		SwingUtilities.invokeLater(() -> SVGFrameTools.dropSVGFrameHorizontal(panels, "Grid2D color painters"));
+		SwingUtilities.invokeLater(() -> SVGFrameTools.dropSVGFramePanelMatrix(panels, "Grid2D color painters"));
 	}
 
 	private static JPanel labeled(String title, com.github.TKnudsen.infoVis.view.painters.ChartPainter painter) {
