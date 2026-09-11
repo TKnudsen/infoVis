@@ -1081,6 +1081,34 @@ public class DisplayTools {
 	}
 
 	/**
+	 * Draws a complete straight arrow: a shaft ending at {@code (x, y)}, plus a
+	 * {@link #drawArrow(Graphics2D, float, float, float, float, float) head} at
+	 * the same point. The shaft runs backward from the tip along the same
+	 * direction as the head, so the two form a single visual arrow.
+	 *
+	 * @param g2           the Graphics2D context (non-null)
+	 * @param x            x-coordinate of the arrow's tip
+	 * @param y            y-coordinate of the arrow's tip
+	 * @param arrowLength  length of the head, from tip to tail
+	 * @param arrowRatio   ratio of head breadth to length; 0.5 is a reasonable
+	 *                     starting point
+	 * @param angleDegrees rotation of the arrow around its tip, in degrees
+	 * @param shaftLength  length of the shaft, drawn from the tip backward
+	 */
+	public static void drawArrow(Graphics2D g2, float x, float y, float arrowLength, float arrowRatio,
+			float angleDegrees, float shaftLength) {
+		if (g2 == null)
+			return;
+
+		double angleRad = Math.toRadians(angleDegrees);
+		float shaftStartX = x - (float) (Math.cos(angleRad) * shaftLength);
+		float shaftStartY = y - (float) (Math.sin(angleRad) * shaftLength);
+
+		drawLine(g2, shaftStartX, shaftStartY, x, y);
+		drawArrow(g2, x, y, arrowLength, arrowRatio, angleDegrees);
+	}
+
+	/**
 	 * Draws a quadratic-curve arrow from {@code (x1, y1)} to {@code (x2, y2)},
 	 * bowed sideways by {@code curveRate}, with a filled {@link #drawArrow}
 	 * arrowhead at the end point. Optionally labels the curve at its control

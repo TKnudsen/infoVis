@@ -153,25 +153,10 @@ public class DisplayToolsTester {
 		float headLength = (float) r.getWidth() * 0.35f;
 		float shaftLength = headLength * 1.6f;
 
-		drawArrowWithShaft(g2, (float) r.getMinX() + headLength, (float) r.getMinY() + headLength, headLength, 0.35f,
-				0f, shaftLength);
-		drawArrowWithShaft(g2, (float) r.getMaxX() - headLength, (float) r.getMaxY() - headLength, headLength, 0.35f,
-				180f, shaftLength);
-	}
-
-	/**
-	 * Draws a full arrow (shaft + head) for demo purposes: {@link DisplayTools}
-	 * itself only draws the head, expecting callers to draw their own shaft (see
-	 * {@link DisplayTools#drawCurvedArrow}, which does exactly that).
-	 */
-	private static void drawArrowWithShaft(Graphics2D g2, float tipX, float tipY, float headLength, float headRatio,
-			float angleDegrees, float shaftLength) {
-		double angleRad = Math.toRadians(angleDegrees);
-		float shaftStartX = tipX - (float) (Math.cos(angleRad) * shaftLength);
-		float shaftStartY = tipY - (float) (Math.sin(angleRad) * shaftLength);
-
-		DisplayTools.drawLine(g2, shaftStartX, shaftStartY, tipX, tipY);
-		DisplayTools.drawArrow(g2, tipX, tipY, headLength, headRatio, angleDegrees);
+		DisplayTools.drawArrow(g2, (float) r.getMinX() + headLength, (float) r.getMinY() + headLength, headLength,
+				0.35f, 0f, shaftLength);
+		DisplayTools.drawArrow(g2, (float) r.getMaxX() - headLength, (float) r.getMaxY() - headLength, headLength,
+				0.35f, 180f, shaftLength);
 	}
 
 	private static void demoDrawCurvedArrow(Graphics2D g2, Rectangle2D r) {
