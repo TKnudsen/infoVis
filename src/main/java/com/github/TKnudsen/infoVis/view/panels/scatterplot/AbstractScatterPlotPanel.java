@@ -107,16 +107,29 @@ public abstract class AbstractScatterPlotPanel<T> extends XYNumericalChartPanel<
 	 * @param data the data to plot
 	 */
 	protected void initializeData(List<T> data) {
-		NumericRange rangeX = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingX,
+		refreshGlobalRange(data);
+
+		initializeXAxisPainter(globalRangeX.getMin(), globalRangeX.getMax());
+		initializeYAxisPainter(globalRangeY.getMin(), globalRangeY.getMax());
+	}
+
+	/**
+	 * Recomputes {@link #globalRangeX}/{@link #globalRangeY} (the zoom-out/pan
+	 * clamp bounds) from {@code data} using the panel's current world-position
+	 * mappings, without touching the axis painters' current min/max -- i.e.
+	 * without resetting whatever the user is currently zoomed/panned to.
+	 * <p>
+	 * Call this whenever the underlying positions may have changed (new data,
+	 * or {@code setWorldPositionMappings}/a layout update moving existing
+	 * points) so the clamp keeps tracking where the data actually is. Without
+	 * it, {@link #zoom}/{@link #pan} stay clamped to wherever the data used to
+	 * be, which can leave points permanently outside the reachable view.
+	 */
+	protected void refreshGlobalRange(List<T> data) {
+		this.globalRangeX = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingX,
 				getClass().getSimpleName() + " (x-axis)");
-		NumericRange rangeY = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingY,
+		this.globalRangeY = PositionEncodingFunctions.computeRangeTolerant(data, worldPositionMappingY,
 				getClass().getSimpleName() + " (y-axis)");
-
-		this.globalRangeX = rangeX;
-		this.globalRangeY = rangeY;
-
-		initializeXAxisPainter(rangeX.getMin(), rangeX.getMax());
-		initializeYAxisPainter(rangeY.getMin(), rangeY.getMax());
 	}
 
 	/**

@@ -134,9 +134,15 @@ public class ScatterPlotIndexedGPU<T> extends AbstractGPUScatterPlotPanel<T>
 		// Recompute bounds from current data
 		scatterPlotPainter.updateWorldBounds();
 
-		// Update axes (for CPU Mode)
 		if (scatterPlotPainter.getEffectiveRenderMode().equals(RenderMode.CPU)) {
+			// CPU mode: reset axes to the full new range (existing behavior)
 			initializeData(getData());
+		} else {
+			// GPU mode: only refresh the zoom-out/pan clamp, without resetting
+			// whatever the user is currently zoomed/panned to -- without this,
+			// globalRangeX/Y went stale the moment positions moved, permanently
+			// capping zoom-out below what's needed to see all current points
+			refreshGlobalRange(getData());
 		}
 
 		repaint();

@@ -140,6 +140,17 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	}
 
 	/**
+	 * @return the tooltip painter currently set by {@link TooltipHandler} (or
+	 *         whatever last called {@link #setToolTipPainter(ChartPainter)}),
+	 *         or {@code null} if none is showing. A subclass whose own paint
+	 *         pipeline bypasses {@link #paintComponent(Graphics)} (e.g. a
+	 *         GL-backed panel) needs this to draw the tooltip itself.
+	 */
+	public ChartPainter getToolTipPainter() {
+		return toolTipPainter;
+	}
+
+	/**
 	 * Updates the chart bounds, margins, and layout when the component is resized.
 	 * 
 	 * <p>

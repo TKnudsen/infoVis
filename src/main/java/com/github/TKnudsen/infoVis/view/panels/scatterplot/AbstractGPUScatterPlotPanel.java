@@ -294,6 +294,14 @@ public abstract class AbstractGPUScatterPlotPanel<T> extends AbstractScatterPlot
 		for (ChartPainter overlayPainter : overlayPainters) {
 			overlayPainter.draw(g2);
 		}
+
+		// InfoVisChartPanel.paintComponent would normally draw this, but this
+		// class overrides paintComponent (readback-frame pipeline) without
+		// calling super, so TooltipHandler's setToolTipPainter(...) would
+		// otherwise compute a tooltip that never actually renders
+		ChartPainter toolTipPainter = getToolTipPainter();
+		if (toolTipPainter != null && toolTipPainter.getRectangle() != null && isShowingTooltips())
+			toolTipPainter.draw(g2);
 	}
 
 	@Override
