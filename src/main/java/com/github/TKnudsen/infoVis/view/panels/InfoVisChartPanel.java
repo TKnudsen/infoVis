@@ -61,11 +61,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 	private Color outlineColor = null;
 
 	/**
-	 * whether or not the panel shall have quadratic bounds
-	 */
-	private boolean quadraticBounds = false;
-
-	/**
 	 * enable tool tipping support
 	 */
 	private boolean showingTooltips;
@@ -215,15 +210,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 			return Math.min(minDimension * 0.5, margin);
 
 		return 0.0;
-	}
-
-	@Override
-	public void setBounds(int x, int y, int width, int height) {
-		if (quadraticBounds) {
-			int min = Math.min(width, height);
-			super.setBounds(x, y, min, min);
-		} else
-			super.setBounds(x, y, width, height);
 	}
 
 	/**
@@ -388,14 +374,6 @@ public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {
 			if (p.getClass().equals(painterClass))
 				painters.add((P) p);
 		return painters;
-	}
-
-	public boolean isQuadraticBounds() {
-		return quadraticBounds;
-	}
-
-	public void setQuadraticBounds(boolean quadraticBounds) {
-		this.quadraticBounds = quadraticBounds;
 	}
 
 	public double getMargin() {
