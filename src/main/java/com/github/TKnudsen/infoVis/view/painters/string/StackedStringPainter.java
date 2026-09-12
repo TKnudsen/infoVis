@@ -224,6 +224,12 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	public void setVerticalAlignment(boolean verticalAlignment) {
 		this.verticalAlignment = verticalAlignment;
 
+		// stacking into multiple rows (vertical alignment) means each row is wide
+		// and short -- text reads normally. Arranging into multiple columns (side
+		// by side) means each column is narrow and tall -- text must rotate to fit.
+		for (StringPainter painter : stringPainters)
+			painter.setVerticalOrientation(!verticalAlignment);
+
 		if (rectangle != null)
 			setRectangle(rectangle);
 	}
