@@ -17,9 +17,9 @@ import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.Horizontal
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
 
 /**
- * Renders a list of strings stacked either vertically or horizontally, each
- * in its own evenly-sized {@link StringPainter} slot with configurable
- * spacing between slots.
+ * Renders a list of strings stacked either vertically or horizontally, each in
+ * its own evenly-sized {@link StringPainter} slot with configurable spacing
+ * between slots.
  *
  * @version 1.0
  * @since 2025
@@ -57,7 +57,8 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	 *
 	 * @param strings list of strings to display
 	 * @param colors  list of colors, matching {@code strings} in size
-	 * @throws IllegalArgumentException if the lists are null, empty, or differently sized
+	 * @throws IllegalArgumentException if the lists are null, empty, or differently
+	 *                                  sized
 	 */
 	public StackedStringPainter(List<String> strings, List<Color> colors) {
 		Objects.requireNonNull(strings, "strings must not be null");
@@ -65,16 +66,15 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 		if (strings.isEmpty())
 			throw new IllegalArgumentException("strings must not be empty");
 		if (strings.size() != colors.size())
-			throw new IllegalArgumentException(
-					"strings and colors must have the same size (strings: " + strings.size() + ", colors: "
-							+ colors.size() + ")");
+			throw new IllegalArgumentException("strings and colors must have the same size (strings: " + strings.size()
+					+ ", colors: " + colors.size() + ")");
 
 		this.strings = new ArrayList<>(strings);
 		this.stringPainters = new ArrayList<>();
 		for (int i = 0; i < strings.size(); i++) {
 			StringPainter painter = new StringPainter(strings.get(i));
 			painter.setFontColor(colors.get(i));
-			painter.setColor(colors.get(i));
+			painter.setPaint(colors.get(i));
 			stringPainters.add(painter);
 		}
 	}
@@ -100,13 +100,12 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	}
 
 	/**
-	 * Splits {@code rectangle} into {@code count} evenly-sized slots, side by
-	 * side (if {@code vertical} is false, i.e. splitting the width) or stacked
-	 * (if {@code vertical} is true, i.e. splitting the height), with
-	 * {@code spacing} pixels between adjacent slots.
+	 * Splits {@code rectangle} into {@code count} evenly-sized slots, side by side
+	 * (if {@code vertical} is false, i.e. splitting the width) or stacked (if
+	 * {@code vertical} is true, i.e. splitting the height), with {@code spacing}
+	 * pixels between adjacent slots.
 	 */
-	private static List<Rectangle2D> splitEvenly(Rectangle2D rectangle, int count, boolean vertical,
-			double spacing) {
+	private static List<Rectangle2D> splitEvenly(Rectangle2D rectangle, int count, boolean vertical, double spacing) {
 		List<Rectangle2D> slots = new ArrayList<>(count);
 
 		double totalLength = vertical ? rectangle.getHeight() : rectangle.getWidth();
@@ -114,8 +113,7 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 
 		double position = vertical ? rectangle.getY() : rectangle.getX();
 		for (int i = 0; i < count; i++) {
-			slots.add(vertical
-					? new Rectangle2D.Double(rectangle.getX(), position, rectangle.getWidth(), slotLength)
+			slots.add(vertical ? new Rectangle2D.Double(rectangle.getX(), position, rectangle.getWidth(), slotLength)
 					: new Rectangle2D.Double(position, rectangle.getY(), slotLength, rectangle.getHeight()));
 			position += slotLength + spacing;
 		}
@@ -247,10 +245,10 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	}
 
 	/**
-	 * Sets where each individual string sits along its own slot -- e.g.
-	 * {@code UP} makes every string start flush at the same edge regardless of
-	 * its own length, instead of the default {@code CENTER}, which leaves
-	 * differently-sized strings visually starting at different positions.
+	 * Sets where each individual string sits along its own slot -- e.g. {@code UP}
+	 * makes every string start flush at the same edge regardless of its own length,
+	 * instead of the default {@code CENTER}, which leaves differently-sized strings
+	 * visually starting at different positions.
 	 */
 	public void setStringVerticalPosition(VerticalStringAlignment alignment) {
 		Objects.requireNonNull(alignment, "alignment must not be null");

@@ -32,6 +32,7 @@ import com.github.TKnudsen.infoVis.view.painters.axis.categorical.YAxisCategoric
 import com.github.TKnudsen.infoVis.view.painters.axis.categorical.YCatXnumChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.XAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.TooltipStringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
@@ -295,7 +296,7 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 		if (toolTipString == null)
 			return null;
 
-		StringPainter stringPainter = new StringPainter(toolTipString);
+		StringPainter stringPainter = new TooltipStringPainter(toolTipString);
 
 		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, toolTipWidth, toolTipHeight);
 		stringPainter.setRectangle(rect);

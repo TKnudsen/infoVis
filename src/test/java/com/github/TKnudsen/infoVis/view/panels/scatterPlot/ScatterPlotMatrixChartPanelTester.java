@@ -63,6 +63,11 @@ public class ScatterPlotMatrixChartPanelTester {
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
+		// HOVER HIGHLIGHTING, mirrors selection but via a separate SelectionModel
+		// so the two states stay independent
+		SelectionModel<Double[]> highlightModel = SelectionModels.create();
+		panel.addHighlightInteraction(highlightModel);
+
 		SVGFrameTools.dropSVGFrame(panel, "ScatterplotMatrixPainter Test Frame", 500, 500);
 	}
 }

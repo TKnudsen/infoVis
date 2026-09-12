@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IHighlightVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IPanning;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -29,8 +30,8 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.SizeEncodingFun
  * @since 2018
  */
 public class ScatterPlot<T> extends AbstractScatterPlotPanel<T> implements IRectangleSelection<T>,
-		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, IColorEncoding<T>, ISizeEncoding<T>,
-		IOverplottingMitigation, IZooming, IPanning {
+		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, IHighlightVisualizer<T>, IColorEncoding<T>,
+		ISizeEncoding<T>, IOverplottingMitigation, IZooming, IPanning {
 
 	/**
 	 *
@@ -96,6 +97,11 @@ public class ScatterPlot<T> extends AbstractScatterPlotPanel<T> implements IRect
 	}
 
 	@Override
+	public void setHighlightedFunction(Function<? super T, Boolean> highlightedFunction) {
+		this.scatterPlotPainter.setHighlightedFunction(highlightedFunction);
+	}
+
+	@Override
 	public void setSizeEncodingFunction(Function<? super T, Double> sizeEncodingFunction) {
 		this.scatterPlotPainter.setSizeEncodingFunction(sizeEncodingFunction);
 	}
@@ -157,6 +163,14 @@ public class ScatterPlot<T> extends AbstractScatterPlotPanel<T> implements IRect
 
 	public void setSelectionPaint(Paint selectionPaint) {
 		this.scatterPlotPainter.setSelectionPaint(selectionPaint);
+	}
+
+	public Paint getHighlightPaint() {
+		return this.scatterPlotPainter.getHighlightPaint();
+	}
+
+	public void setHighlightPaint(Paint highlightPaint) {
+		this.scatterPlotPainter.setHighlightPaint(highlightPaint);
 	}
 
 	public int getToolTipWidth() {

@@ -4,15 +4,16 @@ import java.awt.Color;
 
 /**
  * <p>
- * Default colors for the all-data/filter/selection triad used across
+ * Default colors for the all-data/filter/selection/highlighting used across
  * InfoVis status and distribution views.
  * </p>
  *
- * @version 1.0
+ * @version 1.1
  */
 public class InfoVisColors {
 
 	public static final Color ALL_DATA_COLOR = Color.DARK_GRAY;
 	public static final Color FILTER_COLOR = Color.LIGHT_GRAY;
 	public static final Color SELECTION_COLOR = new Color(51, 98, 140);
+	public static final Color HIGHLIGHT_COLOR = new Color(100, 130, 160);
 }

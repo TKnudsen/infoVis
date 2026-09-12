@@ -532,6 +532,10 @@ public abstract class AbstractGPUScatterPlotPanel<T> extends AbstractScatterPlot
 		getScatterPlotPainter().setSelectedFunction(selectedFunction);
 	}
 
+	public void setHighlightedFunction(Function<? super T, Boolean> highlightedFunction) {
+		getScatterPlotPainter().setHighlightedFunction(highlightedFunction);
+	}
+
 	// ==================== VISUAL ENCODING ====================
 
 	public void setSizeEncodingFunction(Function<? super T, Double> sizeEncodingFunction) {
@@ -584,6 +588,14 @@ public abstract class AbstractGPUScatterPlotPanel<T> extends AbstractScatterPlot
 
 	public void setSelectionPaint(Paint selectionPaint) {
 		getScatterPlotPainter().setSelectionPaint(selectionPaint);
+	}
+
+	public Paint getHighlightPaint() {
+		return getScatterPlotPainter().getHighlightPaint();
+	}
+
+	public void setHighlightPaint(Paint highlightPaint) {
+		getScatterPlotPainter().setHighlightPaint(highlightPaint);
 	}
 
 	// ==================== POSITION MAPPING ====================

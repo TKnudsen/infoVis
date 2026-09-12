@@ -188,16 +188,19 @@ public class BarsPainter<O> extends ChartPainter implements ITooltip {
 		if (verticalOrientation) {
 			final double spaceForEachBar = ((width - 2 * offset) / (double) c);
 			final double distBetweenBars = (spaceForEachBar < 2) ? 0
-					: Math.min(5.0, Math.max(1.00, spaceForEachBar / 10));
+					: Math.min(4.0, Math.max(0.00, spaceForEachBar / 10));
 
-			final double barWidth = ((width - 2 * offset) - (c - 1) * distBetweenBars) / (double) c;
+			// (c + 1) gaps, not (c - 1): one before the first bar and one after the
+			// last, matching the gaps between bars -- otherwise the outer edges
+			// sit flush against the rectangle while inner gaps get spacing
+			final double barWidth = ((width - 2 * offset) - (c + 1) * distBetweenBars) / (double) c;
 			if (barWidth <= 0 || Double.isNaN(barWidth) || Double.isInfinite(barWidth)) {
 				this.bars = Collections.emptyList();
 				drawable = false;
 				return;
 			}
 
-			double firstX = r.getX() + offset;
+			double firstX = r.getX() + offset + distBetweenBars;
 
 			double yAxisMaxValue = 0;
 			for (int i = 0; i < c; i++) {
@@ -234,16 +237,19 @@ public class BarsPainter<O> extends ChartPainter implements ITooltip {
 			// Horizontal
 			final double spaceForEachBar = ((height - 2 * offset) / (double) c);
 			final double distBetweenBars = (spaceForEachBar < 2) ? 0
-					: Math.min(5.0, Math.max(1.00, spaceForEachBar / 10));
+					: Math.min(4.0, Math.max(0.00, spaceForEachBar / 10));
 
-			final double barHeight = ((height - 2 * offset) - (c - 1) * distBetweenBars) / (double) c;
+			// (c + 1) gaps, not (c - 1): one before the first bar and one after the
+			// last, matching the gaps between bars -- otherwise the outer edges
+			// sit flush against the rectangle while inner gaps get spacing
+			final double barHeight = ((height - 2 * offset) - (c + 1) * distBetweenBars) / (double) c;
 			if (barHeight <= 0 || Double.isNaN(barHeight) || Double.isInfinite(barHeight)) {
 				this.bars = Collections.emptyList();
 				drawable = false;
 				return;
 			}
 
-			double firstY = r.getY() + offset;
+			double firstY = r.getY() + offset + distBetweenBars;
 
 			double xAxisMaxValue = 0;
 			for (int i = 0; i < c; i++) {

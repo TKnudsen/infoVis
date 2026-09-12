@@ -17,6 +17,7 @@ import com.github.TKnudsen.infoVis.view.gpu.PerformanceLogger;
 import com.github.TKnudsen.infoVis.view.gpu.RenderMode;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.TooltipStringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 import com.github.TKnudsen.infoVis.view.visualChannels.position.PositionEncodingFunctions;
@@ -317,6 +318,22 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 		return result != null && result;
 	}
 
+	/**
+	 * GPU counterpart to {@link #isSelected(Object)}, for {@code highlightedFunction}
+	 * (see {@link com.github.TKnudsen.infoVis.view.interaction.IHighlightVisualizer}).
+	 * The CPU render path picks this up automatically via
+	 * {@link AbstractScatterPlotPainter#drawCPU(Graphics2D)}; a GPU-rendering
+	 * concrete painter (e.g. {@code ScatterPlotIndexedGPUPainter}) must check
+	 * this itself in its own {@code displayGL}/{@code addPointToGPU}, the same
+	 * way it already does for {@link #isSelected(Object)}.
+	 */
+	protected boolean isHighlighted(T t) {
+		if (highlightedFunction == null)
+			return false;
+		Boolean result = highlightedFunction.apply(t);
+		return result != null && result;
+	}
+
 	protected Color extractColor(Paint paint) {
 		if (paint instanceof Color)
 			return (Color) paint;
@@ -462,7 +479,7 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 		if (toolTipString == null)
 			return null;
 
-		StringPainter stringPainter = new StringPainter(toolTipString);
+		StringPainter stringPainter = new TooltipStringPainter(toolTipString);
 		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, getToolTipWidth(), getToolTipHeight());
 		stringPainter.setRectangle(rect);
 

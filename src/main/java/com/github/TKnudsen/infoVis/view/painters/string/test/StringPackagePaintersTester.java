@@ -6,12 +6,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
-import java.awt.Paint;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -32,11 +32,12 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * Standalone interactive gallery of every painter in
- * {@code com.github.TKnudsen.infoVis.view.painters.string}: {@link StringPainter}
- * (default, aligned, vertical, and truncated variants), {@link TitlePainter},
- * {@link ScalingTextPainter}, {@link StringOvalOutlinePainter},
- * {@link UpperRightLabelPainter}, {@link LegendaryPainter}, and
- * {@link StackedStringPainter} (horizontal and vertical).
+ * {@code com.github.TKnudsen.infoVis.view.painters.string}:
+ * {@link StringPainter} (default, aligned, vertical, and truncated variants),
+ * {@link TitlePainter}, {@link ScalingTextPainter},
+ * {@link StringOvalOutlinePainter}, {@link UpperRightLabelPainter},
+ * {@link LegendaryPainter}, and {@link StackedStringPainter} (horizontal and
+ * vertical).
  *
  * @version 1.0
  * @since 2026
@@ -92,7 +93,7 @@ public class StringPackagePaintersTester {
 
 		StackedStringPainter verticalStack = new StackedStringPainter(Arrays.asList("Red", "Green", "Blue"),
 				Arrays.asList(Color.RED, Color.GREEN.darker(), Color.BLUE));
-		verticalStack.setVerticalAlignment(true);
+		verticalStack.setVerticalStacking(true);
 		grid.add(cell("StackedStringPainter (vertical)", verticalStack));
 
 		frame.add(grid, BorderLayout.CENTER);
@@ -107,7 +108,10 @@ public class StringPackagePaintersTester {
 		return labeled(title, panel);
 	}
 
-	/** wraps painter in a panel with a visible light-gray host background, for painters meant to overlay other content */
+	/**
+	 * wraps painter in a panel with a visible light-gray host background, for
+	 * painters meant to overlay other content
+	 */
 	private static JPanel cellOnHost(String title, ChartPainter painter) {
 		JPanel host = new JPanel() {
 			@Override

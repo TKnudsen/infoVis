@@ -66,7 +66,7 @@ public class StackedStringPainterTester {
 
 		for (List<String> strings : GROUPS) {
 			StackedStringPainter painter = new StackedStringPainter(strings, PALETTE.subList(0, strings.size()));
-			painter.setVerticalAlignment(vertical);
+			painter.setVerticalStacking(vertical);
 			painter.setDrawOutline(true);
 
 			InfoVisChartPanel panel = new InfoVisChartPanel(painter);

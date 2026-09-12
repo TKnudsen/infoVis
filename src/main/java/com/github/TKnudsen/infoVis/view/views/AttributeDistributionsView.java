@@ -4,21 +4,29 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataContainer;
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataContainers;
@@ -84,6 +92,16 @@ public class AttributeDistributionsView extends JPanel implements PropertyChange
 	private final Set<Long> ids;
 	private final SelectionModel<Long> globalSelectionModel;
 
+	/**
+	 * Notified with (attribute, hoveredElements) whenever the mouse moves over
+	 * one of this view's per-attribute charts, and with (attribute, emptyList())
+	 * once it leaves. Deliberately kept generic (raw item IDs, no notion of
+	 * "bin" or "aggregation") since this is an infoVis-level, domain-agnostic
+	 * view -- a caller with domain knowledge (e.g. resolving IDs to a bin) wires
+	 * that translation externally.
+	 */
+	private final BiConsumer<String, List<Long>> hoverConsumer;
+
 	// ==================== UI STATE ====================
 
 	private final Map<String, DynamicQueryView<Long>> attributeDynamicQueries = new HashMap<>();
@@ -92,10 +110,22 @@ public class AttributeDistributionsView extends JPanel implements PropertyChange
 	// ==================== CONSTRUCTION ====================
 
 	public AttributeDistributionsView(ComplexDataContainer container, SelectionModel<Long> globalSelectionModel) {
+		this(container, globalSelectionModel, null);
+	}
+
+	/**
+	 * @param hoverConsumer optional; notified with (attribute, hoveredElements)
+	 *                      on hover over any per-attribute chart, and with
+	 *                      (attribute, emptyList()) once the mouse leaves it. May
+	 *                      be null to opt out of hover notifications entirely.
+	 */
+	public AttributeDistributionsView(ComplexDataContainer container, SelectionModel<Long> globalSelectionModel,
+			BiConsumer<String, List<Long>> hoverConsumer) {
 		this.container = Objects.requireNonNull(container);
 		this.ids = ComplexDataContainers.keySetAsLong(container);
 
 		this.globalSelectionModel = Objects.requireNonNull(globalSelectionModel);
+		this.hoverConsumer = hoverConsumer;
 
 		this.themeManager = VisualizationThemeManager.getInstance();
 		this.currentTheme = themeManager.getTheme();
@@ -321,6 +351,15 @@ public class AttributeDistributionsView extends JPanel implements PropertyChange
 
 		dynamicQuery.setBorder(VisualizationThemeUtils.createThemedTitledBorder(attribute, currentTheme));
 
+		// wired to the inner histogram component, not dynamicQuery itself: the
+		// histogram is a child component offset within dynamicQuery (spacers for
+		// slider alignment), so a point from a mouse listener on dynamicQuery is
+		// in the wrong coordinate space for dynamicQuery.getElementsAtPoint(p)
+		// (which forwards it to the histogram's own getElementsAtPoint(p)
+		// untranslated) -- attaching directly to the histogram keeps mouse
+		// coordinates and hit-testing in the same (its own) coordinate space
+		attachHoverWiring(attribute, dynamicQuery.getHistogram(), dynamicQuery.getHistogram());
+
 		return dynamicQuery;
 	}
 
@@ -366,7 +405,36 @@ public class AttributeDistributionsView extends JPanel implements PropertyChange
 		// Index selection model for this bar chart
 		BarCharts.addInteraction(barChart, true, true, globalSelectionModel);
 
+		attachHoverWiring(attribute, barChart, barChart);
+
 		return barChart;
+	}
+
+	// ==================== HOVER WIRING ====================
+
+	/**
+	 * Attaches mouse-move/exit hover notification to one chart, reusing its own
+	 * {@link IClickSelection#getElementsAtPoint(Point)} for hit-testing -- the
+	 * same operation click selection already needs, so no separate hover
+	 * hit-testing logic is required.
+	 */
+	private void attachHoverWiring(String attribute, JComponent component, IClickSelection<Long> clickSelection) {
+		if (hoverConsumer == null)
+			return;
+
+		component.addMouseMotionListener(new MouseAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				hoverConsumer.accept(attribute, clickSelection.getElementsAtPoint(e.getPoint()));
+			}
+		});
+
+		component.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseExited(MouseEvent e) {
+				hoverConsumer.accept(attribute, Collections.emptyList());
+			}
+		});
 	}
 
 	// ==================== HELPERS ====================

@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.gpu.RenderMode;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IHighlightVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IPanning;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
@@ -49,7 +50,7 @@ import com.jogamp.opengl.GLAutoDrawable;
  */
 public class ScatterPlotIndexedGPU<T> extends AbstractGPUScatterPlotPanel<T>
 		implements IRectangleSelection<T>, IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>,
-		IColorEncoding<T>, ISizeEncoding<T>, IOverplottingMitigation, IZooming, IPanning {
+		IHighlightVisualizer<T>, IColorEncoding<T>, ISizeEncoding<T>, IOverplottingMitigation, IZooming, IPanning {
 
 	private static final long serialVersionUID = 2949962927634263599L;
 

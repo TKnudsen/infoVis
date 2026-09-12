@@ -355,8 +355,13 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 	/**
 	 * Horizontal multi-line drawing: ALWAYS left-bound.
+	 * <p>
+	 * {@code protected}, not {@code private}, so a subclass can replace it
+	 * wholesale for a specialized multi-line convention (e.g.
+	 * {@link TooltipStringPainter}'s tab-separated label/value columns) without
+	 * this general-purpose class knowing anything about that convention.
 	 */
-	private void drawHorizontalStringMultilineLeftBound(Graphics2D g2, FontMetrics fm, String displayString) {
+	protected void drawHorizontalStringMultilineLeftBound(Graphics2D g2, FontMetrics fm, String displayString) {
 		if (g2 == null || fm == null || displayString == null || displayString.isEmpty())
 			return;
 
@@ -431,7 +436,13 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 	// ==================== WHITESPACE NORMALIZATION ====================
 
-	private static String normalizeWhitespaceForRendering(String s, int spacesPerTab) {
+	/**
+	 * {@code protected}, not {@code private static}, so a subclass can override
+	 * it -- e.g. {@link TooltipStringPainter} preserves tabs instead of
+	 * substituting fixed spaces, since it computes a real tab-stop column
+	 * itself in {@link #drawHorizontalStringMultilineLeftBound}.
+	 */
+	protected String normalizeWhitespaceForRendering(String s, int spacesPerTab) {
 		if (s == null || s.isEmpty())
 			return "";
 		if (spacesPerTab < 1)

@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IHighlightVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
@@ -42,9 +43,9 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * <p>
  * Shared CPU-rendering surface for {@link ScatterPlotPainter} and (from
  * {@link AbstractGPUScatterPlotPainter} onward) the GPU-based scatterplot
- * painters: the position/color/size mapping fields, the position-encoding
- * setup (including the degenerate-range tolerance), {@code refreshDataPoints},
- * the two-pass CPU render loop ({@link #drawCPU(Graphics2D)}), and the full
+ * painters: the position/color/size mapping fields, the position-encoding setup
+ * (including the degenerate-range tolerance), {@code refreshDataPoints}, the
+ * two-pass CPU render loop ({@link #drawCPU(Graphics2D)}), and the full
  * getter/setter surface -- all confirmed byte-identical across
  * {@code ScatterPlotPainter}, {@code ScatterPlotIndexedGPUPainter}, and
  * {@code ScatterPlotSpriteGPUPainter} by direct comparison ahead of this
@@ -52,8 +53,8 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * </p>
  *
  * <p>
- * {@link #screenPoints} is deliberately kept {@code protected} rather than
- * made private (unlike most other fields here): {@link LabeledScatterplotPainter}
+ * {@link #screenPoints} is deliberately kept {@code protected} rather than made
+ * private (unlike most other fields here): {@link LabeledScatterplotPainter}
  * reads it directly in its own {@code setRectangle} override, so narrowing its
  * visibility would break that subclass.
  * </p>
@@ -72,9 +73,9 @@ import com.github.TKnudsen.infoVis.view.visualChannels.size.impl.ConstantSizeEnc
  * painter provides its own.
  * </p>
  */
-public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
-		implements IXPositionEncoding, IYPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>,
-		IShapeSelection<T>, IClickSelection<T>, ISelectionVisualizer<T>, ITooltip, IOverplottingMitigation {
+public abstract class AbstractScatterPlotPainter<T> extends ChartPainter implements IXPositionEncoding,
+		IYPositionEncoding, ISizeEncoding<T>, IColorEncoding<T>, IRectangleSelection<T>, IShapeSelection<T>,
+		IClickSelection<T>, ISelectionVisualizer<T>, IHighlightVisualizer<T>, ITooltip, IOverplottingMitigation {
 
 	// input data
 	final List<T> data;
@@ -126,6 +127,11 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 	private boolean drawSelectedLast = true;
 	private Paint selectionPaint = Color.BLACK;
 
+	// transient hover state, independent of selectedFunction/selectionPaint --
+	// see IHighlightVisualizer
+	protected Function<? super T, Boolean> highlightedFunction;
+	private Paint highlightPaint = Color.DARK_GRAY;
+
 	private Function<? super T, String> toolTipMapping;
 
 	// package-visible (not private): ScatterPlotPainter.getTooltip() reads this
@@ -147,7 +153,8 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 		this.worldPositionMappingX = worldPositionMappingX;
 		this.worldPositionMappingY = worldPositionMappingY;
 
-		this.data = Collections.unmodifiableList(VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, true));
+		this.data = Collections
+				.unmodifiableList(VisualMappingTools.sanityCheckFilter(data, worldPositionMappingX, true));
 
 		this.screenPoints = new ArrayList<Point2D>(data.size());
 
@@ -172,7 +179,8 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 	}
 
 	/**
-	 * Thin wrapper around {@link PositionEncodingFunctions#createPositionEncodingFunctionTolerant},
+	 * Thin wrapper around
+	 * {@link PositionEncodingFunctions#createPositionEncodingFunctionTolerant},
 	 * fixing {@code data} to this painter's own field.
 	 */
 	private PositionEncodingFunction createPositionEncodingFunctionTolerant(Function<? super T, Double> mapping,
@@ -255,12 +263,13 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 
 			// cache flags
 			final boolean hasSelection = (selectedFunction != null);
-			final boolean twoPhase = drawSelectedLast && hasSelection;
+			final boolean hasHighlight = (highlightedFunction != null);
+			final boolean twoPhase = drawSelectedLast && (hasSelection || hasHighlight);
 
-			// collect selected indices for second pass
-			List<Integer> selectedIndices = twoPhase ? new ArrayList<>(Math.min(128, n / 10)) : Collections.emptyList();
+			// collect deferred (selected and/or highlighted) indices for second pass
+			List<Integer> deferredIndices = twoPhase ? new ArrayList<>(Math.min(128, n / 10)) : Collections.emptyList();
 
-			// ---- FIRST PASS: draw non-selected ----
+			// ---- FIRST PASS: draw everything neither selected nor highlighted ----
 			for (int i = 0; i < n; i++) {
 				final Point2D p = points.get(i);
 				if (p == null || Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
@@ -272,8 +281,14 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 					selected = (b != null && b.booleanValue());
 				}
 
-				if (twoPhase && selected) {
-					selectedIndices.add(i);
+				boolean highlighted = false;
+				if (hasHighlight) {
+					Boolean b = highlightedFunction.apply(data.get(i));
+					highlighted = (b != null && b.booleanValue());
+				}
+
+				if (twoPhase && (selected || highlighted)) {
+					deferredIndices.add(i);
 					continue;
 				}
 
@@ -286,15 +301,18 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 				if (!Double.isNaN(sEnc))
 					size = sEnc;
 
-				drawPoint(g2, p, (float) size, paint, selected);
+				drawPointHighlighted(g2, p, (float) size, paint, selected, highlighted);
 			}
 
-			// ---- SECOND PASS: draw selected last ----
-			if (twoPhase && !selectedIndices.isEmpty()) {
-				for (int idx : selectedIndices) {
+			// ---- SECOND PASS: draw selected/highlighted last ----
+			if (twoPhase && !deferredIndices.isEmpty()) {
+				for (int idx : deferredIndices) {
 					final Point2D p = points.get(idx);
 					if (p == null || Double.isNaN(p.getX()) || Double.isNaN(p.getY()))
 						continue;
+
+					boolean selected = hasSelection && Boolean.TRUE.equals(selectedFunction.apply(data.get(idx)));
+					boolean highlighted = hasHighlight && Boolean.TRUE.equals(highlightedFunction.apply(data.get(idx)));
 
 					Paint paint = colorMapping != null ? colorMapping.apply(data.get(idx)) : null;
 					if (paint == null)
@@ -305,7 +323,7 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 					if (!Double.isNaN(sEnc))
 						size = sEnc;
 
-					drawPoint(g2, p, (float) size, paint, true);
+					drawPointHighlighted(g2, p, (float) size, paint, selected, highlighted);
 				}
 			}
 
@@ -314,6 +332,29 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 		} finally {
 			screenPointsLock.readLock().unlock();
 		}
+	}
+
+	/**
+	 * Draws {@code point}'s hover-highlight outline (if {@code highlighted}), then
+	 * delegates to {@link #drawPoint(Graphics2D, Point2D, float, Paint, boolean)}
+	 * for the selection outline and the point itself. Kept separate from
+	 * {@code drawPoint} (rather than adding a parameter to it) so
+	 * {@code TrajectoryPainter}'s existing override of that method keeps working
+	 * unchanged.
+	 */
+	private void drawPointHighlighted(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint, boolean selected,
+			boolean highlighted) {
+		if (highlighted) {
+			// drawn larger than the selection outline (pointSize * 1.66, see
+			// drawPoint) and BEFORE it, so a point that is both selected and
+			// highlighted still shows the highlight as an outer ring, rather than
+			// the selection outline fully covering it
+			double pointSizeHighlighted = Math.max(pointSize * 2.0f, pointSize + 4);
+			g2.setPaint(highlightPaint);
+			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSizeHighlighted, true);
+		}
+
+		drawPoint(g2, point, pointSize, pointPaint, selected);
 	}
 
 	/**
@@ -589,6 +630,31 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter
 	@Override
 	public void setSelectedFunction(Function<? super T, Boolean> selectedFunction) {
 		this.selectedFunction = selectedFunction;
+	}
+
+	/**
+	 * @param highlightedFunction reports whether a given element is currently
+	 *                            hover-highlighted; independent of
+	 *                            {@link #setSelectedFunction(Function)}
+	 */
+	@Override
+	public void setHighlightedFunction(Function<? super T, Boolean> highlightedFunction) {
+		this.highlightedFunction = highlightedFunction;
+	}
+
+	/**
+	 * @return the paint used for the hover-highlight outline drawn behind a point
+	 */
+	public Paint getHighlightPaint() {
+		return highlightPaint;
+	}
+
+	/**
+	 * @param highlightPaint paint used for the hover-highlight outline drawn behind
+	 *                       a point
+	 */
+	public void setHighlightPaint(Paint highlightPaint) {
+		this.highlightPaint = highlightPaint;
 	}
 
 	/** @param colorEncodingFunction maps each element to its point color */

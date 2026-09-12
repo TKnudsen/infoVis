@@ -145,18 +145,20 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 				? calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight())
 				: getPointSize();
 
-		// First pass: non-selected points
+		// First pass: everything neither selected nor highlighted
 		for (T t : data) {
-			if (isDrawSelectedLast() && isSelected(t))
+			if (isDrawSelectedLast() && (isSelected(t) || isHighlighted(t)))
 				continue;
-			addPointToGPU(t, defaultPointSize, false);
+			addPointToGPU(t, defaultPointSize, false, false);
 		}
 
-		// Second pass: selected points on top
+		// Second pass: selected/highlighted points on top
 		if (isDrawSelectedLast()) {
 			for (T t : data) {
-				if (isSelected(t))
-					addPointToGPU(t, defaultPointSize, true);
+				boolean selected = isSelected(t);
+				boolean highlighted = isHighlighted(t);
+				if (selected || highlighted)
+					addPointToGPU(t, defaultPointSize, selected, highlighted);
 			}
 		}
 
@@ -218,7 +220,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 
 	// ==================== GPU RENDERING ====================
 
-	private void addPointToGPU(T t, double defaultPointSize, boolean selected) {
+	private void addPointToGPU(T t, double defaultPointSize, boolean selected, boolean highlighted) {
 		double worldX = getWorldPositionMappingX().apply(t);
 		double worldY = getWorldPositionMappingY().apply(t);
 
@@ -250,6 +252,16 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 		// halo diameter = 2 * max(size * 1.66, size + 2)
 		// gl_PointSize is a diameter, so convert accordingly.
 		double coloredDiameter = size * 1.33 * 2.0;
+
+		// Highlight halo: drawn first (i.e. outermost/underneath), larger than the
+		// selection halo, so a point that is both selected and highlighted still
+		// shows the highlight as an outer ring -- mirrors
+		// AbstractScatterPlotPainter.drawPointHighlighted's CPU-side layering
+		if (highlighted) {
+			double highlightHaloDiameter = Math.max(size * 2.0, size + 4) * 2.0;
+			Color highlightColor = extractColor(getHighlightPaint());
+			gpuRenderer.addPointSprite((float) worldX, (float) worldY, (float) highlightHaloDiameter, highlightColor);
+		}
 
 		// Selection halo: black outline larger than the colored point
 		if (selected) {

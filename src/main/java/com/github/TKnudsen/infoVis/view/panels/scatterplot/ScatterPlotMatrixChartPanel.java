@@ -21,9 +21,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
+import com.github.TKnudsen.infoVis.view.interaction.IHighlightVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
 import com.github.TKnudsen.infoVis.view.interaction.IShapeSelection;
+import com.github.TKnudsen.infoVis.view.interaction.handlers.HighlightHandler;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.LassoSelectionHandler;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.MouseButton;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
@@ -66,8 +68,8 @@ import de.javagl.selection.SelectionModel;
  * @since 2018
  */
 public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IRectangleSelection<Double[]>,
-		IClickSelection<Double[]>, IShapeSelection<Double[]>, ISelectionVisualizer<Double[]>, ISizeEncoding<Double[]>,
-		IAxisLogarithmicScale {
+		IClickSelection<Double[]>, IShapeSelection<Double[]>, ISelectionVisualizer<Double[]>,
+		IHighlightVisualizer<Double[]>, ISizeEncoding<Double[]>, IAxisLogarithmicScale {
 
 	/**
 	 * 
@@ -308,6 +310,14 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 	}
 
 	@Override
+	public void setHighlightedFunction(Function<? super Double[], Boolean> highlightedFunction) {
+		for (int x = 0; x < attributeNames.size(); x++)
+			for (int y = 0; y < attributeNames.size(); y++)
+				if (infoVisScatterPlotChartPanels[x][y] != null)
+					infoVisScatterPlotChartPanels[x][y].setHighlightedFunction(highlightedFunction);
+	}
+
+	@Override
 	public void setSizeEncodingFunction(Function<? super Double[], Double> sizeEncodingFunction) {
 		for (int x = 0; x < attributeNames.size(); x++)
 			for (int y = 0; y < attributeNames.size(); y++)
@@ -434,6 +444,56 @@ public class ScatterPlotMatrixChartPanel extends InfoVisChartPanel implements IR
 				cell.setSelectedFunction(localPoint -> {
 					Double[] original = localToOriginal.get(localPoint);
 					return original != null && selectionModel.isSelected(original);
+				});
+			}
+	}
+
+	/**
+	 * Wires interactive, matrix-wide linked hover highlighting: mousing over a
+	 * point in any one cell resolves it to the identity of the original
+	 * {@link #data} row (via {@link #localToOriginal}, same as
+	 * {@link #addInteraction(SelectionModel, boolean, boolean, boolean)}) and
+	 * reflects that as highlighted across every other cell showing the same row.
+	 * <p>
+	 * Deliberately reuses {@link SelectionModel} for {@code highlightModel}
+	 * rather than a dedicated "highlight model" type: the interface itself (a
+	 * named subset of elements plus change events) has no notion of how
+	 * membership was decided, so the same proven plumbing already used for
+	 * click/rectangle/lasso selection works equally well for a hover-driven
+	 * subset. Pass a model separate from the one given to
+	 * {@link #addInteraction(SelectionModel, boolean, boolean, boolean)} so
+	 * selection and highlighting remain independent states.
+	 *
+	 * @param highlightModel the selection model used to hold the currently
+	 *                       hover-highlighted row (if any), shared by all cells,
+	 *                       operating on original {@link #data} row objects
+	 */
+	public void addHighlightInteraction(SelectionModel<Double[]> highlightModel) {
+		// same rationale as addInteraction's selectionModel listener: a cell's own
+		// HighlightHandler repaints only that cell, but a hover in one cell must
+		// be reflected in every other cell too.
+		highlightModel.addSelectionListener(selectionEvent -> {
+			for (int x = 0; x < attributeNames.size(); x++)
+				for (int y = 0; y < attributeNames.size(); y++) {
+					ScatterPlot<Double[]> cell = infoVisScatterPlotChartPanels[x][y];
+					if (cell != null)
+						cell.repaint();
+				}
+		});
+
+		for (int x = 0; x < attributeNames.size(); x++)
+			for (int y = 0; y < attributeNames.size(); y++) {
+				ScatterPlot<Double[]> cell = infoVisScatterPlotChartPanels[x][y];
+				if (cell == null)
+					continue;
+
+				HighlightHandler<Double[]> highlightHandler = new HighlightHandler<>(highlightModel);
+				highlightHandler.setHoverSelection(p -> toOriginal(cell.getElementsAtPoint(p)));
+				highlightHandler.attachTo(cell);
+
+				cell.setHighlightedFunction(localPoint -> {
+					Double[] original = localToOriginal.get(localPoint);
+					return original != null && highlightModel.isSelected(original);
 				});
 			}
 	}

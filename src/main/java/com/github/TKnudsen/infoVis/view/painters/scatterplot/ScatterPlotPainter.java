@@ -12,6 +12,7 @@ import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.TooltipStringPainter;
 import com.github.TKnudsen.infoVis.view.tools.ColorTools;
 import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 
@@ -146,7 +147,7 @@ public class ScatterPlotPainter<T> extends AbstractScatterPlotPainter<T> {
 				return null;
 			}
 
-			StringPainter stringPainter = new StringPainter(toolTipString);
+			StringPainter stringPainter = new TooltipStringPainter(toolTipString);
 
 			Rectangle2D rect = ToolTipTools.createToolTipRectangle(cr, p, getToolTipWidth(), getToolTipHeight());
 			stringPainter.setRectangle(rect);
