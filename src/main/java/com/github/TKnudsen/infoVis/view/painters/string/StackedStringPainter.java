@@ -224,8 +224,8 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	public void setVerticalAlignment(boolean verticalAlignment) {
 		this.verticalAlignment = verticalAlignment;
 
-		for (StringPainter painter : stringPainters)
-			painter.setVerticalOrientation(verticalAlignment);
+		if (rectangle != null)
+			setRectangle(rectangle);
 	}
 
 	public void setStringPosition(HorizontalStringAlignment alignment) {
