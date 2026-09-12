@@ -14,6 +14,7 @@ import java.util.Objects;
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
 
 /**
  * Renders a list of strings stacked either vertically or horizontally, each
@@ -30,7 +31,7 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 	private final List<String> strings;
 	private final List<StringPainter> stringPainters;
 
-	private boolean verticalAlignment = false;
+	private boolean verticalStacking = false;
 	private double offset = DEFAULT_OFFSET;
 	private boolean toolTipping = true;
 
@@ -93,7 +94,7 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 		if (rectangle == null || stringPainters.isEmpty())
 			return;
 
-		List<Rectangle2D> slots = splitEvenly(rectangle, stringPainters.size(), verticalAlignment, offset);
+		List<Rectangle2D> slots = splitEvenly(rectangle, stringPainters.size(), verticalStacking, offset);
 		for (int i = 0; i < stringPainters.size(); i++)
 			stringPainters.get(i).setRectangle(slots.get(i));
 	}
@@ -215,30 +216,47 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 			painter.setDrawOutline(drawOutline);
 	}
 
-	// ==================== ALIGNMENT ====================
+	// ==================== STACKING (arrangement of the strings relative to
+	// each other: side by side vs. one over another) ====================
 
-	public boolean isVerticalAlignment() {
-		return verticalAlignment;
+	public boolean isVerticalStacking() {
+		return verticalStacking;
 	}
 
-	public void setVerticalAlignment(boolean verticalAlignment) {
-		this.verticalAlignment = verticalAlignment;
+	public void setVerticalStacking(boolean verticalStacking) {
+		this.verticalStacking = verticalStacking;
 
-		// stacking into multiple rows (vertical alignment) means each row is wide
-		// and short -- text reads normally. Arranging into multiple columns (side
-		// by side) means each column is narrow and tall -- text must rotate to fit.
+		// stacking into multiple rows means each row is wide and short -- text
+		// reads normally. Arranging into multiple columns (side by side) means
+		// each column is narrow and tall -- text must rotate to fit.
 		for (StringPainter painter : stringPainters)
-			painter.setVerticalOrientation(!verticalAlignment);
+			painter.setVerticalOrientation(!verticalStacking);
 
 		if (rectangle != null)
 			setRectangle(rectangle);
 	}
+
+	// ==================== ALIGNMENT (position of each string within its own
+	// slot) ====================
 
 	public void setStringPosition(HorizontalStringAlignment alignment) {
 		Objects.requireNonNull(alignment, "alignment must not be null");
 
 		for (StringPainter painter : stringPainters)
 			painter.setHorizontalStringAlignment(alignment);
+	}
+
+	/**
+	 * Sets where each individual string sits along its own slot -- e.g.
+	 * {@code UP} makes every string start flush at the same edge regardless of
+	 * its own length, instead of the default {@code CENTER}, which leaves
+	 * differently-sized strings visually starting at different positions.
+	 */
+	public void setStringVerticalPosition(VerticalStringAlignment alignment) {
+		Objects.requireNonNull(alignment, "alignment must not be null");
+
+		for (StringPainter painter : stringPainters)
+			painter.setVerticalStringAlignment(alignment);
 	}
 
 	public void setFontColors(List<Color> colors) {
