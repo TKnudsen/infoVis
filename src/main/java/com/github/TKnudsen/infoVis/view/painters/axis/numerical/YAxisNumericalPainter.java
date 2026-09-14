@@ -137,6 +137,25 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 				x0 -= 2;
 			}
 
+			// Grow the label's drawing rectangle if the configured legend width is too
+			// narrow for the actual label text -- StringPainter otherwise truncates
+			// silently from the right (e.g. "200" -> "20"), which is fine for prose but
+			// turns a numeric axis label into a different, wrong number. Overflowing
+			// past the caller's width guess (into the plot area, for RIGHT/CENTER
+			// alignment where labels sit flush against the axis line) is preferable to
+			// a misleading value. The +4 mirrors StringPainter's default 2px offset on
+			// each side.
+			double requiredWidth = fm.stringWidth(pair.getValue()) + 4;
+			if (requiredWidth > w) {
+				double excess = requiredWidth - w;
+				if (axisLineAlignment.equals(AxisLineAlignment.RIGHT))
+					x0 -= excess;
+				else if (axisLineAlignment.equals(AxisLineAlignment.CENTER))
+					x0 -= excess / 2.0;
+				// LEFT: axis line (and label's left anchor) stays put -- only grow rightward
+				w = requiredWidth;
+			}
+
 			StringPainter sp = createLabelPainter(pair.getValue(), x0, y0, w, h);
 			sp.setHorizontalStringAlignment(getHorizontalAlignmentForAxis());
 			sp.draw(g2);
