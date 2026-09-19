@@ -49,38 +49,52 @@ public class SquarifiedTreemapLayout {
 		for (TreemapNode<T> child : children)
 			areas.add(Math.max(child.getValue(), 0) * scale);
 
-		squarify(children, areas, new ArrayList<>(), new ArrayList<>(), bounds);
+		squarify(children, areas, bounds);
 
+		// only recurse into non-leaf children -- a leaf's bounds are already set
+		// above and it has nothing further to lay out, and skipping it here avoids
+		// an otherwise-pointless call per leaf (recursion depth then follows tree
+		// depth only, not sibling count, matching squarify's own iterative fix)
 		for (TreemapNode<T> child : children)
-			layout(child, child.getBounds());
+			if (!child.isLeaf())
+				layout(child, child.getBounds());
 	}
 
-	private static <T> void squarify(List<TreemapNode<T>> items, List<Double> itemAreas,
-			List<TreemapNode<T>> row, List<Double> rowAreas, Rectangle2D bounds) {
+	/**
+	 * Iterative on purpose: an equivalent one-row-or-item-at-a-time recursive
+	 * version recurses roughly once per <em>sibling item</em>, not once per tree
+	 * level -- for a folder with thousands of files directly inside it (not
+	 * nested any deeper), that recursion depth alone was enough to overflow the
+	 * stack. A loop keeps this at O(1) stack depth regardless of how many
+	 * siblings there are.
+	 */
+	private static <T> void squarify(List<TreemapNode<T>> items, List<Double> itemAreas, Rectangle2D bounds) {
+		List<TreemapNode<T>> row = new ArrayList<>();
+		List<Double> rowAreas = new ArrayList<>();
+		Rectangle2D remainingBounds = bounds;
 
-		if (items.isEmpty()) {
-			layoutRow(row, rowAreas, bounds);
-			return;
+		int index = 0;
+		while (index < items.size()) {
+			TreemapNode<T> next = items.get(index);
+			double nextArea = itemAreas.get(index);
+
+			double w = Math.min(remainingBounds.getWidth(), remainingBounds.getHeight());
+
+			List<Double> rowWithNextAreas = new ArrayList<>(rowAreas);
+			rowWithNextAreas.add(nextArea);
+
+			if (row.isEmpty() || worst(rowAreas, w) >= worst(rowWithNextAreas, w)) {
+				row.add(next);
+				rowAreas.add(nextArea);
+				index++;
+			} else {
+				remainingBounds = layoutRow(row, rowAreas, remainingBounds);
+				row = new ArrayList<>();
+				rowAreas = new ArrayList<>();
+			}
 		}
 
-		double w = Math.min(bounds.getWidth(), bounds.getHeight());
-
-		TreemapNode<T> next = items.get(0);
-		double nextArea = itemAreas.get(0);
-
-		List<Double> rowWithNextAreas = new ArrayList<>(rowAreas);
-		rowWithNextAreas.add(nextArea);
-
-		if (row.isEmpty() || worst(rowAreas, w) >= worst(rowWithNextAreas, w)) {
-			List<TreemapNode<T>> newRow = new ArrayList<>(row);
-			newRow.add(next);
-
-			squarify(items.subList(1, items.size()), itemAreas.subList(1, itemAreas.size()), newRow,
-					rowWithNextAreas, bounds);
-		} else {
-			Rectangle2D remaining = layoutRow(row, rowAreas, bounds);
-			squarify(items, itemAreas, new ArrayList<>(), new ArrayList<>(), remaining);
-		}
+		layoutRow(row, rowAreas, remainingBounds);
 	}
 
 	/**
