@@ -12,7 +12,11 @@ import java.util.function.Function;
 import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.interaction.ISelectionVisualizer;
+import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.tools.ColorTools;
+import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
 
 /**
  * Renders a {@link TreemapNode} hierarchy (values already computed via
@@ -44,7 +48,7 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
  * @since 2026
  */
 public class TreemapPainter<T> extends ChartPainter implements IClickSelection<TreemapNode<T>>,
-		IRectangleSelection<TreemapNode<T>>, ISelectionVisualizer<TreemapNode<T>> {
+		IRectangleSelection<TreemapNode<T>>, ISelectionVisualizer<TreemapNode<T>>, ITooltip {
 
 	private TreemapNode<T> root;
 
@@ -53,6 +57,8 @@ public class TreemapPainter<T> extends ChartPainter implements IClickSelection<T
 
 	private Function<? super TreemapNode<T>, Color> fillColorFunction = n -> Color.LIGHT_GRAY;
 	private Function<? super TreemapNode<T>, Boolean> selectedFunction;
+
+	private boolean toolTipping = true;
 
 	public TreemapPainter(TreemapNode<T> root) {
 		this.root = root;
@@ -185,5 +191,34 @@ public class TreemapPainter<T> extends ChartPainter implements IClickSelection<T
 	@Override
 	public void setSelectedFunction(Function<? super TreemapNode<T>, Boolean> selectedFunction) {
 		this.selectedFunction = selectedFunction;
+	}
+
+	/** Shows the label (file/folder name) of whatever tile is under the pointer, reusing the same deepest-node lookup {@link #getElementsAtPoint(Point)} uses. */
+	@Override
+	public ChartPainter getTooltip(Point p) {
+		if (!toolTipping || p == null || root == null)
+			return null;
+
+		TreemapNode<T> node = findDeepestAt(root, p);
+		if (node == null)
+			return null;
+
+		StringPainter stringPainter = new StringPainter(node.getLabel());
+		stringPainter.setRectangle(ToolTipTools.createToolTipRectangle(getRectangle(), p, 160, 28));
+		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.75f));
+		stringPainter.setFontColor(Color.WHITE);
+		stringPainter.setFontSize(13);
+
+		return stringPainter;
+	}
+
+	@Override
+	public boolean isToolTipping() {
+		return toolTipping;
+	}
+
+	@Override
+	public void setToolTipping(boolean toolTipping) {
+		this.toolTipping = toolTipping;
 	}
 }

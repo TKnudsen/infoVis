@@ -81,6 +81,12 @@ public class TreemapPanel<T> extends InfoVisChartPanel {
 			}
 		});
 
+		// TreemapPainter implements ITooltip; setShowingTooltips(true) is what
+		// actually wires mouse-move detection to it (creates/attaches a
+		// TooltipHandler internally) -- without this call tiles never show a
+		// tooltip despite the painter itself supporting one
+		setShowingTooltips(true);
+
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
