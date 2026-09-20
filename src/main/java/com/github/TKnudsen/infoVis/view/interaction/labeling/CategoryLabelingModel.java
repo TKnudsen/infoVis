@@ -363,8 +363,13 @@ public abstract class CategoryLabelingModel implements Function<String, String> 
 		if (!file.endsWith(".json"))
 			file += ".json";
 
-		FileTools.createDirectory(file.substring(0, file.lastIndexOf("/")));
-		// new File(file.substring(0, file.lastIndexOf("/"))).mkdirs();
+		// File's own parent resolution (not a hardcoded "/" split) -- logFileName()
+		// implementations build paths with File.separator, which is "\" on Windows,
+		// so a forward-slash-only split threw StringIndexOutOfBoundsException there
+		// whenever the resolved path had no "/" at all.
+		String parent = new File(file).getParent();
+		if (parent != null)
+			FileTools.createDirectory(parent);
 
 		ComplexDataObject cdo = new ComplexDataObject(file.replace(".json", ""));
 		for (String attribute : mapping.keySet())
