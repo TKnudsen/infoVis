@@ -53,6 +53,26 @@ public class YYYAxisChartRectangleLayout extends MultiAxisChartRectangleLayout {
 	}
 
 	/**
+	 * Insets each axis rectangle's top by its own axisLegendOffset, so the axis
+	 * name/physical-unit label (drawn above the axis's value range, see
+	 * {@link com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter#drawPhysU})
+	 * has dedicated header space instead of overlapping the chart's topmost
+	 * data values. Previously axisLegendOffset was stored but never applied by
+	 * this layout, so the "space reserved for axis labels" it documents never
+	 * actually existed.
+	 */
+	@Override
+	protected void assignRectanglesToAxes(Rectangle2D[][] rectangleMatrix) {
+		for (int i = 0; i < rectangleMatrix.length && i < axisSizeCharacteristics.size(); i++) {
+			Rectangle2D r = rectangleMatrix[i][0];
+			double legendOffset = axisSizeCharacteristics.get(i).getAxisLegendOffset();
+
+			axisSizeCharacteristics.get(i).setAxisRectangle(new Rectangle2D.Double(r.getX(), r.getY() + legendOffset,
+					r.getWidth(), Math.max(0, r.getHeight() - legendOffset)));
+		}
+	}
+
+	/**
 	 * Gets the rectangle bounds for the Y-axis at the specified index.
 	 * 
 	 * @param axisIndex the zero-based index of the axis

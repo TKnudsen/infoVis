@@ -178,7 +178,11 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		g2.setColor(fontColor);
 		FontMetrics fm = g2.getFontMetrics(font);
 
-		double yOffset = rectangle.getY() + getFontSize() * 2.3;
+		// drawn above the axis's own value-range rectangle, into the header band
+		// reserved for it by the chart-rectangle-layout's axisLegendOffset (see
+		// e.g. YYYAxisChartRectangleLayout#assignRectanglesToAxes) -- not inside
+		// the rectangle, where it would overlap the topmost plotted values.
+		double yOffset = rectangle.getY() - getFontSize() * 0.6;
 		double xOffset = (rectangle.getWidth() - fm.stringWidth(physicalUnit)) / 2.0 - 2;
 
 		g2.drawString("[" + physicalUnit + "]", (int) (rectangle.getX() + xOffset), (int) yOffset);
