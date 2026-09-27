@@ -13,6 +13,9 @@ import com.github.TKnudsen.infoVis.view.interaction.IRectangleSelection;
 import com.github.TKnudsen.infoVis.view.painters.axis.numerical.YAxisNumericalPainter;
 import com.github.TKnudsen.infoVis.view.painters.boxplot.BoxPlotVerticalPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.VerticalStringAlignment;
 import com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel;
 
 /**
@@ -36,6 +39,7 @@ public class BoxPlotVerticalMultiplesChartPanel extends YAxisNumericalChartPanel
 	private double maxGlobal = Double.NaN;
 
 	Grid2DPainterPainter<BoxPlotVerticalPainter> boxPlotPainterGrid;
+	Grid2DPainterPainter<StringPainter> labelPainterGrid;
 
 	public BoxPlotVerticalMultiplesChartPanel(List<StatisticsSupport> dataStatisticsPerDimension, List<Color> colors,
 			List<String> labels) {
@@ -90,6 +94,7 @@ public class BoxPlotVerticalMultiplesChartPanel extends YAxisNumericalChartPanel
 			labels.add("");
 
 		BoxPlotVerticalPainter[][] painters = new BoxPlotVerticalPainter[dataStatisticsPerDimension.size()][1];
+		StringPainter[][] labelPainters = new StringPainter[dataStatisticsPerDimension.size()][1];
 
 		for (int i = 0; i < dataStatisticsPerDimension.size(); i++) {
 			StatisticsSupport dataStatistics = dataStatisticsPerDimension.get(i);
@@ -100,12 +105,25 @@ public class BoxPlotVerticalMultiplesChartPanel extends YAxisNumericalChartPanel
 			painter.setPaint(colors.get(i));
 
 			painters[i][0] = painter;
+
+			StringPainter labelPainter = new StringPainter(labels.get(i));
+			labelPainter.setBackgroundPaint(null);
+			labelPainter.setHorizontalStringAlignment(HorizontalStringAlignment.CENTER);
+			labelPainter.setVerticalStringAlignment(VerticalStringAlignment.DOWN);
+
+			labelPainters[i][0] = labelPainter;
 		}
 
 		boxPlotPainterGrid = new Grid2DPainterPainter<>(painters);
 		boxPlotPainterGrid.setDrawOutline(false);
 
 		addChartPainter(boxPlotPainterGrid);
+
+		labelPainterGrid = new Grid2DPainterPainter<>(labelPainters);
+		labelPainterGrid.setBackgroundPaint(null);
+		labelPainterGrid.setDrawOutline(false);
+
+		addChartPainter(labelPainterGrid);
 	}
 
 	@Override

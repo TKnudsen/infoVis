@@ -42,6 +42,6 @@ public class BoxPlotVerticalMultiplesChartPanels {
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
-		SVGFrameTools.dropSVGFrame(panel, "InfoVisBoxPlotVerticalMultiplesPanel", 800, 400);
+		SVGFrameTools.dropSVGFrame(panel, "InfoVisBoxPlotVerticalMultiplesPanel", 500, 500);
 	}
 }
