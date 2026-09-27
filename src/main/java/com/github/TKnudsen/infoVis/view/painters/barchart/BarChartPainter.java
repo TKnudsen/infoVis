@@ -189,11 +189,31 @@ public abstract class BarChartPainter extends ChartPainter
 
 	/**
 	 * convenient method, for tool tips, etc.
-	 * 
+	 *
 	 * @return
 	 */
 	public List<? extends Number> getData() {
 		return Collections.unmodifiableList(data);
+	}
+
+	/**
+	 * The current on-screen rectangle of each bar, in bar order -- the same
+	 * rectangles the bars themselves fill/outline. Lets a composed, sibling
+	 * painter (e.g. {@link ErrorBarChartPainter}) align itself to the bars
+	 * without duplicating this chart's layout math.
+	 *
+	 * @return unmodifiable list of bar rectangles, or an empty list if bars
+	 *         haven't been laid out yet
+	 */
+	public List<Rectangle2D> getBarRectangles() {
+		if (barPainters == null)
+			return Collections.emptyList();
+
+		List<Rectangle2D> rectangles = new ArrayList<>(barPainters.size());
+		for (BarPainter barPainter : barPainters)
+			rectangles.add(barPainter.getBarRectangle());
+
+		return Collections.unmodifiableList(rectangles);
 	}
 
 	@Override

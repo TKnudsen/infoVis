@@ -15,11 +15,16 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.Parsers;
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
+import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
+import com.github.TKnudsen.ComplexDataObject.model.tools.StatisticsSupport;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.LinearNormalizationFunction;
 import com.github.TKnudsen.ComplexDataObject.model.transformations.normalization.NormalizationFunction;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.barchart.BarChartVerticalPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.BarPresenceMarkerPainter;
+import com.github.TKnudsen.infoVis.view.painters.barchart.ErrorBarChartPainter;
 import com.github.TKnudsen.infoVis.view.painters.grid.Grid2DPainterPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
@@ -187,8 +192,16 @@ public class BarChartsValueBased {
 	}
 
 	/**
-	 * 
-	 * @param data           list of bar chart data
+	 * Layers several series over the same category slots, all sharing one
+	 * Y-axis scale (the global max across ALL layers -- not just the first
+	 * one, which the axis would otherwise silently clip taller bars from a
+	 * later layer against). Each extra layer is registered with
+	 * {@code addChartPainter(painter, true)}, the same mechanism
+	 * {@link YAxisNumericalChartPanel} already uses to share its Y
+	 * position-encoding function with any painter it hosts -- no separate
+	 * axis-sharing coordinator is needed.
+	 *
+	 * @param data           list of bar chart data, one list per layer
 	 * @param barchartColors one color for each bar chart layer
 	 * @return bar chart
 	 */
@@ -198,18 +211,23 @@ public class BarChartsValueBased {
 		if (data.isEmpty())
 			return null;
 
+		double globalMax = Double.NEGATIVE_INFINITY;
+		for (List<? extends Number> layer : data)
+			globalMax = Math.max(globalMax, MathFunctions.getMax(layer));
+
 		// create bar chart
 		Color color = Color.GRAY;
 		if (barchartColors != null && !barchartColors.isEmpty())
 			color = barchartColors.get(0);
-		BarChartValueBased barChart = createBarChart(data.get(0), color);
+		BarChartValueBased barChart = new BarChartValueBased(data.get(0),
+				DataConversion.constantValueList(color, data.get(0).size()), globalMax);
 
 		// add additional bar chart layers
 		for (int i = 1; i < data.size(); i++) {
 			List<? extends Number> bars = data.get(i);
 
 			List<Color> colors = new ArrayList<Color>();
-			Color c = barchartColors.size() > i ? barchartColors.get(i) : Color.BLACK;
+			Color c = barchartColors != null && barchartColors.size() > i ? barchartColors.get(i) : Color.BLACK;
 			for (@SuppressWarnings("unused")
 			Number d : bars)
 				colors.add(c);
@@ -217,6 +235,57 @@ public class BarChartsValueBased {
 			BarChartVerticalPainter barChartVerticalPainter = new BarChartVerticalPainter(bars, colors);
 			barChart.addChartPainter(barChartVerticalPainter, true);
 		}
+
+		return barChart;
+	}
+
+	/**
+	 * Adds a {@link BarPresenceMarkerPainter} for the given bar chart painter --
+	 * a baseline tick marking every nonzero bar, useful for
+	 * {@link #createLayeredBarChart} layers drawn semi-transparent/overlaid,
+	 * where a bar's own fill can be too faint to tell a small-but-nonzero value
+	 * apart from an empty one.
+	 *
+	 * @param barChart       the panel to add the marker to
+	 * @param barChartPainter the layer (its own painter, e.g. from
+	 *                        {@link BarChartValueBased#getBarChartPainter()} or an
+	 *                        extra layer you added yourself) to mark
+	 * @param markerColor    the marker line's color
+	 */
+	public static void addPresenceMarker(BarChartValueBased barChart, BarChartPainter barChartPainter,
+			Color markerColor) {
+		BarPresenceMarkerPainter marker = new BarPresenceMarkerPainter(barChartPainter);
+		marker.setMarkerPaint(markerColor);
+		barChart.addChartPainter(marker);
+	}
+
+	/**
+	 * Creates a bar chart whose bar heights are each distribution's mean, with a
+	 * whisker (via {@link ErrorBarChartPainter}) showing its spread.
+	 *
+	 * @param valuesPerBar one distribution per bar
+	 * @param colors       one color per bar
+	 * @param errorMeasure which spread measure the whisker shows
+	 * @return bar chart
+	 */
+	public static BarChartValueBased createErrorBarChart(List<StatisticsSupport> valuesPerBar, List<Color> colors,
+			ErrorBarChartPainter.ErrorMeasure errorMeasure) {
+		Objects.requireNonNull(valuesPerBar);
+
+		List<Double> means = new ArrayList<>(valuesPerBar.size());
+		double globalMax = Double.NEGATIVE_INFINITY;
+		for (StatisticsSupport stats : valuesPerBar) {
+			means.add(stats.getMean());
+			// the true sample max, not just the mean, so the axis is always tall
+			// enough for the error whisker's upper bound too
+			globalMax = Math.max(globalMax, stats.getMax());
+		}
+
+		BarChartValueBased barChart = new BarChartValueBased(means, colors, globalMax);
+
+		ErrorBarChartPainter errorBarChartPainter = new ErrorBarChartPainter(barChart.getBarChartPainter(),
+				valuesPerBar, errorMeasure);
+		barChart.addChartPainter(errorBarChartPainter);
 
 		return barChart;
 	}
