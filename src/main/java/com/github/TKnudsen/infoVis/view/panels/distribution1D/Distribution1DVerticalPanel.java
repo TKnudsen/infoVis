@@ -57,7 +57,7 @@ public class Distribution1DVerticalPanel<T> extends YAxisNumericalChartPanel<Dou
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
 				throw new IllegalArgumentException("InfoVisBoxPlotVerticalPanel: no valid input given");
 
-		NumericRange rangeY = NumericRangeTools.computeFiniteRangeStrict(data, worldPositionMappingY, null, null);
+		NumericRange rangeY = NumericRangeTools.computeFiniteRangeTolerant(data, worldPositionMappingY, null, null);
 
 		initializeYAxisPainter(rangeY.getMin(), rangeY.getMax());
 

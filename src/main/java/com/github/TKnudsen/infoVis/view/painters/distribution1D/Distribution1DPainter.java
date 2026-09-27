@@ -91,8 +91,12 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 	}
 
 	protected final void initializePositionEncodingFunction() {
-		positionEncodingFunction = PositionEncodingFunctions.createPositionEncodingFunction(data,
-				getWorldToDoubleMapping(), 0d, 1d, getClass().getSimpleName());
+		// tolerant: a distribution over a single repeated (or otherwise
+		// zero-variance) value is a valid, common thing to render -- e.g. a column
+		// where every row currently has the same (or a default 0.0) value -- and
+		// must not throw, just collapse to a single-point range
+		positionEncodingFunction = PositionEncodingFunctions.createPositionEncodingFunctionTolerant(data,
+				getWorldToDoubleMapping(), 0d, 1d, false, getClass().getSimpleName());
 
 		// painter has no state information, no need to add a
 		// PositionEncodingFunctionListener to the PositionEncodingFunction

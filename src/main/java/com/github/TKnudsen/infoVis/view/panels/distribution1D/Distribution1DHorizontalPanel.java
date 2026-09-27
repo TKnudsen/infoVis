@@ -57,7 +57,7 @@ public class Distribution1DHorizontalPanel<T> extends XAxisNumericalChartPanel<D
 			if (Double.isNaN(minGlobal) || Double.isNaN(maxGlobal))
 				throw new IllegalArgumentException("Distribution1DHorizontalPanel: no valid input given");
 
-		NumericRange rangeX = NumericRangeTools.computeFiniteRangeStrict(data, worldPositionMappingX, null, null);
+		NumericRange rangeX = NumericRangeTools.computeFiniteRangeTolerant(data, worldPositionMappingX, null, null);
 		
 		initializeXAxisPainter(rangeX.getMin(), rangeX.getMax());
 
