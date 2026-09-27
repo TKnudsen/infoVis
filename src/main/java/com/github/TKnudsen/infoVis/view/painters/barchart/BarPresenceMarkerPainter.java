@@ -20,8 +20,10 @@ import com.github.TKnudsen.infoVis.view.visualChannels.position.y.IYPositionEnco
  * "there is a real, nonzero value here" tick, independent of whether the bar
  * itself is drawn tall enough, or opaque enough, to show that on its own.
  * Most useful for near-zero bars, or bars drawn semi-transparent/overlaid as
- * part of a {@link LayeredBarChartPainter}, where the bar's own fill/outline
- * alone can fail to communicate that the value is nonzero.
+ * part of a
+ * {@link com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased#createLayeredBarChart
+ * layered chart}, where the bar's own fill/outline alone can fail to
+ * communicate that the value is nonzero.
  * </p>
  *
  * @version 1.0

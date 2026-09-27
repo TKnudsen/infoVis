@@ -197,7 +197,8 @@ public class BarChartsValueBased {
 	 * one, which the axis would otherwise silently clip taller bars from a
 	 * later layer against). Each extra layer is registered with
 	 * {@code addChartPainter(painter, true)}, the same mechanism
-	 * {@link YAxisNumericalChartPanel} already uses to share its Y
+	 * {@link com.github.TKnudsen.infoVis.view.panels.axis.YAxisNumericalChartPanel
+	 * YAxisNumericalChartPanel} already uses to share its Y
 	 * position-encoding function with any painter it hosts -- no separate
 	 * axis-sharing coordinator is needed.
 	 *
