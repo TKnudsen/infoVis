@@ -16,6 +16,7 @@ import javax.swing.TransferHandler;
 
 import com.github.TKnudsen.infoVis.view.interaction.ITooltip;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
+import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringPainter;
 
 /**

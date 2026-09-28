@@ -33,8 +33,9 @@ import com.github.TKnudsen.infoVis.view.tools.ToolTipTools;
  *
  * <p>
  * Selection follows the same {@link IClickSelection}/{@link
- * IRectangleSelection}/{@link ISelectionVisualizer} contract {@code
- * com.JB.infoVisLib.painters.barchart.BarChart} already uses, so a {@link
+ * IRectangleSelection}/{@link ISelectionVisualizer} contract {@link
+ * com.github.TKnudsen.infoVis.view.panels.barchart.BarChartValueBased}
+ * already uses, so a {@link
  * com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler}
  * attaches the same way. The two selection modes deliberately differ in what
  * they select: a click resolves to the single most specific node (leaf or

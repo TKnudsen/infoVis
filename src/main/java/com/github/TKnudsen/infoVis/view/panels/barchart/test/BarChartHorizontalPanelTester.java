@@ -1,22 +1,20 @@
-package com.github.TKnudsen.infoVis.view.panels.barChart;
+package com.github.TKnudsen.infoVis.view.panels.barchart.test;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataObject;
 import com.github.TKnudsen.ComplexDataObject.model.io.csv.CSVParser;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.DoubleParser;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.IntegerParser;
-import com.github.TKnudsen.infoVis.data.barChart.BarChartDataForTesting;
+import com.github.TKnudsen.infoVis.data.BarChartDataForTesting;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
-import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
-import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartValueBased;
+import com.github.TKnudsen.infoVis.view.painters.string.StringPainter.HorizontalStringAlignment;
+import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartHorizontalValueBased;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartsValueBased;
+import com.github.TKnudsen.infoVis.view.ui.InfoVisColors;
 
 import de.javagl.selection.LoggingSelectionListener;
 import de.javagl.selection.SelectionModel;
@@ -33,13 +31,13 @@ import de.javagl.selection.SelectionModels;
  * </p>
  * 
  * <p>
- * Vertical bar chart test with interaction design
+ * Horizontal bar chart test with interaction design
  * </p>
  * 
  * @author Juergen Bernard
  * @version 1.03
  */
-public class BarChartVerticalPanelTester {
+public class BarChartHorizontalPanelTester {
 
 	private static IntegerParser integerParser = new IntegerParser();
 	private static DoubleParser doubleParser = new DoubleParser();
@@ -72,9 +70,10 @@ public class BarChartVerticalPanelTester {
 		}
 
 		// BARCHART
-		BarChartValueBased barChart = BarChartsValueBased.createBarChart(points, colors);
+		BarChartHorizontalValueBased barChart = BarChartsValueBased.createBarChartHorizontal(points, colors);
 		barChart.setBackground(null);
-		BarChartsValueBased.addLegend(barChart, labels);
+		BarChartsValueBased.setSelectionPaint(barChart, InfoVisColors.SELECTION_COLOR);
+		BarChartsValueBased.addLegend(barChart, labels, HorizontalStringAlignment.LEFT);
 
 		// SELECTION MODEL, INTERACTION
 		SelectionModel<Integer> selectionModel = SelectionModels.create();
@@ -82,7 +81,7 @@ public class BarChartVerticalPanelTester {
 
 		selectionModel.addSelectionListener(new LoggingSelectionListener<>());
 
-		SVGFrameTools.dropSVGFrame(barChart, "BarChartVerticalPanelTester", 800, 400);
+		SVGFrameTools.dropSVGFrame(barChart, "BarChartHorizontalPanelTester", 800, 400);
 	}
 
 }

@@ -2,8 +2,8 @@ package com.github.TKnudsen.infoVis.view.panels.scatterPlot;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Paint;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

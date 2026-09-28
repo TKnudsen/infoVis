@@ -19,11 +19,10 @@ import java.util.Set;
 import java.util.function.Function;
 
 import com.github.TKnudsen.infoVis.view.gpu.RenderMode;
+import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotIndexedGPUPainter;
 import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotPainter;
 import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotSpriteGPUPainter;
-import com.github.TKnudsen.infoVis.view.painters.scatterplot.ScatterPlotIndexedGPUPainter;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;

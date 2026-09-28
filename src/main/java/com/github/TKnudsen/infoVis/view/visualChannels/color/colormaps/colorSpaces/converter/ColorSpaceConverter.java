@@ -1,7 +1,6 @@
 package com.github.TKnudsen.infoVis.view.visualChannels.color.colormaps.colorSpaces.converter;
 
 import java.awt.Color;
-import java.util.Arrays;
 
 /**
  * <p>

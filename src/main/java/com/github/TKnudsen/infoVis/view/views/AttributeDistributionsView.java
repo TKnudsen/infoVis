@@ -26,12 +26,11 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
-
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataContainer;
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataContainers;
 import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataObject;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.Parsers;
+import com.github.TKnudsen.infoVis.view.interaction.IClickSelection;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChart.CategoryOrder;
 import com.github.TKnudsen.infoVis.view.panels.barchart.BarChartVertical;

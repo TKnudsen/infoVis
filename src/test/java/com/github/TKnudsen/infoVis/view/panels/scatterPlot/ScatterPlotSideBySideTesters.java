@@ -25,8 +25,8 @@ import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 import com.github.TKnudsen.infoVis.view.panels.scatterplot.ScatterPlot;
-import com.github.TKnudsen.infoVis.view.panels.scatterplot.ScatterPlotSpriteGPU;
 import com.github.TKnudsen.infoVis.view.panels.scatterplot.ScatterPlotIndexedGPU;
+import com.github.TKnudsen.infoVis.view.panels.scatterplot.ScatterPlotSpriteGPU;
 import com.github.TKnudsen.infoVis.view.panels.scatterplot.ScatterPlots;
 
 import de.javagl.selection.LoggingSelectionListener;
