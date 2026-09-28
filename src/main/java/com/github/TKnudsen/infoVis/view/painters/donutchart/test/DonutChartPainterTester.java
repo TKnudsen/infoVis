@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.view.painters.donutchart;
+package com.github.TKnudsen.infoVis.view.painters.donutchart.test;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
+import com.github.TKnudsen.infoVis.view.painters.donutchart.DonutChartPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
