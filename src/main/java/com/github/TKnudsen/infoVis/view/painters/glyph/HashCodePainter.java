@@ -18,13 +18,13 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * "identicon" for arbitrary objects).
  *
  * <p>
- * The derivation constants below were tuned by hand against the 32-bit range
- * of {@code Object.hashCode()} to produce visually varied but compact
- * glyphs; that is why the constructor takes an {@code int}, not a
- * {@code long} -- feeding it a wider value defeats the tuning and tends to
- * push the glyph's spikes outside its own rectangle. There is no formal
- * derivation behind the individual numbers -- they are named for the role
- * they play, not for any documented meaning of the value itself.
+ * The derivation constants below were tuned by hand against the 32-bit range of
+ * {@code Object.hashCode()} to produce visually varied but compact glyphs; that
+ * is why the constructor takes an {@code int}, not a {@code long} -- feeding it
+ * a wider value defeats the tuning and tends to push the glyph's spikes outside
+ * its own rectangle. There is no formal derivation behind the individual
+ * numbers -- they are named for the role they play, not for any documented
+ * meaning of the value itself.
  * </p>
  *
  * @version 1.1
@@ -49,25 +49,29 @@ public class HashCodePainter extends ChartPainter {
 	private static final double ORBIT_DISTANCE_CENTER_OFFSET = 50;
 	private static final double ORBIT_DISTANCE_SCALE = 0.005;
 
-	// -- offshotAngle: half-angle (degrees) of the spike's fork at the orbit point --
+	// -- offshotAngle: half-angle (degrees) of the spike's fork at the orbit point
+	// --
 	private static final double OFFSHOT_ANGLE_DIVISOR = 66666.6;
 	private static final double OFFSHOT_ANGLE_MODULO = 4500;
 	private static final double OFFSHOT_ANGLE_SCALE = 0.01;
 	private static final double OFFSHOT_ANGLE_BASE_DEGREES = 45;
 
-	// -- offshotDistance: fraction of the glyph's half-size each fork tip reaches --
+	// -- offshotDistance: fraction of the glyph's half-size each fork tip reaches
+	// --
 	private static final double OFFSHOT_DISTANCE_DIVISOR = 188888.0;
 	private static final double OFFSHOT_DISTANCE_MODULO = 20;
 	private static final double OFFSHOT_DISTANCE_SCALE = 0.01;
 	private static final double OFFSHOT_DISTANCE_BASE = 0.05;
 	private static final double OFFSHOT_DISTANCE_PEAK_WIDENING = 0.1;
 
-	// -- centerDotSize: fraction of the glyph's half-size the center dot's radius spans --
+	// -- centerDotSize: fraction of the glyph's half-size the center dot's radius
+	// spans --
 	private static final double CENTER_DOT_SIZE_DIVISOR = 10000.0;
 	private static final double CENTER_DOT_SIZE_MODULO = 50;
 	private static final double CENTER_DOT_SIZE_SCALE = 0.0066;
 
-	// -- draw(): how far the spline's control points bulge sideways from the spike's centerline --
+	// -- draw(): how far the spline's control points bulge sideways from the
+	// spike's centerline --
 	private static final double CURVE_CONTROL_POINT_OFFSET = 0.1;
 
 	private final int hashcode;
@@ -88,7 +92,10 @@ public class HashCodePainter extends ChartPainter {
 		initialize();
 	}
 
-	/** @param object the object whose {@link Object#hashCode()} is used to derive the glyph; null is treated as hash code 0 */
+	/**
+	 * @param object the object whose {@link Object#hashCode()} is used to derive
+	 *               the glyph; null is treated as hash code 0
+	 */
 	public HashCodePainter(Object object, int maxPeakCount) {
 		this(Objects.hashCode(object), maxPeakCount);
 	}
@@ -107,8 +114,9 @@ public class HashCodePainter extends ChartPainter {
 				numberOfPeaks = PEAK_COUNT_FALLBACK;
 		}
 
-		orbitDistance = ORBIT_DISTANCE_BASE + (Math.abs(hashcode / ORBIT_DISTANCE_DIVISOR) % ORBIT_DISTANCE_MODULO
-				- ORBIT_DISTANCE_CENTER_OFFSET) * ORBIT_DISTANCE_SCALE;
+		orbitDistance = ORBIT_DISTANCE_BASE
+				+ (Math.abs(hashcode / ORBIT_DISTANCE_DIVISOR) % ORBIT_DISTANCE_MODULO - ORBIT_DISTANCE_CENTER_OFFSET)
+						* ORBIT_DISTANCE_SCALE;
 
 		offshotAngle = (Math.abs(hashcode / OFFSHOT_ANGLE_DIVISOR) % OFFSHOT_ANGLE_MODULO) * OFFSHOT_ANGLE_SCALE
 				+ OFFSHOT_ANGLE_BASE_DEGREES;
@@ -128,7 +136,7 @@ public class HashCodePainter extends ChartPainter {
 			return;
 
 		Color oldColor = g2.getColor();
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 		Stroke oldStroke = g2.getStroke();
 		g2.setStroke(stroke);
 

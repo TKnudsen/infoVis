@@ -35,16 +35,15 @@ import com.github.TKnudsen.infoVis.view.visualChannels.color.colormaps.colorMaps
  * {@code impl} class is included.
  * </p>
  * <p>
- * <b>Thread safety:</b> {@link #colorMaps2D()} is not synchronized. Two
- * threads racing the first call could each build and assign their own array
- * (each internally equal, just distinct instances) before either check
- * observes the other's write -- harmless for typical single-threaded/EDT
- * usage, but not a guarantee of a single shared instance under concurrent
- * first access.
+ * <b>Thread safety:</b> {@link #colorMaps2D()} is not synchronized. Two threads
+ * racing the first call could each build and assign their own array (each
+ * internally equal, just distinct instances) before either check observes the
+ * other's write -- harmless for typical single-threaded/EDT usage, but not a
+ * guarantee of a single shared instance under concurrent first access.
  * </p>
  *
  * @version 1.0
- * @since 2019
+ * @since 2026
  */
 public class Colormap2D {
 
@@ -52,8 +51,8 @@ public class Colormap2D {
 
 	/**
 	 * @return every registered 2D colormap, lazily constructed on first call and
-	 *         cached thereafter. The returned array is the shared cached
-	 *         instance, not a defensive copy -- callers must not mutate it.
+	 *         cached thereafter. The returned array is the shared cached instance,
+	 *         not a defensive copy -- callers must not mutate it.
 	 */
 	public static IColorMap2D[] colorMaps2D() {
 		if (colorMaps == null) {

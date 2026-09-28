@@ -15,7 +15,7 @@ import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
  * that need it (e.g. hit-testing).
  *
  * @version 1.0
- * @since 2026
+ * @since 2018
  */
 public class RegularShapePainter extends ChartPainter {
 

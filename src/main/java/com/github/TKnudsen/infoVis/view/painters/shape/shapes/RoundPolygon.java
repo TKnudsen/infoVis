@@ -14,7 +14,9 @@ import java.awt.geom.Rectangle2D;
  * back by {@code arcWidth} pixels near every vertex, and the gap is closed
  * with a quadratic curve through the original corner point.
  *
- * @version 1.0
+ * @version 1.1 -- arcWidth is now clamped to at most half the edge length,
+ *          fixing self-intersecting output on many-sided polygons with a
+ *          large arcWidth
  * @since 2026
  */
 public class RoundPolygon implements Shape {
@@ -147,6 +149,12 @@ public class RoundPolygon implements Shape {
 	protected static Point2D.Float getArcPoint(Point2D.Float p1, Point2D.Float p2, float w) {
 		Point2D.Float res = new Point2D.Float();
 		float d = Math.round(Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)));
+
+		// clamp so the arc-start/arc-end points on the same edge never cross past
+		// its midpoint -- otherwise, for many-sided polygons where edge length
+		// shrinks much faster than a radius-derived arcWidth, they overshoot each
+		// other and the outline self-intersects (visible as a jagged/broken curve).
+		w = Math.min(w, d / 2f);
 
 		if (p1.x < p2.x)
 			res.x = p2.x - w * Math.abs(p1.x - p2.x) / d;

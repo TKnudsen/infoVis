@@ -18,8 +18,8 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  *
  * <p>
  * This class only draws the glyph and tracks its own ticked state; grouping
- * several instances into mutually-exclusive "radio button" behavior (only
- * one ticked at a time) is left to the caller -- see
+ * several instances into mutually-exclusive "radio button" behavior (only one
+ * ticked at a time) is left to the caller -- see
  * {@link com.github.TKnudsen.infoVis.view.painters.glyph.test.RadioPainterTester
  * RadioPainterTester} for an example.
  * </p>
@@ -45,7 +45,7 @@ public class RadioPainter extends ChartPainter {
 
 		setBackgroundPaint(Color.WHITE);
 		setBorderPaint(Color.WHITE);
-		setColor(Color.BLACK);
+		setPaint(Color.BLACK);
 		stroke = DisplayTools.mediumStroke;
 	}
 
@@ -82,8 +82,8 @@ public class RadioPainter extends ChartPainter {
 
 	/**
 	 * @return the glyph's preferred pixel width (circle diameter + label width),
-	 *         valid only after at least one {@link #draw(Graphics2D)} call --
-	 *         the label width depends on font metrics only available at draw time
+	 *         valid only after at least one {@link #draw(Graphics2D)} call -- the
+	 *         label width depends on font metrics only available at draw time
 	 */
 	public int getPreferredWidth() {
 		return preferredWidth;

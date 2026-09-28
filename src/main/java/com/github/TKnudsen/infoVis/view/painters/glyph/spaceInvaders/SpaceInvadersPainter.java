@@ -19,8 +19,8 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * with the painter's own rectangle, so the same glyph reads correctly from icon
  * size up to a full window.
  *
- * @version 1.1
  * @since 2011
+ * @version 1.1 revised in September 2026
  */
 public class SpaceInvadersPainter extends ChartPainter {
 

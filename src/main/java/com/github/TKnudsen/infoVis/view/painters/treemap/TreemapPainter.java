@@ -193,6 +193,12 @@ public class TreemapPainter<T> extends ChartPainter implements IClickSelection<T
 		this.selectedFunction = selectedFunction;
 	}
 
+	/** Labels can run long (a full file path); shown in full up to this many characters, ellipsized beyond it. */
+	private static final int TOOLTIP_MAX_CHARS = 255;
+
+	/** Rough per-character width estimate (13pt font) for sizing the tooltip box; {@link StringPainter} truncates/fits to the real font metrics at draw time regardless, so an imprecise estimate here only affects how generously wide the box is offered, not correctness. */
+	private static final double TOOLTIP_CHAR_WIDTH_ESTIMATE = 7.5;
+
 	/** Shows the label (file/folder name) of whatever tile is under the pointer, reusing the same deepest-node lookup {@link #getElementsAtPoint(Point)} uses. */
 	@Override
 	public ChartPainter getTooltip(Point p) {
@@ -203,8 +209,16 @@ public class TreemapPainter<T> extends ChartPainter implements IClickSelection<T
 		if (node == null)
 			return null;
 
-		StringPainter stringPainter = new StringPainter(node.getLabel());
-		stringPainter.setRectangle(ToolTipTools.createToolTipRectangle(getRectangle(), p, 160, 28));
+		String label = node.getLabel();
+		if (label == null)
+			label = "";
+		if (label.length() > TOOLTIP_MAX_CHARS)
+			label = label.substring(0, TOOLTIP_MAX_CHARS) + "...";
+
+		double width = Math.max(160, label.length() * TOOLTIP_CHAR_WIDTH_ESTIMATE + 16);
+
+		StringPainter stringPainter = new StringPainter(label);
+		stringPainter.setRectangle(ToolTipTools.createToolTipRectangle(getRectangle(), p, width, 28));
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.75f));
 		stringPainter.setFontColor(Color.WHITE);
 		stringPainter.setFontSize(13);

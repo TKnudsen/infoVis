@@ -12,6 +12,7 @@ import javax.swing.JPanel;
  * bounds.
  * </p>
  *
+ * @since 2020
  * @version 1.1
  */
 public class QuadraticPanel extends JPanel {
@@ -33,8 +34,8 @@ public class QuadraticPanel extends JPanel {
 
 	/**
 	 * @param nestedComponent the component to constrain
-	 * @param aspectRatio     desired width:height ratio, e.g. 1.0 for square,
-	 *                        1.5 for 3:2, 0.5 for a portrait 1:2
+	 * @param aspectRatio     desired width:height ratio, e.g. 1.0 for square, 1.5
+	 *                        for 3:2, 0.5 for a portrait 1:2
 	 */
 	public QuadraticPanel(JComponent nestedComponent, double aspectRatio) {
 		if (aspectRatio <= 0 || !Double.isFinite(aspectRatio))

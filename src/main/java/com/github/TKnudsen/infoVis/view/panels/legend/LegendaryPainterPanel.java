@@ -16,27 +16,31 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
  * Wraps an arbitrary {@link ChartPainter} with a {@link LegendaryPainter}
- * overlay drawn on top of the whole panel -- for a chart whose own axes
- * don't already occupy the space a legend would need.
+ * overlay drawn on top of the whole panel -- for a chart whose own axes don't
+ * already occupy the space a legendPainter would need.
  *
- * @param <AP> the wrapped chart painter's type
+ * @param <P> the wrapped chart painter's type
  * @since 2013
  */
-public class LegendaryPainterPanel<AP extends ChartPainter> extends InfoVisChartPanel {
+public class LegendaryPainterPanel<P extends ChartPainter> extends InfoVisChartPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private final LegendaryPainter legendary;
+	private final P painter;
+	private final LegendaryPainter legendPainter;
 
-	public LegendaryPainterPanel(AP painter, List<Entry<String, Paint>> legendaryEntries) {
+	public LegendaryPainterPanel(P painter, List<Entry<String, Paint>> legendEntries) {
 		super(painter);
 
-		legendary = new LegendaryPainter();
-		legendary.setData(legendaryEntries);
+		this.painter = painter;
+		legendPainter = new LegendaryPainter();
+		legendPainter.setData(legendEntries);
 	}
 
-	public LegendaryPainterPanel(AP painter, List<String> legendaryEntries, List<Color> legendaryColors) {
+	public LegendaryPainterPanel(P painter, List<String> legendaryEntries, List<Color> legendaryColors) {
 		super(painter);
+
+		this.painter = painter;
 
 		List<Entry<String, Paint>> entries = new ArrayList<>();
 		for (int i = 0; i < legendaryEntries.size(); i++) {
@@ -46,15 +50,19 @@ public class LegendaryPainterPanel<AP extends ChartPainter> extends InfoVisChart
 			entries.add(new SimpleEntry<String, Paint>(legendaryEntries.get(i), c));
 		}
 
-		legendary = new LegendaryPainter();
-		legendary.setData(entries);
+		legendPainter = new LegendaryPainter();
+		legendPainter.setData(entries);
+	}
+
+	public P getPainter() {
+		return painter;
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		legendary.setRectangle(new Rectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1));
-		legendary.draw((Graphics2D) g);
+		legendPainter.setRectangle(new Rectangle2D.Double(0, 0, getWidth() - 1, getHeight() - 1));
+		legendPainter.draw((Graphics2D) g);
 	}
 }

@@ -192,10 +192,14 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 			addMarkerPosition(pixValue, startValue, formattingScale);
 
 			// iterate...
+			// note: "<=" against maxValue, not "<" -- when quantization evenly
+			// divides the range (the common "nice" case, e.g. 0.25 steps over
+			// [0,1]), the walk lands exactly on maxValue, and a strict "<" would
+			// drop that tick even though it's the axis's own upper bound.
 			double loop = quantization;
 			while (!Double.isNaN(loop) && !Double.isInfinite(loop)
 					&& new BigDecimal(loop).doubleValue() <= new BigDecimal(valueInterval).doubleValue()
-					&& new BigDecimal(startValue + loop).doubleValue() < maxValue.doubleValue()) {
+					&& new BigDecimal(startValue + loop).doubleValue() <= maxValue.doubleValue()) {
 				pixValue = positionEncodingFunction.apply(startValue + loop);
 				addMarkerPosition(pixValue, startValue + loop, formattingScale);
 				loop += quantization;

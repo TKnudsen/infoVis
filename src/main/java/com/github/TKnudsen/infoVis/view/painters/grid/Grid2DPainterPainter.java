@@ -38,7 +38,7 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	private double gridSpacing = Double.NaN;
 	private boolean enableToolTipping = true;
 
-	protected String[][] toolTipStringGrid;
+	private String[][] toolTipStringGrid;
 
 	public Grid2DPainterPainter(T[][] painters) {
 		this(painters, null);

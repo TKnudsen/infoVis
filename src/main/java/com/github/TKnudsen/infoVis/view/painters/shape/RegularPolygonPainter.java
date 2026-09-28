@@ -12,7 +12,7 @@ import com.github.TKnudsen.infoVis.view.painters.shape.shapes.RegularPolygon;
  * Draws a regular N-sided polygon inscribed in the painter's rectangle.
  *
  * @version 1.0
- * @since 2026
+ * @since 2018
  */
 public class RegularPolygonPainter extends ChartPainter {
 

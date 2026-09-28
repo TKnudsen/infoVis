@@ -21,16 +21,25 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * space.
  * </p>
  *
- * @version 1.1 (optimized)
+ * @version 1.2 -- start/end points are now marked blue/orange (a directional
+ *          cue carried over from the legacy PainterLib TrajectoryPainter,
+ *          which this class otherwise fully supersedes -- overlaid on top of
+ *          screenPoints rather than tracked via drawPoint()'s call order,
+ *          since selected points are drawn in a deferred second pass and so
+ *          are not necessarily visited in data order), and an optional label
+ *          can be drawn in the chart's bottom-left corner via
+ *          {@link #setLabel(String)}
  * @since 2019
  */
 public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 
-	// private Point2D lastPoint = null;
+	private static final float START_END_MARKER_SIZE_FACTOR = 1.33f;
 
 	// Store last coordinates as primitives to avoid Point2D deref each time
 	private float lastX, lastY;
 	private boolean hasLast = false;
+
+	private String label;
 
 	public TrajectoryPainter(List<T> data, Function<? super T, ? extends Paint> colorMapping,
 			Function<? super T, Double> worldPositionMappingX, Function<? super T, Double> worldPositionMappingY) {
@@ -41,36 +50,58 @@ public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 		hasLast = false;
+
+		markStartAndEnd(g2);
+		drawLabel(g2);
+	}
+
+	private void markStartAndEnd(Graphics2D g2) {
+		if (chartRectangle == null || screenPoints == null || screenPoints.isEmpty())
+			return;
+
+		float pointSize = (float) calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+
+		Paint oldPaint = g2.getPaint();
+
+		Point2D start = screenPoints.get(0);
+		if (start != null) {
+			g2.setPaint(Color.BLUE);
+			DisplayTools.drawPoint(g2, (float) start.getX(), (float) start.getY(),
+					pointSize * START_END_MARKER_SIZE_FACTOR, true);
+		}
+
+		if (screenPoints.size() > 1) {
+			Point2D end = screenPoints.get(screenPoints.size() - 1);
+			if (end != null) {
+				g2.setPaint(Color.ORANGE);
+				DisplayTools.drawPoint(g2, (float) end.getX(), (float) end.getY(),
+						pointSize * START_END_MARKER_SIZE_FACTOR, true);
+			}
+		}
+
+		g2.setPaint(oldPaint);
+	}
+
+	private void drawLabel(Graphics2D g2) {
+		if (label == null || chartRectangle == null)
+			return;
+
+		Color oldColor = g2.getColor();
+		g2.setColor(Color.BLACK);
+		g2.drawString(label, (int) chartRectangle.getX() + 2, (int) (chartRectangle.getMaxY() - 4));
+		g2.setColor(oldColor);
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	@Override
 	protected void drawPoint(Graphics2D g2, Point2D point, float pointSize, Paint pointPaint, boolean selected) {
-//		if (selected) {
-//			// line
-//			if (lastPoint != null) {
-//				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-//						BasicStrokeTools.get((float) (pointSize + 2), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND),
-//						Color.BLACK);
-//				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-//						BasicStrokeTools.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
-//
-//			}
-//
-//			// point
-//			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.66, Color.BLACK, true);
-//			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
-//		} else {
-//			// line
-//			if (lastPoint != null)
-//				DisplayTools.drawLine(g2, lastPoint.getX(), lastPoint.getY(), point.getX(), point.getY(),
-//						BasicStrokeTools.get(pointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), pointPaint);
-//
-//			// point
-//			DisplayTools.drawPoint(g2, point.getX(), point.getY(), pointSize * 1.33, pointPaint, true);
-//		}
-//
-//		lastPoint = point;
-
 		final float x = (float) point.getX();
 		final float y = (float) point.getY();
 

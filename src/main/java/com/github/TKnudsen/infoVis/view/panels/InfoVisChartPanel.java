@@ -27,7 +27,7 @@ import com.github.TKnudsen.infoVis.view.tools.ComponentTools;
  * Basic chart functionality to maintain, layout, and draw painters.
  * </p>
  *
- * @version 2.07
+ * @version 2.27
  * @since 2016
  */
 public class InfoVisChartPanel extends JPanel implements IToolTipPaintable {

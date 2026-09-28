@@ -12,9 +12,9 @@ import com.github.TKnudsen.infoVis.view.painters.glyph.spaceInvaders.SpaceInvade
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
- * Standalone interactive demo of {@link SpaceInvadersPainter} at a few
- * different sizes, since its stroke thickness and headline layout both
- * change across internal size tiers.
+ * Stand-alone interactive demo of {@link SpaceInvadersPainter} at a few
+ * different sizes, since its stroke thickness and headline layout both change
+ * across internal size tiers.
  *
  * @version 1.0
  * @since 2026

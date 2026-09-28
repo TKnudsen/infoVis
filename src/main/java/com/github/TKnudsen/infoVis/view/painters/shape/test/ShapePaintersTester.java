@@ -15,21 +15,20 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * <p>
  * Gallery demo: one row each of {@link RegularPolygonPainter},
  * {@link RegularShapePainter}, {@link StarPolygonPainter} and
- * {@link RoundPolygonPainter}, growing from a triangle (3 edges) up to a
- * 17-gon -- shows how all four shape families vary with edge count, side by
- * side.
+ * {@link RoundPolygonPainter}, growing from a triangle (3 edges) up to a 17-gon
+ * -- shows how all four shape families vary with edge count, side by side.
  * </p>
  *
  * @version 1.0
  * @since 2026
  */
-public class ShapePaintersTesterOverview {
+public class ShapePaintersTester {
 
 	public static void main(String[] args) {
 
 		int painterCount = 15;
 
-		JPanel panel = new JPanel(new GridLayout(4, painterCount));
+		JPanel panel = new JPanel(new GridLayout(5, painterCount));
 
 		// RegularPolygonPainter
 		for (int i = 0; i < painterCount; i++)
@@ -45,7 +44,11 @@ public class ShapePaintersTesterOverview {
 
 		// RoundPolygonPainter
 		for (int i = 0; i < painterCount; i++)
-			panel.add(new InfoVisChartPanel(new RoundPolygonPainter(i + 3)));
+			panel.add(new InfoVisChartPanel(new RoundPolygonPainter(i + 3, 0.15)));
+
+		// RoundPolygonPainter
+		for (int i = 0; i < painterCount; i++)
+			panel.add(new InfoVisChartPanel(new RoundPolygonPainter(i + 3, 0.35)));
 
 		SVGFrameTools.dropSVGFrame(panel, "Shape Painters Overview", 1200, 320);
 	}

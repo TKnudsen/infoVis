@@ -1,5 +1,6 @@
 package com.github.TKnudsen.infoVis.view.panels.aggregation.test;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +13,9 @@ import de.javagl.selection.SelectionModel;
 import de.javagl.selection.SelectionModels;
 
 /**
- * Interactive demo of {@link AggregateSignificanceBarChartPainterPanel}:
- * click a bar to select it (control-click to add to the selection), or the
- * close button in the corner to remove the panel.
+ * Interactive demo of {@link AggregateSignificanceBarChartPainterPanel}: click
+ * a bar to select it (control-click to add to the selection), or the close
+ * button in the corner to remove the panel.
  *
  * @since 2026
  */
@@ -36,11 +37,14 @@ public class AggregateSignificanceBarChartPainterPanelTester {
 
 		SelectionModel<Long> selectionModel = SelectionModels.create();
 
-		AggregateSignificanceBarChartPainterPanel<Long> panel = new AggregateSignificanceBarChartPainterPanel<>(elementMapping, labels,
-				headline, selectionModel);
+		AggregateSignificanceBarChartPainterPanel<Long> panel = new AggregateSignificanceBarChartPainterPanel<>(
+				elementMapping, labels, headline, selectionModel);
+
+		List<Color> colors = Arrays.asList(new Color(100, 30, 31), new Color(167, 167, 167), new Color(37, 73, 159));
+		panel.setSignificanceColors(colors);
 
 		selectionModel.addSelectionListener(panel);
 
-		SVGFrameTools.dropSVGFrame(panel, headline, 1000, 700);
+		SVGFrameTools.dropSVGFrame(panel, headline, 600, 200);
 	}
 }

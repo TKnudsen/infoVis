@@ -29,13 +29,25 @@ public class PanningOneAxisHandler extends InteractionHandler {
 	private final Number worldGlobalMax;
 	private IPositionEncodingFunction positionEncodingFunction;
 
+	/**
+	 * Which screen coordinate drives the pan math. {@code false} (default) reads
+	 * mouse X, matching every existing caller of this class, which all target a
+	 * horizontal axis; {@code true} reads mouse Y instead, for a handler built
+	 * from a Y-axis position-encoding function -- see the
+	 * {@code verticalAxis}-taking constructors. Without this, a "Y-axis" handler
+	 * would still silently drive off horizontal mouse movement, since nothing
+	 * about the position-encoding function itself tells this class which screen
+	 * axis it corresponds to.
+	 */
+	private boolean verticalAxis = false;
+
 	long lastDrag = 0L;
 	Point lastPoint = null;
 
 	private final List<NumberIntervalChangeListener> numberIntervalChangeListeners = new CopyOnWriteArrayList<>();
 
 	/**
-	 * 
+	 *
 	 * @param worldGlobalMin           min
 	 * @param worldGlobalMax           max
 	 * @param positionEncodingFunction function
@@ -51,7 +63,7 @@ public class PanningOneAxisHandler extends InteractionHandler {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param worldGlobalMin           min
 	 * @param worldGlobalMax           max
 	 * @param positionEncodingFunction function
@@ -62,6 +74,22 @@ public class PanningOneAxisHandler extends InteractionHandler {
 		this(worldGlobalMin, worldGlobalMax, positionEncodingFunction);
 
 		setMouseButton(mouseButton);
+	}
+
+	/**
+	 * @param worldGlobalMin           min
+	 * @param worldGlobalMax           max
+	 * @param positionEncodingFunction function
+	 * @param mouseButton              button
+	 * @param verticalAxis             {@code true} if
+	 *                                  {@code positionEncodingFunction} is a
+	 *                                  Y-axis (drives off mouse Y instead of X)
+	 */
+	public PanningOneAxisHandler(Number worldGlobalMin, Number worldGlobalMax,
+			IPositionEncodingFunction positionEncodingFunction, MouseButton mouseButton, boolean verticalAxis) {
+		this(worldGlobalMin, worldGlobalMax, positionEncodingFunction, mouseButton);
+
+		this.verticalAxis = verticalAxis;
 	}
 
 	private MouseListener createMouseListener() {
@@ -125,10 +153,12 @@ public class PanningOneAxisHandler extends InteractionHandler {
 
 		NumberInterval oldNumberInterval = getCurrentXAxisMinMaxValues();
 
-		int deltaX = mouseEvent.getPoint().x - lastPoint.x;
+		double currentCoord = verticalAxis ? mouseEvent.getPoint().getY() : mouseEvent.getPoint().getX();
+		double lastCoord = verticalAxis ? lastPoint.getY() : lastPoint.getX();
+		double delta = currentCoord - lastCoord;
 
-		double d0 = positionEncodingFunction.inverseMapping(mouseEvent.getPoint().getX()).doubleValue();
-		double d1 = positionEncodingFunction.inverseMapping(mouseEvent.getPoint().getX() + deltaX).doubleValue();
+		double d0 = positionEncodingFunction.inverseMapping(currentCoord).doubleValue();
+		double d1 = positionEncodingFunction.inverseMapping(currentCoord + delta).doubleValue();
 		double diff = MathFunctions.round(d1 - d0, 0);
 
 		if (diff == 0)
