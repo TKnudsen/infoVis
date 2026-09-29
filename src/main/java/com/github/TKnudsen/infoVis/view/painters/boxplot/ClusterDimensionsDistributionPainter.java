@@ -74,6 +74,13 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 	private boolean showAxis = true;
 	private boolean showTicks = false;
 
+	// user-facing toggles for the two real-unit label kinds (see
+	// #drawCentroidLines and #drawTicks); independent of `showTicks`, which
+	// is auto-computed from available space in #recalculateLayout and gates
+	// axis-endpoint labels regardless of this flag
+	private boolean showCentroidLabel = true;
+	private boolean showAxisEndpointLabels = true;
+
 	private String title = "";
 	private Color titleBackground = Color.LIGHT_GRAY;
 
@@ -100,7 +107,7 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 	private Color densityLineColor = Color.BLACK;
 	private Color centroidLineColor = Color.RED;
 	private Color spreadBandColor = new Color(64, 64, 64, 90);
-	private Color tickColor = Color.BLUE;
+	private Color tickColor = Color.DARK_GRAY;
 
 	public ClusterDimensionsDistributionPainter(double[] centroid, List<double[]> members) {
 		this.centroid = centroid;
@@ -307,14 +314,41 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 		}
 	}
 
+	/**
+	 * Draws each dimension's centroid line, and -- when
+	 * {@link #globalStatisticsPerDimension} is available -- its real-unit value
+	 * as a label in {@link #centroidLineColor}, so it reads visually distinct
+	 * from the two axis-endpoint labels {@link #drawTicks(Graphics2D)} draws in
+	 * {@link #tickColor} (the dataset's real-unit min/max for that dimension --
+	 * not quartile-based whiskers, and not this particular cluster's own
+	 * min/max, which is the unlabeled gray range band from
+	 * {@link #drawRangeBands(Graphics2D)}). The two never collide:
+	 * {@link #drawTicks} skips any tick that would land within
+	 * {@code labelFontSize} of the centroid.
+	 */
 	private void drawCentroidLines(Graphics2D g2) {
 		if (members.size() < 1 || densityBins == null)
 			return;
 
 		g2.setColor(centroidLineColor);
+		Font font = new Font(g2.getFont().getName(), g2.getFont().getStyle(), labelFontSize);
+
 		for (int i = 0; i < densityBins.length; i++) {
+			double x = columnLeft(i);
 			int y = (int) toScreenY(centroid[i]);
-			g2.drawLine((int) columnLeft(i), y, (int) columnRight(i), y);
+			g2.drawLine((int) x, y, (int) columnRight(i), y);
+
+			if (showCentroidLabel && globalStatisticsPerDimension != null && i < globalStatisticsPerDimension.length) {
+				double dimensionMin = globalStatisticsPerDimension[i].getMin();
+				double dimensionMax = globalStatisticsPerDimension[i].getMax();
+				double value = dimensionMin + centroid[i] * (dimensionMax - dimensionMin);
+
+				int labelY = Math.max(y, (int) (dataAreaRectangle.getY() + columnSpacing + labelFontSize));
+
+				g2.setFont(font);
+				g2.setColor(centroidLineColor);
+				g2.drawString(formatTickValue(value, dimensionMax), (int) (x + tickMarkLength), labelY);
+			}
 		}
 	}
 
@@ -341,7 +375,8 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 	}
 
 	private void drawTicks(Graphics2D g2) {
-		if (!showTicks || globalStatisticsPerDimension == null || members.size() < 1 || densityBins == null)
+		if (!showTicks || !showAxisEndpointLabels || globalStatisticsPerDimension == null || members.size() < 1
+				|| densityBins == null)
 			return;
 
 		g2.setColor(tickColor);
@@ -510,6 +545,24 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 	public void setShowAxis(boolean showAxis) {
 		this.showAxis = showAxis;
 		setRectangle(getRectangle());
+	}
+
+	/** Whether each dimension's centroid line carries its real-unit value label (in {@link #centroidLineColor}). */
+	public boolean isShowCentroidLabel() {
+		return showCentroidLabel;
+	}
+
+	public void setShowCentroidLabel(boolean showCentroidLabel) {
+		this.showCentroidLabel = showCentroidLabel;
+	}
+
+	/** Whether each dimension shows its real-unit axis-endpoint (min/max) labels (in {@link #tickColor}). */
+	public boolean isShowAxisEndpointLabels() {
+		return showAxisEndpointLabels;
+	}
+
+	public void setShowAxisEndpointLabels(boolean showAxisEndpointLabels) {
+		this.showAxisEndpointLabels = showAxisEndpointLabels;
 	}
 
 	public YAxisNumericalPainter<Double> getAxisPainter() {
