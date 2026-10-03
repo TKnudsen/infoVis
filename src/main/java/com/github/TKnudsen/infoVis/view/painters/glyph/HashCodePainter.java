@@ -132,7 +132,7 @@ public class HashCodePainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Color oldColor = g2.getColor();
@@ -146,16 +146,16 @@ public class HashCodePainter extends ChartPainter {
 
 		double angle = 2 * Math.PI / (double) numberOfPeaks;
 		AffineTransform old = g2.getTransform();
-		AffineTransform rotate = AffineTransform.getRotateInstance(angle, rectangle.getCenterX(),
-				rectangle.getCenterY());
-		AffineTransform initRotationTransform = AffineTransform.getRotateInstance(initRotation, rectangle.getCenterX(),
-				rectangle.getCenterY());
+		AffineTransform rotate = AffineTransform.getRotateInstance(angle, getRectangle().getCenterX(),
+				getRectangle().getCenterY());
+		AffineTransform initRotationTransform = AffineTransform.getRotateInstance(initRotation, getRectangle().getCenterX(),
+				getRectangle().getCenterY());
 
 		g2.transform(initRotationTransform);
 		for (int i = 0; i < numberOfPeaks; i++) {
-			double orbitX = rectangle.getCenterX();
-			double orbitY = rectangle.getCenterY() - orbitDistance * half;
-			DisplayTools.drawLine(g2, (float) rectangle.getCenterX(), (float) rectangle.getCenterY(), (float) orbitX,
+			double orbitX = getRectangle().getCenterX();
+			double orbitY = getRectangle().getCenterY() - orbitDistance * half;
+			DisplayTools.drawLine(g2, (float) getRectangle().getCenterX(), (float) getRectangle().getCenterY(), (float) orbitX,
 					(float) orbitY);
 
 			double offshotPointX1 = orbitX - Math.sin(Math.toRadians(offshotAngle)) * offshotDistance * half;
@@ -165,17 +165,17 @@ public class HashCodePainter extends ChartPainter {
 			DisplayTools.drawLine(g2, (float) orbitX, (float) orbitY, (float) offshotPointX2, (float) offshotPointY);
 
 			// spline towards the border and back
-			double curveScaleX = rectangle.getCenterX();
+			double curveScaleX = getRectangle().getCenterX();
 			Path2D.Double path = new Path2D.Double();
 			path.moveTo(offshotPointX1, offshotPointY);
-			path.quadTo(curveScaleX - CURVE_CONTROL_POINT_OFFSET * half, rectangle.getMinY(), curveScaleX,
-					rectangle.getMinY());
-			path.quadTo(curveScaleX + CURVE_CONTROL_POINT_OFFSET * half, rectangle.getMinY(), offshotPointX2,
+			path.quadTo(curveScaleX - CURVE_CONTROL_POINT_OFFSET * half, getRectangle().getMinY(), curveScaleX,
+					getRectangle().getMinY());
+			path.quadTo(curveScaleX + CURVE_CONTROL_POINT_OFFSET * half, getRectangle().getMinY(), offshotPointX2,
 					offshotPointY);
 			g2.draw(path);
 
 			// g2's paint is already `color` (set at the top of this method)
-			DisplayTools.drawPoint(g2, rectangle.getCenterX(), rectangle.getCenterY(), centerDotSize * half, false);
+			DisplayTools.drawPoint(g2, getRectangle().getCenterX(), getRectangle().getCenterY(), centerDotSize * half, false);
 
 			g2.transform(rotate);
 		}

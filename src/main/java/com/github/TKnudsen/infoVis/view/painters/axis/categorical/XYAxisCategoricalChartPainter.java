@@ -37,7 +37,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
-		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();
+		setChartRectangle(xyAxisChartRectangleLayout.getChartRectangle());
 		xAxisPainter.setRectangle(xyAxisChartRectangleLayout.getXAxisRectangle());
 		yAxisPainter.setRectangle(xyAxisChartRectangleLayout.getYAxisRectangle());
 	}
@@ -56,11 +56,11 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 
 		drawChart(g2);
 
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setColor(c);
@@ -83,7 +83,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 	@Override
 	public void setDrawYAxis(boolean drawYAxis) {
 		this.xyAxisChartRectangleLayout.setDrawYAxis(drawYAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getYAxisLegendWidth() {
@@ -93,7 +93,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 	@Override
 	public void setYAxisLegendWidth(double yAxisLegendWidth) {
 		this.xyAxisChartRectangleLayout.setYAxisLegendWidth(yAxisLegendWidth);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public boolean isDrawXAxis() {
@@ -103,7 +103,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 	@Override
 	public void setDrawXAxis(boolean drawXAxis) {
 		this.xyAxisChartRectangleLayout.setDrawXAxis(drawXAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public abstract class XYAxisCategoricalChartPainter<X extends List<String>, Y ex
 	@Override
 	public void setXAxisLegendHeight(double xAxisLegendHeight) {
 		this.xyAxisChartRectangleLayout.setXAxisLegendHeight(xAxisLegendHeight);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public XYAxisChartRectangleLayout getXyAxisChartRectangleLayout() {

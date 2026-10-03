@@ -66,7 +66,7 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (g2 == null || rectangle == null)
+		if (g2 == null || getRectangle() == null)
 			return;
 
 		// Save graphics state
@@ -102,15 +102,15 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 	 * @param g2 the graphics context
 	 */
 	private void drawHeadline(Graphics2D g2) {
-		if (headline == null || headline.isEmpty() || rectangle == null)
+		if (headline == null || headline.isEmpty() || getRectangle() == null)
 			return;
 
 		g2.setColor(fontColor);
 		g2.setFont(font);
 
 		FontMetrics fm = g2.getFontMetrics();
-		float x = (float) (rectangle.getX() + (rectangle.getWidth() - fm.stringWidth(headline)) * CENTER_ALIGNMENT_FACTOR);
-		float y = (float) (rectangle.getY() + fm.getHeight());
+		float x = (float) (getRectangle().getX() + (getRectangle().getWidth() - fm.stringWidth(headline)) * CENTER_ALIGNMENT_FACTOR);
+		float y = (float) (getRectangle().getY() + fm.getHeight());
 
 		g2.drawString(headline, x, y);
 	}
@@ -127,8 +127,8 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 
 		g2.setPaint(borderPaint);
 
-		if (rectangle != null)
-			g2.draw(rectangle);
+		if (getRectangle() != null)
+			g2.draw(getRectangle());
 
 		if (chartRectangle != null)
 			g2.draw(chartRectangle);
@@ -310,8 +310,8 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 		this.headline = headline;
 
 		// Recalculate layout if rectangle is set
-		if (rectangle != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null)
+			setRectangle(getRectangle());
 	}
 
 	/**
@@ -360,8 +360,8 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 			barsPainter.setFontSize(fontSize);
 
 		// Recalculate layout since headline spacing depends on font size
-		if (rectangle != null && headline != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null && headline != null)
+			setRectangle(getRectangle());
 	}
 
 	@Override
@@ -470,7 +470,7 @@ public class AggregationBarChartPainter<O> extends ChartPainter implements ITool
 		this.barsPainter = barsPainter;
 
 		// Update layout
-		if (rectangle != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null)
+			setRectangle(getRectangle());
 	}
 }

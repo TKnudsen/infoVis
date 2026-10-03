@@ -75,13 +75,13 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 		double hReduced = 0;
 
 		if (!specialValues.isEmpty() && highlightsAtTheUpperBound && isShowTrianglesForSelection())
-			hReduced = chartRectangle.getHeight() * getRelativeHighlightHeight();
+			hReduced = getChartRectangle().getHeight() * getRelativeHighlightHeight();
 
-		return chartRectangle.getMaxY() + hReduced;
+		return getChartRectangle().getMaxY() + hReduced;
 	}
 
 	public void drawHighlightTriangle(Graphics2D g2, T worldData, Paint paint) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		Color c = g2.getColor();
@@ -90,21 +90,21 @@ public class Distribution1DHorizontalHighlightPainter<T> extends Distribution1DH
 		Number worldValue = getWorldToDoubleMapping().apply(worldData);
 		double xCord = getPositionEncodingFunction().apply(worldValue);
 
-		double height = (Double.isNaN(getSizeOfTriangle())) ? chartRectangle.getHeight() * getRelativeHighlightHeight()
+		double height = (Double.isNaN(getSizeOfTriangle())) ? getChartRectangle().getHeight() * getRelativeHighlightHeight()
 				: getSizeOfTriangle();
 
 		Path2D path = new Path2D.Double();
 
 		if (highlightsAtTheUpperBound) {
-			path.moveTo(xCord, this.chartRectangle.getMinY() + height);
-			path.lineTo(xCord + 0.5 * height, this.chartRectangle.getMinY());
-			path.lineTo(xCord - 0.5 * height, this.chartRectangle.getMinY());
-			path.lineTo(xCord, this.chartRectangle.getMinY() + height);
+			path.moveTo(xCord, getChartRectangle().getMinY() + height);
+			path.lineTo(xCord + 0.5 * height, getChartRectangle().getMinY());
+			path.lineTo(xCord - 0.5 * height, getChartRectangle().getMinY());
+			path.lineTo(xCord, getChartRectangle().getMinY() + height);
 		} else {
-			path.moveTo(xCord, this.chartRectangle.getMaxY() - height);
-			path.lineTo(xCord + 0.5 * height, this.chartRectangle.getMaxY());
-			path.lineTo(xCord - 0.5 * height, this.chartRectangle.getMaxY());
-			path.lineTo(xCord, this.chartRectangle.getMaxY() - height);
+			path.moveTo(xCord, getChartRectangle().getMaxY() - height);
+			path.lineTo(xCord + 0.5 * height, getChartRectangle().getMaxY());
+			path.lineTo(xCord - 0.5 * height, getChartRectangle().getMaxY());
+			path.lineTo(xCord, getChartRectangle().getMaxY() - height);
 		}
 
 		g2.setStroke(DisplayTools.standardStroke);

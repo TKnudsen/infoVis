@@ -31,11 +31,11 @@ public class YAxisCategoricalPainter<T extends List<String>> extends AxisCategor
 	protected void refreshLabelPainters() {
 		labelPainters = new ArrayList<>();
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		axisRectangle = new Rectangle2D.Double(rectangle.getMinX(), rectangle.getMinY() + offsetWithinChartRectangle,
-				rectangle.getWidth(), rectangle.getHeight() - (2 * offsetWithinChartRectangle));
+		axisRectangle = new Rectangle2D.Double(getRectangle().getMinX(), getRectangle().getMinY() + offsetWithinChartRectangle,
+				getRectangle().getWidth(), getRectangle().getHeight() - (2 * offsetWithinChartRectangle));
 
 		if (markerLabels != null)
 			for (int i = 0; i < markerLabels.size(); i++) {
@@ -78,28 +78,28 @@ public class YAxisCategoricalPainter<T extends List<String>> extends AxisCategor
 	@Override
 	protected void drawAxis(Graphics2D g2) {
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		// draw Y-Axis
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 		g2.setStroke(stroke);
 		if (drawInnerAxisLegend)
 			if (drawAxisBetweenAxeMarkersOnly)
-				DisplayTools.drawLine(g2, (int) this.rectangle.getMinX(), markerPositionsWithLabels.get(0).getKey(),
-						(int) this.rectangle.getMinX(),
+				DisplayTools.drawLine(g2, (int) getRectangle().getMinX(), markerPositionsWithLabels.get(0).getKey(),
+						(int) getRectangle().getMinX(),
 						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
 			else
-				g2.drawLine((int) this.rectangle.getMinX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMinX(),
-						(int) (rectangle.getMaxY()));
+				g2.drawLine((int) getRectangle().getMinX(), (int) (getRectangle().getMinY()), (int) getRectangle().getMinX(),
+						(int) (getRectangle().getMaxY()));
 		else {
 			if (drawAxisBetweenAxeMarkersOnly)
-				DisplayTools.drawLine(g2, (int) this.rectangle.getMaxX(), markerPositionsWithLabels.get(0).getKey(),
-						(int) this.rectangle.getMaxX(),
+				DisplayTools.drawLine(g2, (int) getRectangle().getMaxX(), markerPositionsWithLabels.get(0).getKey(),
+						(int) getRectangle().getMaxX(),
 						markerPositionsWithLabels.get(markerPositionsWithLabels.size() - 1).getKey());
 			else
-				g2.drawLine((int) this.rectangle.getMaxX(), (int) (rectangle.getMinY()), (int) this.rectangle.getMaxX(),
-						(int) (rectangle.getMaxY()));
+				g2.drawLine((int) getRectangle().getMaxX(), (int) (getRectangle().getMinY()), (int) getRectangle().getMaxX(),
+						(int) (getRectangle().getMaxY()));
 		}
 
 		// draw markers

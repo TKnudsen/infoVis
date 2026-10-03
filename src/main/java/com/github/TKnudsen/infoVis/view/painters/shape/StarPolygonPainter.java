@@ -47,12 +47,12 @@ public class StarPolygonPainter extends ChartPainter {
 	}
 
 	protected void calculatePolygon() {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		int x = (int) rectangle.getCenterX();
-		int y = (int) rectangle.getCenterY();
-		int r = (int) (Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.5);
+		int x = (int) getRectangle().getCenterX();
+		int y = (int) getRectangle().getCenterY();
+		int r = (int) (Math.min(getRectangle().getWidth(), getRectangle().getHeight()) * 0.5);
 		int innerR = (int) (Math.max(1, r * 0.4));
 		double startAngle = -Math.PI / 2;
 

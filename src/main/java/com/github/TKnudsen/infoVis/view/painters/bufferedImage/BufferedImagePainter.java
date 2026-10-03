@@ -50,7 +50,7 @@ public class BufferedImagePainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		Stroke s = g2.getStroke();
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		super.draw(g2);
@@ -59,12 +59,12 @@ public class BufferedImagePainter extends ChartPainter {
 			rescale();
 		if (scaledBImage != null)
 			g2.drawImage(scaledBImage,
-					(int) (rectangle.getX() + 0.5 * (rectangle.getWidth() - scaledBImage.getWidth())),
-					(int) (rectangle.getY() + 0.5 * (rectangle.getHeight() - scaledBImage.getHeight())), null, null);
+					(int) (getRectangle().getX() + 0.5 * (getRectangle().getWidth() - scaledBImage.getWidth())),
+					(int) (getRectangle().getY() + 0.5 * (getRectangle().getHeight() - scaledBImage.getHeight())), null, null);
 
 		if (isDrawOutline()) {
 			g2.setStroke(stroke);
-			DisplayTools.drawRectangle(g2, rectangle, getPaint());
+			DisplayTools.drawRectangle(g2, getRectangle(), getPaint());
 		}
 
 		g2.setStroke(s);
@@ -77,38 +77,38 @@ public class BufferedImagePainter extends ChartPainter {
 	}
 
 	private void rescale() {
-		if (bImage == null || rectangle == null)
+		if (bImage == null || getRectangle() == null)
 			return;
 
-		if (Double.isNaN(rectangle.getX()) || Double.isNaN(rectangle.getY()) || Double.isNaN(rectangle.getWidth())
-				|| Double.isNaN(rectangle.getHeight())) {
+		if (Double.isNaN(getRectangle().getX()) || Double.isNaN(getRectangle().getY()) || Double.isNaN(getRectangle().getWidth())
+				|| Double.isNaN(getRectangle().getHeight())) {
 			System.err.println("BufferedImagePainter: rectangle with null entries. canceling rescale.");
 			return;
 		}
 
-		if (rectangle.getWidth() <= 0 || rectangle.getHeight() <= 0)
+		if (getRectangle().getWidth() <= 0 || getRectangle().getHeight() <= 0)
 			scaledBImage = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_INDEXED);
-		else if (bImage.getData().getBounds().equals(rectangle)) {
+		else if (bImage.getData().getBounds().equals(getRectangle())) {
 			scaledBImage = bImage;
 			return;
-		} else if (scaledBImage.getData().getBounds().equals(rectangle)) {
+		} else if (scaledBImage.getData().getBounds().equals(getRectangle())) {
 			return;
 		} else {
 			int width;
 			int height;
 			if (keepRatio) {
-				double ratio = Math.min(rectangle.getWidth() / bImage.getWidth(),
-						rectangle.getHeight() / bImage.getHeight());
+				double ratio = Math.min(getRectangle().getWidth() / bImage.getWidth(),
+						getRectangle().getHeight() / bImage.getHeight());
 				width = (int) Math.max(Math.round(ratio * bImage.getWidth()), 1.0);
 				height = (int) Math.max(Math.round(ratio * bImage.getHeight()), 1.0);
 			} else {
-				width = (int) rectangle.getWidth();
-				height = (int) rectangle.getHeight();
+				width = (int) getRectangle().getWidth();
+				height = (int) getRectangle().getHeight();
 			}
 			scaledBImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D graphics2D = scaledBImage.createGraphics();
 			graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-			graphics2D.drawImage(bImage, 0, 0, (int) rectangle.getWidth(), (int) rectangle.getHeight(), null);
+			graphics2D.drawImage(bImage, 0, 0, (int) getRectangle().getWidth(), (int) getRectangle().getHeight(), null);
 		}
 	}
 

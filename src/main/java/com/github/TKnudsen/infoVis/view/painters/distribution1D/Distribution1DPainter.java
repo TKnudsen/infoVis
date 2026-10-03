@@ -108,9 +108,9 @@ public abstract class Distribution1DPainter<T> extends ChartPainter
 
 		// adjust alpha
 		if (dynamicAlpha)
-			if (chartRectangle != null)
+			if (getChartRectangle() != null)
 				alpha = (float) Math.min(1.0f,
-						Math.max(0.01f, chartRectangle.getWidth() / data.size() / stroke.getLineWidth() * 0.5f));
+						Math.max(0.01f, getChartRectangle().getWidth() / data.size() / stroke.getLineWidth() * 0.5f));
 
 		if (!externalPositionEncodingFunction)
 			updatePositionEncoding(rectangle);

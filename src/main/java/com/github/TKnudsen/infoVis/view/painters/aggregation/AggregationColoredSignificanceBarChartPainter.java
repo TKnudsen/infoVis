@@ -93,7 +93,7 @@ public class AggregationColoredSignificanceBarChartPainter<O> extends BarChartSe
 				significanceDotsBarsRenderer.setRectangle(rect);
 		}
 
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 	}
 
 	@Override

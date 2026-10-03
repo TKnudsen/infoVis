@@ -56,10 +56,10 @@ public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 	}
 
 	private void markStartAndEnd(Graphics2D g2) {
-		if (chartRectangle == null || screenPoints == null || screenPoints.isEmpty())
+		if (getChartRectangle() == null || screenPoints == null || screenPoints.isEmpty())
 			return;
 
-		float pointSize = (float) calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+		float pointSize = (float) calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		Paint oldPaint = g2.getPaint();
 
@@ -83,12 +83,12 @@ public class TrajectoryPainter<T> extends ScatterPlotPainter<T> {
 	}
 
 	private void drawLabel(Graphics2D g2) {
-		if (label == null || chartRectangle == null)
+		if (label == null || getChartRectangle() == null)
 			return;
 
 		Color oldColor = g2.getColor();
 		g2.setColor(Color.BLACK);
-		g2.drawString(label, (int) chartRectangle.getX() + 2, (int) (chartRectangle.getMaxY() - 4));
+		g2.drawString(label, (int) getChartRectangle().getX() + 2, (int) (getChartRectangle().getMaxY() - 4));
 		g2.setColor(oldColor);
 	}
 

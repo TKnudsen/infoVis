@@ -38,19 +38,19 @@ public class ArrowPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(getBackgroundPaint());
-		g2.fill(rectangle);
+		g2.fill(getRectangle());
 		g2.setPaint(getPaint());
 
 		Graphics2D g2d = (Graphics2D) g2.create();
 		try {
-			double x1 = rectangle.getX();
-			double y = rectangle.getCenterY();
-			double x2 = x1 + rectangle.getWidth() - ARROWHEAD_MARGIN;
+			double x1 = getRectangle().getX();
+			double y = getRectangle().getCenterY();
+			double x2 = x1 + getRectangle().getWidth() - ARROWHEAD_MARGIN;
 
 			g2d.draw(new Line2D.Double(x1, y, x2, y));
 			g2d.translate(x2, y);

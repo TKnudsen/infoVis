@@ -139,7 +139,7 @@ public class ClusterDimensionsDistributionPainter extends ChartPainter {
 		drawCentroidLines(g2);
 		drawTicks(g2);
 
-		DisplayTools.drawRectangle(g2, rectangle, Color.black);
+		DisplayTools.drawRectangle(g2, getRectangle(), Color.black);
 
 		g2.setColor(previousColor);
 	}

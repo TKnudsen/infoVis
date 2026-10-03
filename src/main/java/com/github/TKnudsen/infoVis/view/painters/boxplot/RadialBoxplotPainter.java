@@ -85,7 +85,7 @@ public class RadialBoxplotPainter extends ChartPainter {
 	}
 
 	private void intializeScreenCoordinates() {
-		if (chartRectangle == null || dataStatistics == null)
+		if (getChartRectangle() == null || dataStatistics == null)
 			return;
 
 		double min = dataStatistics.getMin();
@@ -132,24 +132,24 @@ public class RadialBoxplotPainter extends ChartPainter {
 	 * Scalability: 1.000.000 iterations take 150 ms. One call takes 0,000.150 ms.
 	 */
 	private void drawLevel(Graphics2D g2, double ratioOfAxis, Paint color) {
-		if (rectangle != null)
-			DisplayTools.drawPoint(g2, rectangle.getCenterX(), rectangle.getCenterY(), ratioOfAxis * radiusMax, color,
+		if (getRectangle() != null)
+			DisplayTools.drawPoint(g2, getRectangle().getCenterX(), getRectangle().getCenterY(), ratioOfAxis * radiusMax, color,
 					false);
 	}
 
 	private void drawLowerWhisker(Graphics2D g2) {
-		if (rectangle != null)
-			if (Math.min(rectangle.getWidth(), rectangle.getHeight()) > 20) {
+		if (getRectangle() != null)
+			if (Math.min(getRectangle().getWidth(), getRectangle().getHeight()) > 20) {
 				g2.setStroke(dashedstroke);
-				drawLevel(g2, rLowerWhisker, ColorTools.setAlpha(color, (color.getAlpha() / 255.0f) * 0.33f));
+				drawLevel(g2, rLowerWhisker, ColorTools.setAlpha(getColor(), (getColor().getAlpha() / 255.0f) * 0.33f));
 			}
 	}
 
 	private void drawUpperWhisker(Graphics2D g2) {
-		if (rectangle != null)
-			if (Math.min(rectangle.getWidth(), rectangle.getHeight()) > 20) {
+		if (getRectangle() != null)
+			if (Math.min(getRectangle().getWidth(), getRectangle().getHeight()) > 20) {
 				g2.setStroke(dashedstroke);
-				drawLevel(g2, rUpperWhisker, color);
+				drawLevel(g2, rUpperWhisker, getColor());
 			}
 	}
 
@@ -157,11 +157,11 @@ public class RadialBoxplotPainter extends ChartPainter {
 		if (fill) {
 			float strokeWidth = (float) (Math.abs(r25 - r75) * radiusMax);
 			g2.setStroke(new BasicStroke(strokeWidth));
-			drawLevel(g2, (r25 + r75) * 0.5, ColorTools.setAlpha(color, (color.getAlpha() / 255.0f) * 0.33f));
+			drawLevel(g2, (r25 + r75) * 0.5, ColorTools.setAlpha(getColor(), (getColor().getAlpha() / 255.0f) * 0.33f));
 		}
 		g2.setStroke(stroke);
-		drawLevel(g2, r25, color);
-		drawLevel(g2, r75, color);
+		drawLevel(g2, r25, getColor());
+		drawLevel(g2, r75, getColor());
 	}
 
 	public boolean isFill() {

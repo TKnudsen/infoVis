@@ -34,14 +34,14 @@ public class PlusPainter extends ButtonPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		if (drawCircle)
 			circlePainter.draw(g2);
 
-		double width = rectangle.getWidth();
-		double space = Math.min(width, rectangle.getHeight());
+		double width = getRectangle().getWidth();
+		double space = Math.min(width, getRectangle().getHeight());
 		float strokeWidth = (float) (0.15 * space);
 		float lineWidth = (float) (width * 0.8);
 		if (drawCircle)
@@ -52,16 +52,16 @@ public class PlusPainter extends ButtonPainter {
 
 		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			g2.draw(rectangle);
+			g2.draw(getRectangle());
 		}
 
 		g2.setStroke(BasicStrokeTools.get(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		g2.setColor(plusColor);
 
-		Line2D horz = new Line2D.Double(rectangle.getCenterX() - lineWidth * 0.5, rectangle.getCenterY(),
-				rectangle.getCenterX() + lineWidth * 0.5, rectangle.getCenterY());
-		Line2D vert = new Line2D.Double(rectangle.getCenterX(), rectangle.getCenterY() - lineWidth * 0.5,
-				rectangle.getCenterX(), rectangle.getCenterY() + lineWidth * 0.5);
+		Line2D horz = new Line2D.Double(getRectangle().getCenterX() - lineWidth * 0.5, getRectangle().getCenterY(),
+				getRectangle().getCenterX() + lineWidth * 0.5, getRectangle().getCenterY());
+		Line2D vert = new Line2D.Double(getRectangle().getCenterX(), getRectangle().getCenterY() - lineWidth * 0.5,
+				getRectangle().getCenterX(), getRectangle().getCenterY() + lineWidth * 0.5);
 
 		g2.draw(horz);
 		g2.draw(vert);

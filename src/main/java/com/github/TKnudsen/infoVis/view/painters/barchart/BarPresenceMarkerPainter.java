@@ -54,7 +54,7 @@ public class BarPresenceMarkerPainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		List<Rectangle2D> barRectangles = barChartPainter.getBarRectangles();

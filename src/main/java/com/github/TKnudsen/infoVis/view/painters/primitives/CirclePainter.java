@@ -44,12 +44,12 @@ public class CirclePainter extends ChartPainter {
 
 		Color c = g2.getColor();
 
-		if (fill && rectangle != null && getPaint() != null) {
+		if (fill && getRectangle() != null && getPaint() != null) {
 			g2.setPaint(getPaint());
 			g2.fill(arc);
 		}
 
-		if (isDrawOutline() && rectangle != null) {
+		if (isDrawOutline() && getRectangle() != null) {
 			g2.setPaint(getBorderPaint());
 			g2.draw(arc);
 		}

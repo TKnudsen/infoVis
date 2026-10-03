@@ -31,7 +31,7 @@ public class IconBasedButtonPainter extends ButtonPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		bufferedImagePainter.draw(g2);

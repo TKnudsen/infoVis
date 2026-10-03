@@ -34,16 +34,16 @@ public class CrossHairPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Paint oldPaint = g2.getPaint();
 		g2.setPaint(getPaint());
 
 		if (renderX)
-			g2.drawLine((int) rectangle.getMinX(), y, (int) rectangle.getMaxX(), y);
+			g2.drawLine((int) getRectangle().getMinX(), y, (int) getRectangle().getMaxX(), y);
 		if (renderY)
-			g2.drawLine(x, (int) rectangle.getMinY(), x, (int) rectangle.getMaxY());
+			g2.drawLine(x, (int) getRectangle().getMinY(), x, (int) getRectangle().getMaxY());
 
 		g2.setPaint(oldPaint);
 	}

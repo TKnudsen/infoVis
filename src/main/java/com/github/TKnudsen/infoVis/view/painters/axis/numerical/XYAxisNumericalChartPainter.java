@@ -41,7 +41,7 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
-		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();
+		setChartRectangle(xyAxisChartRectangleLayout.getChartRectangle());
 		xAxisPainter.setRectangle(xyAxisChartRectangleLayout.getXAxisRectangle());
 		yAxisPainter.setRectangle(xyAxisChartRectangleLayout.getYAxisRectangle());
 	}
@@ -65,9 +65,9 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 
 		g2.setPaint(getPaint());
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setStroke(s);
@@ -111,7 +111,7 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setYAxisMinValue(Y yAxisMinValue) {
 		yAxisPainter.setMinValue(yAxisMinValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public Y getYAxisMaxValue() {
@@ -121,13 +121,13 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setYAxisMaxValue(Y yAxisMaxValue) {
 		yAxisPainter.setMaxValue(yAxisMaxValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setDrawYAxis(boolean drawYAxis) {
 		this.xyAxisChartRectangleLayout.setDrawYAxis(drawYAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getYAxisLegendWidth() {
@@ -137,7 +137,7 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setYAxisLegendWidth(double yAxisLegendWidth) {
 		this.xyAxisChartRectangleLayout.setYAxisLegendWidth(yAxisLegendWidth);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public X getXAxisMinValue() {
@@ -147,7 +147,7 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setXAxisMinValue(X xAxisMinValue) {
 		xAxisPainter.setMinValue(xAxisMinValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public X getXAxisMaxValue() {
@@ -157,19 +157,19 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setXAxisMaxValue(X xAxisMaxValue) {
 		xAxisPainter.setMaxValue(xAxisMaxValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setDrawXAxis(boolean drawXAxis) {
 		this.xyAxisChartRectangleLayout.setDrawXAxis(drawXAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setYAxisMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.yAxisPainter.setMarkerDistanceInPixels(markerDistanceInPixels);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getXAxisLegendHeight() {
@@ -179,13 +179,13 @@ public abstract class XYAxisNumericalChartPainter<X extends Number, Y extends Nu
 	@Override
 	public void setXAxisLegendHeight(double xAxisLegendHeight) {
 		this.xyAxisChartRectangleLayout.setXAxisLegendHeight(xAxisLegendHeight);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setXAxisMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.xAxisPainter.setMarkerDistanceInPixels(markerDistanceInPixels);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public XYAxisChartRectangleLayout getXyAxisChartRectangleLayout() {

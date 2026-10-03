@@ -65,12 +65,12 @@ public class RoundPolygonPainter extends ChartPainter {
 	}
 
 	protected void calculatePolygon() {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		int x = (int) rectangle.getCenterX();
-		int y = (int) rectangle.getCenterY();
-		double targetRadius = Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.5;
+		int x = (int) getRectangle().getCenterX();
+		int y = (int) getRectangle().getCenterY();
+		double targetRadius = Math.min(getRectangle().getWidth(), getRectangle().getHeight()) * 0.5;
 		double startAngle = -Math.PI / 2;
 
 		// A quadratic-Bezier corner cut never reaches its control point (the

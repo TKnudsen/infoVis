@@ -58,7 +58,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	 * TODO: generate abstract method that doesn't care for orientation.
 	 */
 	public void drawAxis(Graphics2D g2) {
-		if (rectangle == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
+		if (getRectangle() == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
 			return;
 
 		// Make a defensive copy immediately to avoid race conditions
@@ -83,8 +83,8 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 		// Compute axis line coordinates
 		float y = (float) getAxisAlignmentCoordinate();
-		float x1 = (float) rectangle.getMinX();
-		float x2 = (float) rectangle.getMaxX();
+		float x1 = (float) getRectangle().getMinX();
+		float x2 = (float) getRectangle().getMaxX();
 
 		if (drawAxisBetweenAxeMarkersOnly) {
 			if (markers == null || markers.size() == 0)
@@ -96,7 +96,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		}
 
 		// Draw main axis line
-		if (rectangle.getHeight() > 0)
+		if (getRectangle().getHeight() > 0)
 			DisplayTools.drawLine(g2, x1, y, x2, y);
 
 		// Draw tick marks and labels
@@ -104,7 +104,7 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		// Restore state
@@ -120,8 +120,8 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		if (markerPositionsWithLabels == null)
 			return;
 
-		float yTop = (float) rectangle.getMinY();
-		float yBottom = (float) rectangle.getMaxY();
+		float yTop = (float) getRectangle().getMinY();
+		float yBottom = (float) getRectangle().getMaxY();
 		float tickLen = (float) markerLineWidth;
 
 		for (Entry<Double, String> pair : markerPositionsWithLabels) {
@@ -140,11 +140,11 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 				float artificialXOffset = 0f;
 
 				// Avoid clipping at right edge
-				if (x > rectangle.getMaxX() - 15)
+				if (x > getRectangle().getMaxX() - 15)
 					artificialXOffset = -(float) (getMarkerDistanceInPixels() * 0.28);
 
 				float textX = x + artificialXOffset - labelWidth * 0.4f;
-				float textY = (float) (rectangle.getY() + fm.getHeight() * 1.0 + 4);
+				float textY = (float) (getRectangle().getY() + fm.getHeight() * 1.0 + 4);
 
 				g2.setColor(fontColor);
 				g2.drawString(label, textX, textY);
@@ -156,16 +156,16 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	protected void drawPhysU(Graphics2D g2) {
-		if (rectangle == null || physicalUnit == null || physicalUnit.isEmpty())
+		if (getRectangle() == null || physicalUnit == null || physicalUnit.isEmpty())
 			return;
 
 		g2.setColor(fontColor);
 		FontMetrics fm = g2.getFontMetrics(font);
 
-		double yOffset = rectangle.getY() + fm.getHeight() * 2.0 + rectangle.getHeight() * 0.15;
-		double xOffset = rectangle.getWidth() - fm.stringWidth(physicalUnit) * 1.2 - 2;
+		double yOffset = getRectangle().getY() + fm.getHeight() * 2.0 + getRectangle().getHeight() * 0.15;
+		double xOffset = getRectangle().getWidth() - fm.stringWidth(physicalUnit) * 1.2 - 2;
 
-		g2.drawString("[" + physicalUnit + "]", (int) (rectangle.getX() + xOffset), (int) yOffset);
+		g2.drawString("[" + physicalUnit + "]", (int) (getRectangle().getX() + xOffset), (int) yOffset);
 	}
 
 	@Override
@@ -183,11 +183,11 @@ public class XAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	public double getAxisAlignmentCoordinate() {
 		switch (axisLineAlignment) {
 		case CENTER:
-			return rectangle.getCenterY();
+			return getRectangle().getCenterY();
 		case TOP:
-			return rectangle.getY();
+			return getRectangle().getY();
 		case BOTTOM:
-			return rectangle.getMaxY();
+			return getRectangle().getMaxY();
 		default:
 			throw new IllegalArgumentException(
 					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);

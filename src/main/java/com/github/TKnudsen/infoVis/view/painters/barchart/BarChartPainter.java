@@ -58,7 +58,7 @@ public abstract class BarChartPainter extends ChartPainter
 
 	// listening to the positionEncodingFunction
 	private final PositionEncodingFunctionListener myPositionEncodingFunctionListener = () -> updatePositionEncoding(
-			rectangle);
+			getRectangle());
 
 	// interaction
 	private Function<? super Integer, Boolean> selectedFunction;

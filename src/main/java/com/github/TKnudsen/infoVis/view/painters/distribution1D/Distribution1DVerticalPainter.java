@@ -38,7 +38,7 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 
 	@Override
 	public void drawLine(Graphics2D g2, float positionValue, double capSize) {
-		float yStart = (float) (chartRectangle.getMinX() - capSize);
+		float yStart = (float) (getChartRectangle().getMinX() - capSize);
 		float yEnd = (float) (getValueXEndPosition() + capSize);
 
 		DisplayTools.drawLine(g2, positionValue, yStart, positionValue, yEnd);
@@ -50,7 +50,7 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 	 * @return double
 	 */
 	protected double getValueXEndPosition() {
-		return chartRectangle.getMaxX();
+		return getChartRectangle().getMaxX();
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public class Distribution1DVerticalPainter<T> extends Distribution1DPainter<T> i
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getY(),
-				getPositionEncodingFunction().inverseMapping(p.getY()), chartRectangle);
+				getPositionEncodingFunction().inverseMapping(p.getY()), getChartRectangle());
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class PolaroidImagePainter extends ChartPainter {
 		setStringPainter(new StringPainter(label));
 		setImagePainter(new BufferedImagePainter(image));
 		getImagePainter().setKeepRatio(true);
-		drawOutline = true;
+		setDrawOutline(true);
 	}
 
 	@Override

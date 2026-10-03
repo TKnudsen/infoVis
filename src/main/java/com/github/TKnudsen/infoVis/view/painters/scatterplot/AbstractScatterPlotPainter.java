@@ -202,7 +202,7 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter impleme
 			refreshingDataPoints = true;
 			screenPoints.clear();
 
-			if (data == null || chartRectangle == null)
+			if (data == null || getChartRectangle() == null)
 				return;
 
 			for (int i = 0; i < data.size(); i++) {
@@ -241,7 +241,7 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter impleme
 	 * directly for its own CPU-fallback rendering path without duplicating it.
 	 */
 	protected final void drawCPU(Graphics2D g2) {
-		if (chartRectangle == null || data == null || data.isEmpty())
+		if (getChartRectangle() == null || data == null || data.isEmpty())
 			return;
 
 		screenPointsLock.readLock().lock();
@@ -259,7 +259,7 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter impleme
 			// get point size once
 			double ps = this.pointSize;
 			if (Double.isNaN(ps))
-				ps = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+				ps = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 			// cache flags
 			final boolean hasSelection = (selectedFunction != null);
@@ -399,11 +399,11 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter impleme
 		if (rectangle == null)
 			return;
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		// stroke width...
-		double size = Math.floor(Math.min(this.chartRectangle.getWidth(), this.chartRectangle.getHeight()) / 150);
+		double size = Math.floor(Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) / 150);
 		if (size < 0)
 			size = 0;
 		if (size % 2 == 1)
@@ -586,7 +586,7 @@ public abstract class AbstractScatterPlotPainter<T> extends ChartPainter impleme
 		if (p == null)
 			return null;
 
-		final Rectangle2D cr = chartRectangle;
+		final Rectangle2D cr = getChartRectangle();
 		if (cr == null)
 			return null;
 

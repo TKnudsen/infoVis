@@ -53,13 +53,13 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 	@Override
 	protected void drawMedian(Graphics2D g2) {
-		if (chartRectangle == null || chartRectangle.getHeight() <= 0)
+		if (getChartRectangle() == null || getChartRectangle().getHeight() <= 0)
 			return;
 
 		final Stroke oldStroke = g2.getStroke();
 
 		// Scale stroke width based on chart width
-		final float strokeWidth = (float) Math.min(5f, Math.max(1f, chartRectangle.getWidth() * 0.01));
+		final float strokeWidth = (float) Math.min(5f, Math.max(1f, getChartRectangle().getWidth() * 0.01));
 		final Stroke medianStroke = BasicStrokeTools.get(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
 
 		g2.setStroke(medianStroke);
@@ -67,8 +67,8 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 		// Draw vertical median line
 		final float x = (float) medScreen;
-		final float y1 = (float) chartRectangle.getMinY();
-		final float y2 = (float) chartRectangle.getMaxY();
+		final float y1 = (float) getChartRectangle().getMinY();
+		final float y2 = (float) getChartRectangle().getMaxY();
 
 		DisplayTools.drawLine(g2, x, y1, x, y2);
 
@@ -77,7 +77,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 	@Override
 	protected void drawDashedConnectors(Graphics2D g2) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		final Paint oldPaint = g2.getPaint();
@@ -86,7 +86,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 		g2.setPaint(getPaint());
 		g2.setStroke(dashedstroke);
 
-		final float y = (float) chartRectangle.getCenterY();
+		final float y = (float) getChartRectangle().getCenterY();
 
 		// Left connector
 		DisplayTools.drawLine(g2, (float) lowerWhiskerScreen, y, (float) lowerQuartileScreen, y);
@@ -100,12 +100,12 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 	@Override
 	protected void drawOutliers(Graphics2D g2) {
-		if (chartRectangle == null || outlierScreenCoordinates == null || outlierScreenCoordinates.length == 0)
+		if (getChartRectangle() == null || outlierScreenCoordinates == null || outlierScreenCoordinates.length == 0)
 			return;
 
 		// Pre-compute constants and reuse paint
-		final int centerY = (int) Math.round(chartRectangle.getCenterY());
-		final int radius = (int) Math.max(1, Math.min(chartRectangle.getHeight() * 0.15, stroke.getLineWidth() * 4));
+		final int centerY = (int) Math.round(getChartRectangle().getCenterY());
+		final int radius = (int) Math.max(1, Math.min(getChartRectangle().getHeight() * 0.15, stroke.getLineWidth() * 4));
 
 		final Paint oldPaint = g2.getPaint();
 		g2.setPaint(getBorderPaint());
@@ -118,7 +118,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 	@Override
 	protected void drawLevel(Graphics2D g2, double ratioOfAxis, Paint color) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		final Paint oldPaint = g2.getPaint();
@@ -128,8 +128,8 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 		g2.setStroke(stroke);
 
 		final float x = (float) ratioOfAxis;
-		final float y1 = (float) chartRectangle.getMinY();
-		final float y2 = (float) chartRectangle.getMaxY();
+		final float y1 = (float) getChartRectangle().getMinY();
+		final float y2 = (float) getChartRectangle().getMaxY();
 
 		DisplayTools.drawLine(g2, x, y1, x, y2);
 
@@ -139,8 +139,8 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 
 	@Override
 	Rectangle2D calculateQuartilesRectangle() {
-		return new Rectangle2D.Double(Math.min(upperQuartileScreen, lowerQuartileScreen), chartRectangle.getMinY(),
-				Math.abs(upperQuartileScreen - lowerQuartileScreen), chartRectangle.getHeight());
+		return new Rectangle2D.Double(Math.min(upperQuartileScreen, lowerQuartileScreen), getChartRectangle().getMinY(),
+				Math.abs(upperQuartileScreen - lowerQuartileScreen), getChartRectangle().getHeight());
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class BoxPlotHorizontalPainter extends BoxPlotPainter implements IXPositi
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getX(),
-				getPositionEncodingFunction().inverseMapping(p.getX()), chartRectangle);
+				getPositionEncodingFunction().inverseMapping(p.getX()), getChartRectangle());
 	}
 
 	@Override

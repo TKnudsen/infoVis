@@ -36,7 +36,7 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 		xAxisChartRectangleLayout.setMargin(border);
 
 		xAxisChartRectangleLayout.setRectangle(rectangle);
-		this.chartRectangle = xAxisChartRectangleLayout.getChartRectangle();
+		setChartRectangle(xAxisChartRectangleLayout.getChartRectangle());
 		xAxisPainter.setRectangle(xAxisChartRectangleLayout.getXAxisRectangle());
 	}
 
@@ -57,9 +57,9 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 		if (xAxisChartRectangleLayout.isDrawXAxis())
 			drawXAxis(g2);
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setColor(c);
@@ -92,7 +92,7 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 	@Override
 	public void setXAxisMinValue(X xAxisMinValue) {
 		xAxisPainter.setMinValue(xAxisMinValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public X getXAxisMaxValue() {
@@ -102,25 +102,25 @@ public abstract class XAxisNumericalChartPainter<X extends Number> extends AxisP
 	@Override
 	public void setXAxisMaxValue(X xAxisMaxValue) {
 		xAxisPainter.setMaxValue(xAxisMaxValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setDrawXAxis(boolean drawXAxis) {
 		this.xAxisChartRectangleLayout.setDrawXAxis(drawXAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setXAxisLegendHeight(double xAxisLegendHeight) {
 		this.xAxisChartRectangleLayout.setXAxisLegendHeight(xAxisLegendHeight);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setXAxisMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.xAxisPainter.setMarkerDistanceInPixels(markerDistanceInPixels);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public XAxisChartRectangleLayout getXyAxisChartRectangleLayout() {

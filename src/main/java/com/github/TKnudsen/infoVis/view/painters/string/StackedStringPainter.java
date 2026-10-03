@@ -89,7 +89,7 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null || stringPainters.isEmpty())
 			return;
@@ -230,8 +230,8 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 		for (StringPainter painter : stringPainters)
 			painter.setVerticalOrientation(!verticalStacking);
 
-		if (rectangle != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null)
+			setRectangle(getRectangle());
 	}
 
 	// ==================== ALIGNMENT (position of each string within its own
@@ -278,8 +278,8 @@ public final class StackedStringPainter extends ChartPainter implements ITooltip
 			throw new IllegalArgumentException("offset must be non-negative");
 		this.offset = offset;
 
-		if (rectangle != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null)
+			setRectangle(getRectangle());
 	}
 
 	// ==================== PAINTERS ACCESS ====================

@@ -40,11 +40,11 @@ public class ScalingTextPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		double width = rectangle.getWidth();
-		double height = rectangle.getHeight();
+		double width = getRectangle().getWidth();
+		double height = getRectangle().getHeight();
 
 		Font oldFont = g2.getFont();
 
@@ -65,7 +65,7 @@ public class ScalingTextPainter extends ChartPainter {
 		Paint oldPaint = g2.getPaint();
 		g2.setFont(font);
 		g2.setPaint(getPaint());
-		g2.drawString(text, (float) (rectangle.getX() + xOffset), (float) (rectangle.getCenterY() + centerOffset));
+		g2.drawString(text, (float) (getRectangle().getX() + xOffset), (float) (getRectangle().getCenterY() + centerOffset));
 		g2.setFont(oldFont);
 		g2.setPaint(oldPaint);
 	}

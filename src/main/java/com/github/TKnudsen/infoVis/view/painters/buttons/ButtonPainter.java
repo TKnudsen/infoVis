@@ -33,7 +33,7 @@ public abstract class ButtonPainter extends ChartPainter implements IFocusedStat
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Color c = g2.getColor();
@@ -41,10 +41,10 @@ public abstract class ButtonPainter extends ChartPainter implements IFocusedStat
 
 		if (focused) {
 			g2.setColor(focusedColor);
-			g2.fill(rectangle);
+			g2.fill(getRectangle());
 		} else {
 			g2.setColor(notFocusedColor);
-			g2.fill(rectangle);
+			g2.fill(getRectangle());
 		}
 
 		g2.setColor(c);

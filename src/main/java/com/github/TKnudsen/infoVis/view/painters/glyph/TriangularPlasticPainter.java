@@ -61,7 +61,7 @@ public class TriangularPlasticPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null || topTrapezoid == null)
+		if (getRectangle() == null || topTrapezoid == null)
 			return;
 
 		Color old = g2.getColor();
@@ -84,7 +84,7 @@ public class TriangularPlasticPainter extends ChartPainter {
 			g2.fill(centerTriangle);
 		}
 
-		if (rectangle.getHeight() > MIN_HEIGHT_FOR_OUTLINE && rectangle.getWidth() > MIN_WIDTH_FOR_OUTLINE) {
+		if (getRectangle().getHeight() > MIN_HEIGHT_FOR_OUTLINE && getRectangle().getWidth() > MIN_WIDTH_FOR_OUTLINE) {
 			g2.draw(topTrapezoid);
 			g2.draw(leftTrapezoid);
 			g2.draw(rightTrapezoid);
@@ -95,7 +95,7 @@ public class TriangularPlasticPainter extends ChartPainter {
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null)
 			return;

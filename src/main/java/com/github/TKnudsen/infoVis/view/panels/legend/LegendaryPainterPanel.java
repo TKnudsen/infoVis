@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.painters.string.LegendaryPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.LegendPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
- * Wraps an arbitrary {@link ChartPainter} with a {@link LegendaryPainter}
+ * Wraps an arbitrary {@link ChartPainter} with a {@link LegendPainter}
  * overlay drawn on top of the whole panel -- for a chart whose own axes don't
  * already occupy the space a legendPainter would need.
  *
@@ -27,13 +27,13 @@ public class LegendaryPainterPanel<P extends ChartPainter> extends InfoVisChartP
 	private static final long serialVersionUID = 1L;
 
 	private final P painter;
-	private final LegendaryPainter legendPainter;
+	private final LegendPainter legendPainter;
 
 	public LegendaryPainterPanel(P painter, List<Entry<String, Paint>> legendEntries) {
 		super(painter);
 
 		this.painter = painter;
-		legendPainter = new LegendaryPainter();
+		legendPainter = new LegendPainter();
 		legendPainter.setData(legendEntries);
 	}
 
@@ -50,7 +50,7 @@ public class LegendaryPainterPanel<P extends ChartPainter> extends InfoVisChartP
 			entries.add(new SimpleEntry<String, Paint>(legendaryEntries.get(i), c));
 		}
 
-		legendPainter = new LegendaryPainter();
+		legendPainter = new LegendPainter();
 		legendPainter.setData(entries);
 	}
 

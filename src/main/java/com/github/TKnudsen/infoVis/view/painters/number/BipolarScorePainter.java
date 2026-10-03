@@ -37,9 +37,6 @@ public class BipolarScorePainter extends ChartPainter {
 	/** [0..1], lower means more certain. */
 	private double uncertainty;
 
-	/** Reuse the rectangle object instead of allocating each layout pass . */
-	private final Rectangle2D.Double reusedRect = new Rectangle2D.Double();
-
 	public BipolarScorePainter(double score, double minValue, double maxValue) {
 		this(score, minValue, 0.0, maxValue);
 	}
@@ -125,89 +122,39 @@ public class BipolarScorePainter extends ChartPainter {
 			}
 		}
 
-		reusedRect.setRect(x, y, w, h);
-		this.chartRectangle = reusedRect; // keep parent contract
-
-//		double relativeViewPosition = normalization.apply(score).doubleValue();
-//
-//		double x;
-//		double y = rectangle.getMinY();
-//		double w;
-//		double h = rectangle.getHeight();
-//
-//		double certainty = 1.0 - (Double.isNaN(uncertainty) ? 0 : uncertainty);
-//
-//		if (horizontalOrientation) {
-//			y = rectangle.getMinY();
-//			h = rectangle.getHeight();
-//
-//			y += (h * (1 - certainty)) * 0.5;
-//			h *= certainty;
-//
-//			if (score < neutralValue) {
-//				x = rectangle.getMinX() + relativeViewPosition * rectangle.getWidth() * 0.5;
-//				w = (1 - relativeViewPosition) * rectangle.getWidth() * 0.5;
-//			} else {
-//				x = rectangle.getCenterX();
-//				w = relativeViewPosition * rectangle.getWidth() * 0.5;
-//			}
-//		} else {
-//			x = rectangle.getMinX();
-//			w = rectangle.getWidth();
-//
-//			x += (w * (1 - certainty)) * 0.5;
-//			w *= certainty;
-//
-//			if (score < neutralValue) {
-//				y = rectangle.getCenterY();
-//				h = (1 - relativeViewPosition) * rectangle.getHeight() * 0.5;
-//			} else {
-//				y = rectangle.getCenterY() - relativeViewPosition * rectangle.getHeight() * 0.5;
-//				h = relativeViewPosition * rectangle.getHeight() * 0.5;
-//			}
-//		}
-//
-//		this.chartRectangle = new Rectangle2D.Double(x, y, w, h);
+		setChartRectangle(new Rectangle2D.Double(x, y, w, h));
 	}
 
 	@Override
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null || chartRectangle == null)
+		if (getRectangle() == null || getChartRectangle() == null)
 			return;
 
 		final Paint oldPaint = g2.getPaint();
 
 		// fill then draw the bar using fast DisplayTools variants
 		g2.setPaint(getPaint());
-		DisplayTools.fillRectangle(g2, chartRectangle);
-		DisplayTools.drawRectangle(g2, chartRectangle);
+		DisplayTools.fillRectangle(g2, getChartRectangle());
+		DisplayTools.drawRectangle(g2, getChartRectangle());
 
 		g2.setPaint(getPaint());
-		g2.draw(chartRectangle);
-		g2.fill(chartRectangle);
-
-//		// draw neutral mark
-//		if (horizontalOrientation)
-//			DisplayTools.drawLine(g2, rectangle.getCenterX(), rectangle.getMinY(), rectangle.getCenterX(),
-//					rectangle.getMaxY(), DisplayTools.thickStroke, neutralMarkColor);
-//		else
-//			DisplayTools.drawLine(g2, rectangle.getMinX(), rectangle.getCenterY(), rectangle.getMaxX(),
-//					rectangle.getCenterY(), DisplayTools.thickStroke, neutralMarkColor);
+		g2.draw(getChartRectangle());
+		g2.fill(getChartRectangle());
 
 		// neutral mark (optional)
 		if (drawNeutralMark) {
-			final float cx = (float) rectangle.getCenterX();
-			final float cy = (float) rectangle.getCenterY();
+			final float cx = (float) getRectangle().getCenterX();
+			final float cy = (float) getRectangle().getCenterY();
 
 			if (horizontalOrientation) {
 				// vertical neutral line at center X
-				DisplayTools.drawLine(g2, cx, (float) rectangle.getMinY(), cx, (float) rectangle.getMaxY(),
+				DisplayTools.drawLine(g2, cx, (float) getRectangle().getMinY(), cx, (float) getRectangle().getMaxY(),
 						DisplayTools.thickStroke, neutralMarkColor);
 			} else {
 				// horizontal neutral line at center Y
-				DisplayTools.drawLine(g2, (float) rectangle.getMinX(), cy, (float) rectangle.getMaxX(), cy,
+				DisplayTools.drawLine(g2, (float) getRectangle().getMinX(), cy, (float) getRectangle().getMaxX(), cy,
 						DisplayTools.thickStroke, neutralMarkColor);
 			}
 		}
@@ -215,7 +162,7 @@ public class BipolarScorePainter extends ChartPainter {
 		// optional outer border of the bar
 		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, chartRectangle);
+			DisplayTools.drawRectangle(g2, getChartRectangle());
 		}
 
 		g2.setPaint(oldPaint);

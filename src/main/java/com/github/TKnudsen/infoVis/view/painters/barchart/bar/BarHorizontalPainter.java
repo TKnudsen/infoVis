@@ -33,8 +33,8 @@ public class BarHorizontalPainter extends BarPainter implements IXPositionEncodi
 		double screenX = encodingFunction.apply(getValue());
 		double minValueScreen = encodingFunction.apply(getMinValue());
 
-		Rectangle2D bar = new Rectangle2D.Double(minValueScreen, chartRectangle.getMinY(),
-				Math.abs(screenX - minValueScreen), chartRectangle.getHeight());
+		Rectangle2D bar = new Rectangle2D.Double(minValueScreen, getChartRectangle().getMinY(),
+				Math.abs(screenX - minValueScreen), getChartRectangle().getHeight());
 
 		return bar;
 	}
@@ -48,7 +48,7 @@ public class BarHorizontalPainter extends BarPainter implements IXPositionEncodi
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getX(),
-				getPositionEncodingFunction().inverseMapping(p.getX()), chartRectangle);
+				getPositionEncodingFunction().inverseMapping(p.getX()), getChartRectangle());
 	}
 
 	@Override

@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
-import com.github.TKnudsen.infoVis.view.painters.string.LegendaryPainter;
+import com.github.TKnudsen.infoVis.view.painters.string.LegendPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.ScalingTextPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StackedStringPainter;
 import com.github.TKnudsen.infoVis.view.painters.string.StringOvalOutlinePainter;
@@ -36,7 +36,7 @@ import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
  * {@link StringPainter} (default, aligned, vertical, and truncated variants),
  * {@link TitlePainter}, {@link ScalingTextPainter},
  * {@link StringOvalOutlinePainter}, {@link UpperRightLabelPainter},
- * {@link LegendaryPainter}, and {@link StackedStringPainter} (horizontal and
+ * {@link LegendPainter}, and {@link StackedStringPainter} (horizontal and
  * vertical).
  *
  * @version 1.0
@@ -79,13 +79,13 @@ public class StringPackagePaintersTester {
 
 		grid.add(cellOnHost("UpperRightLabelPainter", new UpperRightLabelPainter("New")));
 
-		LegendaryPainter legendaryPainter = new LegendaryPainter();
+		LegendPainter legendPainter = new LegendPainter();
 		List<Entry<String, Paint>> entries = new ArrayList<>();
 		entries.add(new SimpleEntry<>("Alpha", Color.RED));
 		entries.add(new SimpleEntry<>("Beta", Color.BLUE));
 		entries.add(new SimpleEntry<>("Gamma", Color.GREEN.darker()));
-		legendaryPainter.setData(entries);
-		grid.add(cell("LegendaryPainter", legendaryPainter));
+		legendPainter.setData(entries);
+		grid.add(cell("LegendPainter", legendPainter));
 
 		StackedStringPainter horizontalStack = new StackedStringPainter(Arrays.asList("Red", "Green", "Blue"),
 				Arrays.asList(Color.RED, Color.GREEN.darker(), Color.BLUE));

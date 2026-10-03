@@ -62,7 +62,7 @@ public class AggregateSignificanceBarChartPainter<O> extends BarChartSelectableP
 		if (significanceDotsBarsRenderer != null)
 			significanceDotsBarsRenderer.setRectangle(rect);
 
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 	}
 
 	@Override

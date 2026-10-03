@@ -238,7 +238,7 @@ public class ScatterPlotSpriteGPUPainter<T> extends AbstractGPUScatterPlotPainte
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (chartRectangle == null || data == null || data.isEmpty())
+		if (getChartRectangle() == null || data == null || data.isEmpty())
 			return;
 
 		performanceLogger.logFrameStart();

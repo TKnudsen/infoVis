@@ -144,7 +144,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 	 * </p>
 	 */
 	protected void refreshDataPoints() {
-		if (data == null || chartRectangle == null)
+		if (data == null || getChartRectangle() == null)
 			return;
 
 		final int n = data.size();
@@ -182,7 +182,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		drawLinesAndPoints(g2);
@@ -209,7 +209,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		// Resolve point size once per frame
 		float basePointSize = this.pointSize;
 		if (Float.isNaN(basePointSize))
-			basePointSize = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			basePointSize = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		// Prepare strokes once
 		final BasicStroke stroke = BasicStrokeTools.get(basePointSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -330,11 +330,11 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		if (rectangle == null)
 			return;
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		// stroke width...
-		double size = Math.floor(Math.min(this.chartRectangle.getWidth(), this.chartRectangle.getHeight()) / 150);
+		double size = Math.floor(Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) / 150);
 		if (size < 0)
 			size = 0;
 		if (size % 2 == 1)
@@ -373,10 +373,10 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		if (!tooltipping)
 			return null;
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return null;
 
-		double maxRadius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+		double maxRadius = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		double px = p.getX();
 		double py = p.getY();
@@ -416,7 +416,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 		StringPainter stringPainter = new StringPainter(toolTipString);
 		stringPainter.setHorizontalStringAlignment(HorizontalStringAlignment.CENTER);
 
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 50 + toolTipString.length() * 6, 32);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, 50 + toolTipString.length() * 6, 32);
 		stringPainter.setRectangle(rect);
 
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
@@ -496,7 +496,7 @@ public class ParallelCoordinatesPainter<T> extends ChartPainter
 
 		float radius = this.pointSize;
 		if (Double.isNaN(pointSize))
-			radius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			radius = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		Ellipse2D circle = new Ellipse2D.Double();
 		circle.setFrameFromCenter(p.getX(), p.getY(), p.getX() + radius, p.getY() + radius);

@@ -33,7 +33,7 @@ public class BarVerticalPainter extends BarPainter implements IYPositionEncoding
 		double screenY = positionEncoding.apply(getValue());
 		double minValueScreen = positionEncoding.apply(getMinValue());
 
-		Rectangle2D bar = new Rectangle2D.Double(this.chartRectangle.getMinX(), screenY, this.chartRectangle.getWidth(),
+		Rectangle2D bar = new Rectangle2D.Double(getChartRectangle().getMinX(), screenY, getChartRectangle().getWidth(),
 				Math.abs(screenY - minValueScreen));
 
 		return bar;
@@ -48,7 +48,7 @@ public class BarVerticalPainter extends BarPainter implements IYPositionEncoding
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getY(),
-				getPositionEncodingFunction().inverseMapping(p.getY()), chartRectangle);
+				getPositionEncodingFunction().inverseMapping(p.getY()), getChartRectangle());
 	}
 
 	@Override

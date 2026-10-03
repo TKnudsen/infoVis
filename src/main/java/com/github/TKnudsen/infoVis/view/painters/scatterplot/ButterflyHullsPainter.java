@@ -155,7 +155,7 @@ public class ButterflyHullsPainter<T, G> extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (chartRectangle == null || hullsByGroup.isEmpty())
+		if (getChartRectangle() == null || hullsByGroup.isEmpty())
 			return;
 
 		Paint oldPaint = g2.getPaint();

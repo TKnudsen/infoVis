@@ -59,7 +59,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 		xyAxisChartRectangleLayout.setMargin(border);
 
 		xyAxisChartRectangleLayout.setRectangle(rectangle);
-		this.chartRectangle = xyAxisChartRectangleLayout.getChartRectangle();
+		setChartRectangle(xyAxisChartRectangleLayout.getChartRectangle());
 		xAxisPainter.setRectangle(xyAxisChartRectangleLayout.getXAxisRectangle());
 		yAxisPainter.setRectangle(xyAxisChartRectangleLayout.getYAxisRectangle());
 
@@ -89,7 +89,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 		g2.setPaint(getPaint());
 
 		if (isDrawOutline())
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+			DisplayTools.drawRectangle(g2, getRectangle(), getBorderPaint());
 
 		g2.setColor(c);
 	}
@@ -122,7 +122,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setYAxisMinValue(Y yAxisMinValue) {
 		yAxisPainter.setMinValue(yAxisMinValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public Y getYAxisMaxValue() {
@@ -132,7 +132,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setYAxisMaxValue(Y yAxisMaxValue) {
 		yAxisPainter.setMaxValue(yAxisMaxValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public boolean isDrawYAxis() {
@@ -142,7 +142,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setDrawYAxis(boolean drawYAxis) {
 		this.xyAxisChartRectangleLayout.setDrawYAxis(drawYAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getYAxisLegendWidth() {
@@ -152,7 +152,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setYAxisLegendWidth(double yAxisLegendWidth) {
 		this.xyAxisChartRectangleLayout.setYAxisLegendWidth(yAxisLegendWidth);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public boolean isDrawXAxis() {
@@ -162,7 +162,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setDrawXAxis(boolean drawXAxis) {
 		this.xyAxisChartRectangleLayout.setDrawXAxis(drawXAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
@@ -173,13 +173,13 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 	@Override
 	public void setYAxisMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.yAxisPainter.setMarkerDistanceInPixels(markerDistanceInPixels);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setXAxisLegendHeight(double xAxisLegendHeight) {
 		this.xyAxisChartRectangleLayout.setXAxisLegendHeight(xAxisLegendHeight);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public XYAxisChartRectangleLayout getXyAxisChartRectangleLayout() {
@@ -226,7 +226,7 @@ public abstract class XCatYNumChartPainter<X extends List<String>, Y extends Num
 
 	public void setMargin(double margin) {
 		this.margin = margin;
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 }

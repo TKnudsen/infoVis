@@ -85,7 +85,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 	 * Handle viewport changes (resize, etc.)
 	 */
 	public void reshapeGL(int width, int height) {
-		if (gpuRenderer != null && gpuRendererInitialized && chartRectangle != null) {
+		if (gpuRenderer != null && gpuRendererInitialized && getChartRectangle() != null) {
 			updateGPUProjection();
 			LOGGER.fine(String.format("GPU viewport reshaped to %dx%d", width, height));
 		}
@@ -197,7 +197,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (chartRectangle == null || data == null || data.isEmpty())
+		if (getChartRectangle() == null || data == null || data.isEmpty())
 			return;
 
 		performanceLogger.logFrameStart();
@@ -275,7 +275,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 	}
 
 	private void updateGPUProjection() {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		// worldMinX/Max/Y start out as the static full-data range (computeWorldBounds),
@@ -290,7 +290,7 @@ public class ScatterPlotIndexedGPUPainter<T> extends AbstractGPUScatterPlotPaint
 		worldMinY = yPositionEncodingFunction.getMinWorldValue().doubleValue();
 		worldMaxY = yPositionEncodingFunction.getMaxWorldValue().doubleValue();
 
-		gpuRenderer.updateProjectionMatrix((int) chartRectangle.getWidth(), (int) chartRectangle.getHeight(), worldMinX,
+		gpuRenderer.updateProjectionMatrix((int) getChartRectangle().getWidth(), (int) getChartRectangle().getHeight(), worldMinX,
 				worldMaxX, // X range
 				worldMinY, worldMaxY // Y range - should be min first, max second
 		);

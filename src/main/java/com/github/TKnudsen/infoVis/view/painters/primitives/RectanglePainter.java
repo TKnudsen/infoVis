@@ -25,14 +25,14 @@ public class RectanglePainter extends ChartPainter {
 
 		Color c = g2.getColor();
 
-		if (fill && rectangle != null && getPaint() != null) {
+		if (fill && getRectangle() != null && getPaint() != null) {
 			g2.setPaint(getPaint());
-			g2.fill(rectangle);
+			g2.fill(getRectangle());
 		}
 
-		if (isDrawOutline() && rectangle != null) {
+		if (isDrawOutline() && getRectangle() != null) {
 			g2.setPaint(getBorderPaint());
-			g2.draw(rectangle);
+			g2.draw(getRectangle());
 		}
 
 		g2.setColor(c);

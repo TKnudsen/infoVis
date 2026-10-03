@@ -51,17 +51,17 @@ public class RadioPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(getBackgroundPaint());
-		g2.fill(rectangle);
+		g2.fill(getRectangle());
 		g2.setPaint(getPaint());
 
-		double x = rectangle.getX();
-		double y = rectangle.getY();
-		double h = rectangle.getHeight();
+		double x = getRectangle().getX();
+		double y = getRectangle().getY();
+		double h = getRectangle().getHeight();
 
 		Ellipse2D outline = new Ellipse2D.Double(x + OFFSET, y + OFFSET, h - 2 * OFFSET, h - 2 * OFFSET);
 

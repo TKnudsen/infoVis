@@ -41,7 +41,7 @@ public class UpperRightLabelPainter extends ChartPainter {
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null)
 			return;
@@ -52,7 +52,7 @@ public class UpperRightLabelPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Font oldFont = g2.getFont();
@@ -62,8 +62,8 @@ public class UpperRightLabelPainter extends ChartPainter {
 		double stringWidth = Math.max(metrics.stringWidth(label), metrics.getHeight() * MIN_WIDTH_HEIGHT_FACTOR);
 
 		Rectangle2D.Double labelRect = new Rectangle2D.Double(
-				rectangle.getX() + rectangle.getWidth() - RIGHT_INSET_FACTOR * stringWidth - 1.5,
-				rectangle.getY() + TOP_INSET_FACTOR * stringWidth, (stringWidth + 1) * WIDTH_PADDING_FACTOR,
+				getRectangle().getX() + getRectangle().getWidth() - RIGHT_INSET_FACTOR * stringWidth - 1.5,
+				getRectangle().getY() + TOP_INSET_FACTOR * stringWidth, (stringWidth + 1) * WIDTH_PADDING_FACTOR,
 				stringWidth * HEIGHT_PADDING_FACTOR);
 
 		DisplayTools.drawCube(g2, labelRect, labelRect.getWidth() / ARC_DIVISOR, labelRect.getHeight() / ARC_DIVISOR,
@@ -71,7 +71,7 @@ public class UpperRightLabelPainter extends ChartPainter {
 
 		g2.setPaint(getBorderPaint());
 		g2.drawString(label,
-				(float) (rectangle.getX() + rectangle.getWidth() - TEXT_X_OFFSET_FACTOR * stringWidth
+				(float) (getRectangle().getX() + getRectangle().getWidth() - TEXT_X_OFFSET_FACTOR * stringWidth
 						+ (stringWidth - metrics.stringWidth(label))),
 				(float) (labelRect.getY() + labelRect.getWidth() - (labelRect.getHeight() - fontSize * 0.8) / 2));
 

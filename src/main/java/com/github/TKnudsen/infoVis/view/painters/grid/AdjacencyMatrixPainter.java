@@ -63,15 +63,15 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null || data == null || labels == null || labels.length <= 2)
+		if (getRectangle() == null || data == null || labels == null || labels.length <= 2)
 			return;
 
 		Color color = g2.getColor();
 		Font font = g2.getFont();
 		Stroke strokeTmp = g2.getStroke();
 
-		int suggestedLabelSize = (int) (rectangle.getHeight() / labels.length - 1);
-		int suggestedWidthSize = (int) rectangle.getWidth() / 40;
+		int suggestedLabelSize = (int) (getRectangle().getHeight() / labels.length - 1);
+		int suggestedWidthSize = (int) getRectangle().getWidth() / 40;
 		int labelFontSize = (int) Math.max(8, Math.min(suggestedLabelSize, suggestedWidthSize));
 
 		g2.setFont(new Font("Tahoma", Font.BOLD, labelFontSize));
@@ -98,16 +98,16 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 			g2.setFont(new Font("Tahoma", labelHighlighted ? Font.BOLD : Font.PLAIN, labelFontSize));
 
 			g2.setColor(Color.black);
-			g2.drawString(s, (int) rectangle.getX() + 8, (int) (rectangle.getY() + 2 + gridHeight * x) + m.getHeight() / 3 + (int) (gridHeight / 2));
+			g2.drawString(s, (int) getRectangle().getX() + 8, (int) (getRectangle().getY() + 2 + gridHeight * x) + m.getHeight() / 3 + (int) (gridHeight / 2));
 
-			Rectangle2D labelRect = new Rectangle2D.Double(rectangle.getX() + 2, rectangle.getY() + 2 + gridHeight * x, localLegendWidth,
+			Rectangle2D labelRect = new Rectangle2D.Double(getRectangle().getX() + 2, getRectangle().getY() + 2 + gridHeight * x, localLegendWidth,
 					gridHeight);
 			g2.draw(labelRect);
 			labelRectangles[x] = labelRect;
 
 			for (int y = x; y < labels.length; y++) {
-				double firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
-				double firstY = rectangle.getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
+				double firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
+				double firstY = getRectangle().getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
 
 				int[] xCoords;
 				int[] yCoords;
@@ -130,16 +130,16 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 
 		g2.setColor(color);
 		g2.setStroke(highLightingStroke);
-		g2.drawLine((int) rectangle.getX(), (int) rectangle.getY(), (int) (rectangle.getX() + 2 + localLegendWidth), (int) (rectangle.getY() + 2));
-		g2.drawLine((int) (rectangle.getX() + 2 + localLegendWidth), (int) (rectangle.getY() + 2),
-				(int) (rectangle.getX() + 2 + localLegendWidth + labels.length * gridWidth / 2),
-				(int) (rectangle.getY() + 2 + labels.length * gridHeight / 2));
-		g2.drawLine((int) (rectangle.getX() + 2 + localLegendWidth + labels.length * gridWidth / 2),
-				(int) (rectangle.getY() + 2 + labels.length * gridHeight / 2), (int) (rectangle.getX() + 2 + localLegendWidth),
-				(int) (rectangle.getY() + labels.length * gridHeight));
-		g2.drawLine((int) rectangle.getX(), (int) (rectangle.getY() + labels.length * gridHeight), (int) (rectangle.getX() + localLegendWidth),
-				(int) (rectangle.getY() + labels.length * gridHeight));
-		g2.drawLine((int) rectangle.getX(), (int) rectangle.getY(), (int) rectangle.getX(), (int) (rectangle.getY() + labels.length * gridHeight));
+		g2.drawLine((int) getRectangle().getX(), (int) getRectangle().getY(), (int) (getRectangle().getX() + 2 + localLegendWidth), (int) (getRectangle().getY() + 2));
+		g2.drawLine((int) (getRectangle().getX() + 2 + localLegendWidth), (int) (getRectangle().getY() + 2),
+				(int) (getRectangle().getX() + 2 + localLegendWidth + labels.length * gridWidth / 2),
+				(int) (getRectangle().getY() + 2 + labels.length * gridHeight / 2));
+		g2.drawLine((int) (getRectangle().getX() + 2 + localLegendWidth + labels.length * gridWidth / 2),
+				(int) (getRectangle().getY() + 2 + labels.length * gridHeight / 2), (int) (getRectangle().getX() + 2 + localLegendWidth),
+				(int) (getRectangle().getY() + labels.length * gridHeight));
+		g2.drawLine((int) getRectangle().getX(), (int) (getRectangle().getY() + labels.length * gridHeight), (int) (getRectangle().getX() + localLegendWidth),
+				(int) (getRectangle().getY() + labels.length * gridHeight));
+		g2.drawLine((int) getRectangle().getX(), (int) getRectangle().getY(), (int) getRectangle().getX(), (int) (getRectangle().getY() + labels.length * gridHeight));
 
 		g2.setStroke(strokeTmp);
 		g2.setFont(font);
@@ -171,7 +171,7 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 						continue;
 
 					if (y == x && (x == lower || y == higher))
-						g2.drawRect((int) rectangle.getX() + 2, (int) (rectangle.getY() + 2 + gridHeight * x), (int) localLegendWidth, (int) gridHeight);
+						g2.drawRect((int) getRectangle().getX() + 2, (int) (getRectangle().getY() + 2 + gridHeight * x), (int) localLegendWidth, (int) gridHeight);
 
 					if (x == lower)
 						drawHighlightEdgesAscending(g2, x, y);
@@ -190,7 +190,7 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 						continue;
 
 					if (y == x && x == index)
-						g2.drawRect((int) rectangle.getX() + 2, (int) (rectangle.getY() + 2 + gridHeight * x), (int) localLegendWidth, (int) gridHeight);
+						g2.drawRect((int) getRectangle().getX() + 2, (int) (getRectangle().getY() + 2 + gridHeight * x), (int) localLegendWidth, (int) gridHeight);
 
 					if (x == index)
 						drawHighlightEdgesFull(g2, x, y);
@@ -199,8 +199,8 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 	}
 
 	private void drawHighlightEdgesAscending(Graphics2D g2, int x, int y) {
-		double firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
-		double firstY = rectangle.getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
+		double firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
+		double firstY = getRectangle().getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
 
 		if (x == y) {
 			g2.drawLine((int) (firstX + gridWidth / 2), (int) firstY, (int) (firstX + gridWidth), (int) (firstY + gridHeight / 2));
@@ -217,15 +217,15 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 		if (x != y)
 			return;
 
-		double firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
-		double firstY = rectangle.getY() + 2 + gridHeight * x - Math.abs(y - x) * (gridHeight / 2);
+		double firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
+		double firstY = getRectangle().getY() + 2 + gridHeight * x - Math.abs(y - x) * (gridHeight / 2);
 
 		g2.drawLine((int) (firstX + gridWidth), (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) (firstY + gridHeight));
 		g2.drawLine((int) (firstX + gridWidth / 2), (int) firstY, (int) (firstX + gridWidth / 2), (int) (firstY + gridHeight));
 
 		for (int y2 = x - 1; y2 >= 0; y2--) {
-			firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y2) - 1.0) * (gridWidth / 2);
-			firstY = rectangle.getY() + 2 + gridHeight * x - Math.abs(y2 - x) * (gridHeight / 2);
+			firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y2) - 1.0) * (gridWidth / 2);
+			firstY = getRectangle().getY() + 2 + gridHeight * x - Math.abs(y2 - x) * (gridHeight / 2);
 			g2.drawLine((int) firstX, (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) firstY);
 			g2.drawLine((int) (firstX + gridWidth), (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) (firstY + gridHeight));
 			if (y2 == 0)
@@ -234,8 +234,8 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 	}
 
 	private void drawHighlightEdgesFull(Graphics2D g2, int x, int y) {
-		double firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
-		double firstY = rectangle.getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
+		double firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y) - 1.0) * (gridWidth / 2);
+		double firstY = getRectangle().getY() + 2 + gridHeight * x + Math.abs(y - x) * (gridHeight / 2);
 
 		if (x == y) {
 			g2.drawLine((int) (firstX + gridWidth / 2), (int) firstY, (int) (firstX + gridWidth), (int) (firstY + gridHeight / 2));
@@ -243,8 +243,8 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 			g2.drawLine((int) (firstX + gridWidth), (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) (firstY + gridHeight));
 
 			for (int y2 = x - 1; y2 >= 0; y2--) {
-				firstX = rectangle.getX() + 2 + localLegendWidth + (Math.abs(x - y2) - 1.0) * (gridWidth / 2);
-				firstY = rectangle.getY() + 2 + gridHeight * x - Math.abs(y2 - x) * (gridHeight / 2);
+				firstX = getRectangle().getX() + 2 + localLegendWidth + (Math.abs(x - y2) - 1.0) * (gridWidth / 2);
+				firstY = getRectangle().getY() + 2 + gridHeight * x - Math.abs(y2 - x) * (gridHeight / 2);
 				g2.drawLine((int) firstX, (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) firstY);
 				g2.drawLine((int) (firstX + gridWidth), (int) (firstY + gridHeight / 2), (int) (firstX + gridWidth / 2), (int) (firstY + gridHeight));
 				if (y2 == 0)
@@ -260,7 +260,7 @@ public class AdjacencyMatrixPainter extends ChartPainter implements IClickSelect
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null || data == null || data.length == 0)
 			return;

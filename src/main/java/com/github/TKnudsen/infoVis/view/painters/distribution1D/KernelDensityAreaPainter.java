@@ -62,7 +62,7 @@ public class KernelDensityAreaPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null || evaluationPoints.isEmpty())
+		if (getRectangle() == null || evaluationPoints.isEmpty())
 			return;
 
 		Color c = g2.getColor();

@@ -55,9 +55,9 @@ public class RegularShapePainter extends ChartPainter {
 		pathDoubleVariant = new Path2D.Double();
 
 		for (int i = 0; i < edges; i++) {
-			double x = (chartRectangle.getWidth() / 2);
-			double y = (chartRectangle.getHeight() / 2);
-			double radius = (Math.min(chartRectangle.getWidth(), chartRectangle.getHeight()) * 0.5);
+			double x = (getChartRectangle().getWidth() / 2);
+			double y = (getChartRectangle().getHeight() / 2);
+			double radius = (Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) * 0.5);
 			double angle = 2 * Math.PI / edges;
 
 			polygonIntVariant.addPoint((int) (x + radius * Math.cos(i * angle)),

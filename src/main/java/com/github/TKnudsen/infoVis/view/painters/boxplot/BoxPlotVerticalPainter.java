@@ -54,19 +54,19 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 
 	@Override
 	protected void drawMedian(Graphics2D g2) {
-		if (chartRectangle == null || chartRectangle.getWidth() <= 0)
+		if (getChartRectangle() == null || getChartRectangle().getWidth() <= 0)
 			return;
 
 		final Stroke oldStroke = g2.getStroke();
-		final float strokeWidth = (float) Math.max(1f, chartRectangle.getHeight() * 0.01f);
+		final float strokeWidth = (float) Math.max(1f, getChartRectangle().getHeight() * 0.01f);
 		final Stroke medianStroke = BasicStrokeTools.get(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER);
 
 		g2.setStroke(medianStroke);
 		g2.setPaint(getPaint());
 
 		final float y = (float) medScreen;
-		final float x1 = (float) chartRectangle.getMinX();
-		final float x2 = (float) chartRectangle.getMaxX();
+		final float x1 = (float) getChartRectangle().getMinX();
+		final float x2 = (float) getChartRectangle().getMaxX();
 		DisplayTools.drawLine(g2, x1, y, x2, y);
 
 		g2.setStroke(oldStroke);
@@ -74,7 +74,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 
 	@Override
 	protected void drawDashedConnectors(Graphics2D g2) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		final Paint oldPaint = g2.getPaint();
@@ -82,7 +82,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		g2.setPaint(getPaint());
 		g2.setStroke(dashedstroke);
 
-		final float x = (float) chartRectangle.getCenterX();
+		final float x = (float) getChartRectangle().getCenterX();
 
 		// Lower connector
 		DisplayTools.drawLine(g2, x, (float) lowerWhiskerScreen, x, (float) lowerQuartileScreen);
@@ -95,12 +95,12 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 
 	@Override
 	protected void drawOutliers(Graphics2D g2) {
-		if (chartRectangle == null || outlierScreenCoordinates == null || outlierScreenCoordinates.length == 0)
+		if (getChartRectangle() == null || outlierScreenCoordinates == null || outlierScreenCoordinates.length == 0)
 			return;
 
-		final int centerX = (int) Math.round(chartRectangle.getCenterX());
-		final int radius = (int) Math.max(1, Math.min(chartRectangle.getWidth() * 0.25,
-				Math.min(chartRectangle.getHeight() * 0.25, stroke.getLineWidth() * 3)));
+		final int centerX = (int) Math.round(getChartRectangle().getCenterX());
+		final int radius = (int) Math.max(1, Math.min(getChartRectangle().getWidth() * 0.25,
+				Math.min(getChartRectangle().getHeight() * 0.25, stroke.getLineWidth() * 3)));
 
 		final Paint oldPaint = g2.getPaint();
 		g2.setPaint(getBorderPaint());
@@ -113,7 +113,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 
 	@Override
 	protected void drawLevel(Graphics2D g2, double ratioOfAxis, Paint color) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		final Paint oldPaint = g2.getPaint();
@@ -123,8 +123,8 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 		g2.setStroke(stroke);
 
 		final float y = (float) ratioOfAxis;
-		final float x1 = (float) chartRectangle.getMinX();
-		final float x2 = (float) chartRectangle.getMaxX();
+		final float x1 = (float) getChartRectangle().getMinX();
+		final float x2 = (float) getChartRectangle().getMaxX();
 		DisplayTools.drawLine(g2, x1, y, x2, y);
 
 		g2.setStroke(oldStroke);
@@ -133,8 +133,8 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 
 	@Override
 	Rectangle2D calculateQuartilesRectangle() {
-		return new Rectangle2D.Double(chartRectangle.getMinX(), Math.min(upperQuartileScreen, lowerQuartileScreen),
-				chartRectangle.getWidth(), Math.abs(upperQuartileScreen - lowerQuartileScreen));
+		return new Rectangle2D.Double(getChartRectangle().getMinX(), Math.min(upperQuartileScreen, lowerQuartileScreen),
+				getChartRectangle().getWidth(), Math.abs(upperQuartileScreen - lowerQuartileScreen));
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class BoxPlotVerticalPainter extends BoxPlotPainter implements IYPosition
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getY(),
-				getPositionEncodingFunction().inverseMapping(p.getY()), chartRectangle);
+				getPositionEncodingFunction().inverseMapping(p.getY()), getChartRectangle());
 	}
 
 	@Override

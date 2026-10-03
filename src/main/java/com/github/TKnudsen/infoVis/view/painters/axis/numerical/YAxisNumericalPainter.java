@@ -61,7 +61,7 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	public void drawAxis(Graphics2D g2) {
-		if (rectangle == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
+		if (getRectangle() == null || markerPositionsWithLabels == null || markerPositionsWithLabels.isEmpty())
 			return;
 
 		CopyOnWriteArrayList<Entry<Double, String>> markers = markerPositionsWithLabels;
@@ -80,7 +80,7 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 		// draw Y-Axis
 		g2.setFont(font);
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 		g2.setStroke(stroke);
 
 		// double x = getAxisAlignmentCoordinate();
@@ -94,8 +94,8 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			DisplayTools.drawLine(g2, (float) xAxisCoord, first.getKey().floatValue(), (float) xAxisCoord,
 					last.getKey().floatValue());
 		} else {
-			DisplayTools.drawLine(g2, (float) xAxisCoord, (float) rectangle.getMinY(), (float) xAxisCoord,
-					(float) rectangle.getMaxY());
+			DisplayTools.drawLine(g2, (float) xAxisCoord, (float) getRectangle().getMinY(), (float) xAxisCoord,
+					(float) getRectangle().getMaxY());
 		}
 
 		// draw tick marks and labels
@@ -117,7 +117,7 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			if (!drawLabels)
 				continue;
 
-			double x0 = rectangle.getX() + markerLineWidth + 2;
+			double x0 = getRectangle().getX() + markerLineWidth + 2;
 			// The topmost marker is special-cased to a small, tick-relative offset
 			// instead of the generic centering offset -- otherwise its label centers
 			// on the tick like every other marker, floating well above it with
@@ -127,12 +127,12 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			double y0 = pair.equals(lastMarker) ? yValue - 3 : yValue - fm.getHeight() * 0.55;
 			y0 -= ySpace;
 			y0 = Math.max(3, y0);
-			double w = rectangle.getWidth() - markerLineWidth;
+			double w = getRectangle().getWidth() - markerLineWidth;
 			double h = fm.getHeight();
 
 			if (axisLineAlignment.equals(AxisLineAlignment.CENTER)) {
-				x0 = rectangle.getX();
-				w = rectangle.getWidth() * 0.5 - 2;
+				x0 = getRectangle().getX();
+				w = getRectangle().getWidth() * 0.5 - 2;
 			} else if (axisLineAlignment.equals(AxisLineAlignment.RIGHT)) {
 				x0 -= 2;
 			}
@@ -161,9 +161,9 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 			sp.draw(g2);
 		}
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setStroke(s);
@@ -172,7 +172,7 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 
 	@Override
 	protected void drawPhysU(Graphics2D g2) {
-		if (rectangle == null || physicalUnit == null || physicalUnit.isEmpty())
+		if (getRectangle() == null || physicalUnit == null || physicalUnit.isEmpty())
 			return;
 
 		g2.setColor(fontColor);
@@ -182,10 +182,10 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 		// reserved for it by the chart-rectangle-layout's axisLegendOffset (see
 		// e.g. YYYAxisChartRectangleLayout#assignRectanglesToAxes) -- not inside
 		// the rectangle, where it would overlap the topmost plotted values.
-		double yOffset = rectangle.getY() - getFontSize() * 0.6;
-		double xOffset = (rectangle.getWidth() - fm.stringWidth(physicalUnit)) / 2.0 - 2;
+		double yOffset = getRectangle().getY() - getFontSize() * 0.6;
+		double xOffset = (getRectangle().getWidth() - fm.stringWidth(physicalUnit)) / 2.0 - 2;
 
-		g2.drawString("[" + physicalUnit + "]", (int) (rectangle.getX() + xOffset), (int) yOffset);
+		g2.drawString("[" + physicalUnit + "]", (int) (getRectangle().getX() + xOffset), (int) yOffset);
 	}
 
 	@Override
@@ -203,11 +203,11 @@ public class YAxisNumericalPainter<T extends Number> extends AxisNumericalPainte
 	public double getAxisAlignmentCoordinate() {
 		switch (axisLineAlignment) {
 		case LEFT:
-			return rectangle.getMinX();
+			return getRectangle().getMinX();
 		case RIGHT:
-			return rectangle.getMaxX();
+			return getRectangle().getMaxX();
 		case CENTER:
-			return rectangle.getCenterX();
+			return getRectangle().getCenterX();
 		default:
 			throw new IllegalArgumentException(
 					getClass().getSimpleName() + ": illegal AxisLineAlignment: " + axisLineAlignment);

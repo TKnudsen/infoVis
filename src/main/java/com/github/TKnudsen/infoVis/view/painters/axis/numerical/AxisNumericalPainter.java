@@ -286,7 +286,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 		// width and the text it was sized for didn't correspond to one another.
 		Font tooltipFont = getFont().deriveFont((float) fontSize);
 		int width = Toolkit.getDefaultToolkit().getFontMetrics(tooltipFont).stringWidth(text);
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, width + 16, fontSize * 1.8);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, width + 16, fontSize * 1.8);
 
 		stringPainter.setRectangle(rect);
 
@@ -342,7 +342,7 @@ public abstract class AxisNumericalPainter<T extends Number> extends AxisPainter
 
 	public void setMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.markerDistanceInPixels = markerDistanceInPixels;
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public T getMinValue() {

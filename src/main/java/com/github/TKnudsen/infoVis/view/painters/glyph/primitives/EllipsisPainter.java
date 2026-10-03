@@ -31,15 +31,15 @@ public class EllipsisPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(getBackgroundPaint());
-		g2.fill(rectangle);
+		g2.fill(getRectangle());
 
-		Ellipse2D.Double ellipse = new Ellipse2D.Double(rectangle.getX() + BORDER, rectangle.getY() + BORDER,
-				rectangle.getWidth() - 2 * BORDER, rectangle.getHeight() - 2 * BORDER);
+		Ellipse2D.Double ellipse = new Ellipse2D.Double(getRectangle().getX() + BORDER, getRectangle().getY() + BORDER,
+				getRectangle().getWidth() - 2 * BORDER, getRectangle().getHeight() - 2 * BORDER);
 
 		g2.setPaint(getPaint());
 		g2.fill(ellipse);
@@ -47,9 +47,9 @@ public class EllipsisPainter extends ChartPainter {
 		g2.draw(ellipse);
 
 		FontMetrics metrics = g2.getFontMetrics();
-		float labelX = ((float) rectangle.getWidth() - metrics.stringWidth(label)) * 0.5f + (float) rectangle.getX();
-		float labelY = (float) (rectangle.getHeight() + metrics.getFont().getSize2D()) * 0.5f
-				+ (float) rectangle.getY();
+		float labelX = ((float) getRectangle().getWidth() - metrics.stringWidth(label)) * 0.5f + (float) getRectangle().getX();
+		float labelY = (float) (getRectangle().getHeight() + metrics.getFont().getSize2D()) * 0.5f
+				+ (float) getRectangle().getY();
 		g2.drawString(label, labelX, labelY);
 	}
 

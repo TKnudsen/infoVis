@@ -33,7 +33,7 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 		yAxisChartRectangleLayout.setMargin(border);
 
 		yAxisChartRectangleLayout.setRectangle(rectangle);
-		this.chartRectangle = yAxisChartRectangleLayout.getChartRectangle();
+		setChartRectangle(yAxisChartRectangleLayout.getChartRectangle());
 		yAxisPainter.setRectangle(yAxisChartRectangleLayout.getYAxisRectangle());
 	}
 
@@ -51,11 +51,11 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 		if (yAxisChartRectangleLayout.isDrawYAxis())
 			drawYAxis(g2);
 
-		g2.setColor(color);
+		g2.setPaint(getPaint());
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setColor(c);
@@ -84,7 +84,7 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 	@Override
 	public void setYAxisMinValue(Y yAxisMinValue) {
 		yAxisPainter.setMinValue(yAxisMinValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public Y getYAxisMaxValue() {
@@ -94,13 +94,13 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 	@Override
 	public void setYAxisMaxValue(Y yAxisMaxValue) {
 		yAxisPainter.setMaxValue(yAxisMaxValue);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setDrawYAxis(boolean drawYAxis) {
 		this.yAxisChartRectangleLayout.setDrawYAxis(drawYAxis);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getYAxisLegendWidth() {
@@ -110,13 +110,13 @@ public abstract class YAxisNumericalChartPainter<Y extends Number> extends AxisP
 	@Override
 	public void setYAxisLegendWidth(double yAxisLegendWidth) {
 		this.yAxisChartRectangleLayout.setYAxisLegendWidth(yAxisLegendWidth);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	@Override
 	public void setYAxisMarkerDistanceInPixels(int markerDistanceInPixels) {
 		this.yAxisPainter.setMarkerDistanceInPixels(markerDistanceInPixels);
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public YAxisNumericalPainter<Y> getyAxisPainter() {

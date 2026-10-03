@@ -44,8 +44,8 @@ public abstract class Grid2DShapeSizePainter extends Grid2DColorPainter implemen
 					if (isDrawOutline() && getBorderPaint() != null) {
 						// level of detail: if the grid is too small, the outline transparency is
 						// reduced so a dense grid doesn't turn into a solid mesh of borders
-						float cellSize = (float) Math.min(rectangle.getWidth() / grid.length,
-								rectangle.getHeight() / grid[0].length);
+						float cellSize = (float) Math.min(getRectangle().getWidth() / grid.length,
+								getRectangle().getHeight() / grid[0].length);
 						float alpha;
 						if (cellSize > 10)
 							alpha = 0.66f;

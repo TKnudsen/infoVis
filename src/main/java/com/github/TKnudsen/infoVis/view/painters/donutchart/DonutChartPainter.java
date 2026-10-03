@@ -91,7 +91,7 @@ public class DonutChartPainter extends PieChartPainter {
 	public void setDonutRadiusRelative(double donutRadiusRelative) {
 		this.donutRadiusRelative = donutRadiusRelative;
 
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public Paint getInnerCirclePaint() {

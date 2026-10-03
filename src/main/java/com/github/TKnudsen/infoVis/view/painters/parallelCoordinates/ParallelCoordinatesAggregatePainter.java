@@ -208,7 +208,7 @@ public class ParallelCoordinatesAggregatePainter<T> extends ChartPainter impleme
 		outlierLowerScreenPoints.clear();
 		outlierUpperScreenPoints.clear();
 
-		if (chartRectangle == null || xPositionEncodingFunction == null)
+		if (getChartRectangle() == null || xPositionEncodingFunction == null)
 			return;
 
 		int dimensions = worldPositionMappingsY.size();
@@ -234,7 +234,7 @@ public class ParallelCoordinatesAggregatePainter<T> extends ChartPainter impleme
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		boolean hasSelection = selectedFunction != null;
@@ -302,7 +302,7 @@ public class ParallelCoordinatesAggregatePainter<T> extends ChartPainter impleme
 	public void setRectangle(Rectangle2D rectangle) {
 		super.setRectangle(rectangle);
 
-		if (rectangle == null || chartRectangle == null)
+		if (rectangle == null || getChartRectangle() == null)
 			return;
 
 		if (!externalXPositionEncodingFunction) {
@@ -392,7 +392,7 @@ public class ParallelCoordinatesAggregatePainter<T> extends ChartPainter impleme
 
 	@Override
 	public ChartPainter getTooltip(Point p) {
-		if (!tooltipping || chartRectangle == null)
+		if (!tooltipping || getChartRectangle() == null)
 			return null;
 
 		List<Integer> hits = getElementsAtPoint(p);
@@ -405,7 +405,7 @@ public class ParallelCoordinatesAggregatePainter<T> extends ChartPainter impleme
 		StringPainter stringPainter = new StringPainter(text);
 		stringPainter.setHorizontalStringAlignment(HorizontalStringAlignment.CENTER);
 
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 50 + text.length() * 6, 32);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, 50 + text.length() * 6, 32);
 		stringPainter.setRectangle(rect);
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
 		stringPainter.setFontColor(Color.WHITE);

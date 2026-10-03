@@ -71,20 +71,20 @@ public class RadialPaintersOverviewTester {
 
 	private static InfoVisChartPanel radarChartPainter() {
 		RadarChartPainter painter = new RadarChartPainter(createValues(8));
-		painter.setColor(new Color(79, 129, 188));
+		painter.setPaint(new Color(79, 129, 188));
 		return new InfoVisChartPanel(painter);
 	}
 
 	private static InfoVisChartPanel radarChartButterflyPainter() {
 		RadarChartButterflyPainter painter = new RadarChartButterflyPainter(createValues(8));
-		painter.setColor(new Color(192, 80, 77));
+		painter.setPaint(new Color(192, 80, 77));
 		return new InfoVisChartPanel(painter);
 	}
 
 	private static InfoVisChartPanel radarChartBundlePainter() {
 		List<Double> values = createValues(10);
 		RadarChartBundlePainter painter = new RadarChartBundlePainter(values, createBundle(values, 15));
-		painter.setColor(Color.ORANGE);
+		painter.setPaint(Color.ORANGE);
 		return new InfoVisChartPanel(painter);
 	}
 
@@ -92,7 +92,7 @@ public class RadialPaintersOverviewTester {
 		List<Double> values = createValues(10);
 		RadarChartButterflyBundlePainter painter = new RadarChartButterflyBundlePainter(values,
 				createBundle(values, 15));
-		painter.setColor(new Color(155, 187, 89));
+		painter.setPaint(new Color(155, 187, 89));
 		return new InfoVisChartPanel(painter);
 	}
 

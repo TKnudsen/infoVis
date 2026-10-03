@@ -33,11 +33,11 @@ public class XAxisCategoricalPainter<T extends List<String>> extends AxisCategor
 	protected void refreshLabelPainters() {
 		labelPainters = new ArrayList<>();
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		axisRectangle = new Rectangle2D.Double(rectangle.getMinX() + offsetWithinChartRectangle, rectangle.getMinY(),
-				rectangle.getWidth() - (2 * offsetWithinChartRectangle), rectangle.getHeight());
+		axisRectangle = new Rectangle2D.Double(getRectangle().getMinX() + offsetWithinChartRectangle, getRectangle().getMinY(),
+				getRectangle().getWidth() - (2 * offsetWithinChartRectangle), getRectangle().getHeight());
 
 		if (markerLabels != null)
 			for (int i = 0; i < markerLabels.size(); i++) {

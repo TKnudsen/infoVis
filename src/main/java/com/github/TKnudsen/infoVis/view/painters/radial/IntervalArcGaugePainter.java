@@ -136,7 +136,7 @@ public class IntervalArcGaugePainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Paint previousPaint = g2.getPaint();
@@ -224,8 +224,8 @@ public class IntervalArcGaugePainter extends ChartPainter {
 	private void drawZeroReferenceLine(Graphics2D g2) {
 		g2.setStroke(BasicStrokeTools.get(0.5f));
 		g2.setPaint(getBorderPaint());
-		g2.draw(new Line2D.Double(rectangle.getMinX(), rectangle.getCenterY(), outerSquare.getMaxX(),
-				rectangle.getCenterY()));
+		g2.draw(new Line2D.Double(getRectangle().getMinX(), getRectangle().getCenterY(), outerSquare.getMaxX(),
+				getRectangle().getCenterY()));
 	}
 
 	private void drawSupportRing(Graphics2D g2) {
@@ -315,7 +315,7 @@ public class IntervalArcGaugePainter extends ChartPainter {
 	public void setPercentileRingThicknessRatio(double percentileRingThicknessRatio) {
 		this.percentileRingThicknessRatio = percentileRingThicknessRatio;
 
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public double getRingGapRatio() {
@@ -325,7 +325,7 @@ public class IntervalArcGaugePainter extends ChartPainter {
 	public void setRingGapRatio(double ringGapRatio) {
 		this.ringGapRatio = ringGapRatio;
 
-		setRectangle(rectangle);
+		setRectangle(getRectangle());
 	}
 
 	public boolean isShowZeroReferenceLine() {

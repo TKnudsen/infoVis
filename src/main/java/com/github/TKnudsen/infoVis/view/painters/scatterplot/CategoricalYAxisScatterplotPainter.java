@@ -140,7 +140,7 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 	protected void refreshDataPoints() {
 		screenPoints.clear();
 
-		if (data == null || chartRectangle == null)
+		if (data == null || getChartRectangle() == null)
 			return;
 
 		Map<String, Double> categoryYPixel = new HashMap<>();
@@ -187,13 +187,13 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 	 */
 	@Override
 	public void drawChart(Graphics2D g2) {
-		if (chartRectangle == null || data == null || data.isEmpty())
+		if (getChartRectangle() == null || data == null || data.isEmpty())
 			return;
 
 		Color oldColor = g2.getColor();
 
 		double ps = Double.isNaN(pointSize)
-				? ScatterPlotPainter.calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight())
+				? ScatterPlotPainter.calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight())
 				: pointSize;
 
 		boolean hasSelection = selectedFunction != null;
@@ -251,10 +251,10 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 
 	@Override
 	public ChartPainter getTooltip(Point p) {
-		if (!tooltipping || p == null || chartRectangle == null || data == null || data.isEmpty())
+		if (!tooltipping || p == null || getChartRectangle() == null || data == null || data.isEmpty())
 			return null;
 
-		double maxRadius = ScatterPlotPainter.calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+		double maxRadius = ScatterPlotPainter.calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		double bestDist = Double.POSITIVE_INFINITY;
 		T bestElement = null;
@@ -298,7 +298,7 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 
 		StringPainter stringPainter = new TooltipStringPainter(toolTipString);
 
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, toolTipWidth, toolTipHeight);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, toolTipWidth, toolTipHeight);
 		stringPainter.setRectangle(rect);
 
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
@@ -341,11 +341,11 @@ public class CategoricalYAxisScatterplotPainter<T> extends YCatXnumChartPainter<
 
 	@Override
 	public List<T> getElementsAtPoint(Point p) {
-		if (p == null || chartRectangle == null || data == null)
+		if (p == null || getChartRectangle() == null || data == null)
 			return null;
 
 		double radius = Double.isNaN(pointSize)
-				? ScatterPlotPainter.calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight())
+				? ScatterPlotPainter.calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight())
 				: pointSize;
 
 		Ellipse2D circle = new Ellipse2D.Double();

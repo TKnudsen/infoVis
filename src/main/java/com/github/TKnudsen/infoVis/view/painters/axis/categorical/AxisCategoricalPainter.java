@@ -47,7 +47,7 @@ public abstract class AxisCategoricalPainter<T extends List<String>> extends Axi
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle != null)
+		if (getRectangle() != null)
 			drawAxis(g2);
 	}
 
@@ -76,7 +76,7 @@ public abstract class AxisCategoricalPainter<T extends List<String>> extends Axi
 				StringPainter sp = new StringPainter(stringPainter.getData());
 				sp.setRectangle(new Rectangle2D.Double(p.getX() - 80, p.getY() - 40, 80, 40));
 				sp.setFontColor(fontColor);
-				sp.setFontSize((int) Math.max(12, this.rectangle.getHeight() * 0.66));
+				sp.setFontSize((int) Math.max(12, getRectangle().getHeight() * 0.66));
 				return sp;
 			}
 		return null;

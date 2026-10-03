@@ -47,7 +47,7 @@ public class RadarChartBundlePainter extends RadarChartPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (data == null || data.length == 0 || chartRectangle == null)
+		if (data == null || data.length == 0 || getChartRectangle() == null)
 			return;
 
 		bundleSupport.draw(g2, this::drawSeries);
@@ -56,7 +56,7 @@ public class RadarChartBundlePainter extends RadarChartPainter {
 		// over it above -- it must stay clearly visible regardless of how
 		// many members the bundle has
 		if (bundleSupport.getBundleSize() > 0)
-			drawSeries(g2, data, color, stroke, false);
+			drawSeries(g2, data, getColor(), stroke, false);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class BarsPainter<O> extends ChartPainter implements ITooltip {
 		this.colors = new ArrayList<>();
 		if (this.elementMapping != null) {
 			for (int i = 0; i < this.elementMapping.size(); i++) {
-				this.colors.add(color);
+				this.colors.add(getColor());
 			}
 		}
 	}
@@ -143,11 +143,11 @@ public class BarsPainter<O> extends ChartPainter implements ITooltip {
 
 		for (int i = 0; i < bars.size(); i++) {
 			String s = labeling.get(i);
-			while (fm.stringWidth(s) * 1.1 + 5 > this.rectangle.getWidth() && s.length() > 0)
+			while (fm.stringWidth(s) * 1.1 + 5 > getRectangle().getWidth() && s.length() > 0)
 				s = s.substring(0, s.length() - 1);
 			float startX = (float) (bars.get(i).getX() + 5.0f);
 			if (invertLegendAlignment)
-				startX = (float) (this.rectangle.getMaxX() - fm.stringWidth(s) - offset);
+				startX = (float) (getRectangle().getMaxX() - fm.stringWidth(s) - offset);
 			g2.drawString(s, startX,
 					(float) (bars.get(i).getY() + fm.getHeight() * 0.4 + bars.get(i).getHeight() * 0.5));
 		}
@@ -165,7 +165,7 @@ public class BarsPainter<O> extends ChartPainter implements ITooltip {
 	private void recalculate() {
 		// Snapshot references to avoid races if external code swaps
 		// elementMapping/labeling
-		final Rectangle2D r = this.rectangle;
+		final Rectangle2D r = getRectangle();
 		final List<List<O>> em = this.elementMapping;
 		final int c = (em != null) ? em.size() : 0;
 

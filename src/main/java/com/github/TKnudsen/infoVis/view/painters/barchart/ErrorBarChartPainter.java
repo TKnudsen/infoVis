@@ -119,7 +119,7 @@ public class ErrorBarChartPainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		List<Rectangle2D> barRectangles = barChartPainter.getBarRectangles();
@@ -171,11 +171,11 @@ public class ErrorBarChartPainter extends ChartPainter {
 		if (errorStroke != null)
 			return errorStroke;
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return DisplayTools.standardStroke;
 
 		float width = (float) Math.max(1,
-				Math.max(3, Math.min(chartRectangle.getWidth(), chartRectangle.getHeight()) / 12.0) * 0.14);
+				Math.max(3, Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) / 12.0) * 0.14);
 		return new BasicStroke(width);
 	}
 

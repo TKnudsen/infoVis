@@ -101,7 +101,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (g2 == null || rectangle == null)
+		if (g2 == null || getRectangle() == null)
 			return;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -137,9 +137,9 @@ public class StringPainter extends ChartPainter implements ITooltip {
 				drawVerticalString(g2, fm, oneLine);
 			}
 
-			if (drawOutline) {
+			if (isDrawOutline()) {
 				g2.setPaint(getBorderPaint());
-				DisplayTools.drawRectangle(g2, rectangle);
+				DisplayTools.drawRectangle(g2, getRectangle());
 			}
 		} finally {
 			g2.setStroke(originalStroke);
@@ -164,20 +164,20 @@ public class StringPainter extends ChartPainter implements ITooltip {
 	}
 
 	private boolean isCacheValid(FontRenderContext frc) {
-		return cachedTruncatedString != null && rectangle != null && font != null && rectangle.getX() == cachedX
-				&& rectangle.getY() == cachedY && rectangle.getWidth() == cachedWidth
-				&& rectangle.getHeight() == cachedHeight && font.getSize() == cachedFontSize
+		return cachedTruncatedString != null && getRectangle() != null && font != null && getRectangle().getX() == cachedX
+				&& getRectangle().getY() == cachedY && getRectangle().getWidth() == cachedWidth
+				&& getRectangle().getHeight() == cachedHeight && font.getSize() == cachedFontSize
 				&& font.getStyle() == cachedFontStyle && font.getName().equals(cachedFontName)
 				&& verticalOrientation == cachedVerticalOrientation && offset == cachedOffset
 				&& Objects.equals(frc, cachedFontRenderContext);
 	}
 
 	private void updateCacheKeys(FontRenderContext frc) {
-		if (rectangle != null) {
-			cachedX = rectangle.getX();
-			cachedY = rectangle.getY();
-			cachedWidth = rectangle.getWidth();
-			cachedHeight = rectangle.getHeight();
+		if (getRectangle() != null) {
+			cachedX = getRectangle().getX();
+			cachedY = getRectangle().getY();
+			cachedWidth = getRectangle().getWidth();
+			cachedHeight = getRectangle().getHeight();
 		}
 		if (font != null) {
 			cachedFontName = font.getName();
@@ -205,7 +205,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		if (isCacheValid(frc))
 			return cachedTruncatedString;
 
-		if (fm == null || rectangle == null) {
+		if (fm == null || getRectangle() == null) {
 			cachedTruncatedString = "";
 			updateCacheKeys(frc);
 			return cachedTruncatedString;
@@ -213,11 +213,11 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 		String normalized = normalizeWhitespaceForRendering(string, SPACES_PER_TAB);
 
-		double availableWidth = verticalOrientation ? (rectangle.getHeight() - 2 * offset)
-				: (rectangle.getWidth() - 2 * offset);
+		double availableWidth = verticalOrientation ? (getRectangle().getHeight() - 2 * offset)
+				: (getRectangle().getWidth() - 2 * offset);
 
-		double availableHeight = verticalOrientation ? (rectangle.getWidth() - 2 * offset)
-				: (rectangle.getHeight() - 2 * offset);
+		double availableHeight = verticalOrientation ? (getRectangle().getWidth() - 2 * offset)
+				: (getRectangle().getHeight() - 2 * offset);
 
 		String truncated;
 		if (!verticalOrientation && normalized.indexOf('\n') >= 0) {
@@ -336,12 +336,12 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 		int stringWidth = fm.stringWidth(displayString);
 
-		double additionalHeightOffset = calculateAdditionalHeightOffset(rectangle.getHeight());
+		double additionalHeightOffset = calculateAdditionalHeightOffset(getRectangle().getHeight());
 
 		double horizontalOffset = calculateHorizontalOffset(stringWidth);
 
-		int x = (int) Math.round(rectangle.getMinX() + horizontalOffset);
-		int y = (int) Math.round(rectangle.getCenterY() + font.getSize() * 0.5 + additionalHeightOffset);
+		int x = (int) Math.round(getRectangle().getMinX() + horizontalOffset);
+		int y = (int) Math.round(getRectangle().getCenterY() + font.getSize() * 0.5 + additionalHeightOffset);
 
 		if (getBackgroundPaint() != null) {
 			backgroundRect.setBounds(x - 2, y - font.getSize(), stringWidth + 4, (int) (font.getSize() * 1.333));
@@ -376,18 +376,18 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		double topY;
 		switch (verticalStringAlignment) {
 		case UP:
-			topY = rectangle.getY() + offset;
+			topY = getRectangle().getY() + offset;
 			break;
 		case DOWN:
-			topY = rectangle.getMaxY() - offset - blockHeight;
+			topY = getRectangle().getMaxY() - offset - blockHeight;
 			break;
 		default: // CENTER
-			topY = rectangle.getCenterY() - blockHeight / 2.0;
+			topY = getRectangle().getCenterY() - blockHeight / 2.0;
 			break;
 		}
 
 		int y = (int) Math.round(topY + fm.getAscent());
-		final int x = (int) Math.round(rectangle.getX() + offset);
+		final int x = (int) Math.round(getRectangle().getX() + offset);
 
 		if (getBackgroundPaint() != null) {
 			int maxLineWidth = 0;
@@ -416,11 +416,11 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 		int stringWidth = fm.stringWidth(displayString);
 
-		double xOffset = rectangle.getWidth() - font.getSize();
+		double xOffset = getRectangle().getWidth() - font.getSize();
 		double yOffset = calculateVerticalYOffset(stringWidth);
 
-		int x = (int) Math.round(rectangle.getX() + xOffset * 0.5 + getFontSize());
-		int y = (int) Math.round(rectangle.getY() + yOffset);
+		int x = (int) Math.round(getRectangle().getX() + xOffset * 0.5 + getFontSize());
+		int y = (int) Math.round(getRectangle().getY() + yOffset);
 
 		if (getBackgroundPaint() != null) {
 			backgroundRect.setBounds(x - font.getSize(), y - stringWidth - 2, (int) (font.getSize() * 1.333),
@@ -430,8 +430,8 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		}
 
 		g2.setColor(getFontColor());
-		DisplayTools.drawRotatedString(g2, displayString, (float) (rectangle.getX() + xOffset * 0.5 + getFontSize()),
-				(float) (rectangle.getY() + yOffset), -Math.PI / 2);
+		DisplayTools.drawRotatedString(g2, displayString, (float) (getRectangle().getX() + xOffset * 0.5 + getFontSize()),
+				(float) (getRectangle().getY() + yOffset), -Math.PI / 2);
 	}
 
 	// ==================== WHITESPACE NORMALIZATION ====================
@@ -473,9 +473,9 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		case LEFT:
 			return offset;
 		case RIGHT:
-			return rectangle.getWidth() - stringWidth - offset;
+			return getRectangle().getWidth() - stringWidth - offset;
 		default: // CENTER
-			return (rectangle.getWidth() - stringWidth) / 2.0;
+			return (getRectangle().getWidth() - stringWidth) / 2.0;
 		}
 	}
 
@@ -484,9 +484,9 @@ public class StringPainter extends ChartPainter implements ITooltip {
 		case UP:
 			return stringWidth + 2 * offset;
 		case DOWN:
-			return rectangle.getHeight() - 2 * offset;
+			return getRectangle().getHeight() - 2 * offset;
 		default: // CENTER
-			return rectangle.getHeight() * 0.5 + stringWidth * 0.5;
+			return getRectangle().getHeight() * 0.5 + stringWidth * 0.5;
 		}
 	}
 
@@ -563,7 +563,7 @@ public class StringPainter extends ChartPainter implements ITooltip {
 
 	@Override
 	public ChartPainter getTooltip(Point p) {
-		if (!toolTipping || rectangle == null || !rectangle.contains(p))
+		if (!toolTipping || getRectangle() == null || !getRectangle().contains(p))
 			return null;
 
 		if (string == null || string.isEmpty())

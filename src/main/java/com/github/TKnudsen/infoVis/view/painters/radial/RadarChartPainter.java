@@ -50,11 +50,12 @@ public class RadarChartPainter extends ChartPainter {
 
 	/**
 	 * A fixed, theme-independent default so the chart's area fill is reliably
-	 * visible without the caller having to call {@link #setColor(Color)} first
-	 * -- the inherited look-and-feel-driven default ({@link
-	 * ChartPainter#color}) is meant for text/outlines, not necessarily for an
-	 * area fill, and can end up visually indistinguishable from the background
-	 * under some themes.
+	 * visible without the caller having to call {@link #setPaint(java.awt.Paint)}
+	 * first
+	 * -- the inherited look-and-feel-driven default paint ({@link
+	 * ChartPainter#getPaint()}) is meant for text/outlines, not necessarily for
+	 * an area fill, and can end up visually indistinguishable from the
+	 * background under some themes.
 	 */
 	private static final Color DEFAULT_FILL_COLOR = new Color(70, 130, 180);
 
@@ -63,7 +64,7 @@ public class RadarChartPainter extends ChartPainter {
 			throw new IllegalArgumentException("RadarChartPainter: data must not be null");
 
 		this.data = data.clone();
-		this.color = DEFAULT_FILL_COLOR;
+		setPaint(DEFAULT_FILL_COLOR);
 		this.stroke = DisplayTools.thickStroke;
 
 		initialize();
@@ -91,7 +92,7 @@ public class RadarChartPainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (data == null || data.length == 0 || chartRectangle == null)
+		if (data == null || data.length == 0 || getChartRectangle() == null)
 			return;
 
 		if (drawAxes)
@@ -99,8 +100,8 @@ public class RadarChartPainter extends ChartPainter {
 
 		drawRadar(g2);
 
-		if (drawOutline)
-			DisplayTools.drawRectangle(g2, rectangle, getBorderPaint());
+		if (isDrawOutline())
+			DisplayTools.drawRectangle(g2, getRectangle(), getBorderPaint());
 	}
 
 	/**
@@ -108,9 +109,9 @@ public class RadarChartPainter extends ChartPainter {
 	 * circle starting straight up and going clockwise.
 	 */
 	protected int[][] calculateAxesEndpoints() {
-		double maxRadius = Math.min(chartRectangle.getWidth(), chartRectangle.getHeight()) / 2;
-		int xMean = (int) chartRectangle.getCenterX();
-		int yMean = (int) chartRectangle.getCenterY();
+		double maxRadius = Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) / 2;
+		int xMean = (int) getChartRectangle().getCenterX();
+		int yMean = (int) getChartRectangle().getCenterY();
 
 		int[][] axesEndpoints = new int[data.length][2];
 		for (int i = 0; i < data.length; i++) {
@@ -122,8 +123,8 @@ public class RadarChartPainter extends ChartPainter {
 	}
 
 	protected void drawAxes(Graphics2D g2) {
-		int xMean = (int) chartRectangle.getCenterX();
-		int yMean = (int) chartRectangle.getCenterY();
+		int xMean = (int) getChartRectangle().getCenterX();
+		int yMean = (int) getChartRectangle().getCenterY();
 		int[][] axesEndpoints = calculateAxesEndpoints();
 
 		for (int i = 0; i < data.length; i++) {
@@ -158,9 +159,9 @@ public class RadarChartPainter extends ChartPainter {
 	 *                    #getData()}
 	 */
 	protected int[][] calculateVertexCoordinates(double[] seriesData) {
-		double maxRadius = Math.min(chartRectangle.getWidth(), chartRectangle.getHeight()) / 2;
-		int xMean = (int) chartRectangle.getCenterX();
-		int yMean = (int) chartRectangle.getCenterY();
+		double maxRadius = Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) / 2;
+		int xMean = (int) getChartRectangle().getCenterX();
+		int yMean = (int) getChartRectangle().getCenterY();
 
 		double valueRange = yAxisMaxValue - yAxisMinValue;
 
@@ -196,22 +197,22 @@ public class RadarChartPainter extends ChartPainter {
 		Color previousColor = g2.getColor();
 		Stroke previousStroke = g2.getStroke();
 
-		drawSeries(g2, data, color, stroke, fill);
+		drawSeries(g2, data, getColor(), stroke, fill);
 
 		if (drawCoordinateMarks) {
 			double markRadius = Double.isNaN(pointRadius)
-					? Math.min(chartRectangle.getWidth(), chartRectangle.getHeight()) * 0.0033
+					? Math.min(getChartRectangle().getWidth(), getChartRectangle().getHeight()) * 0.0033
 					: pointRadius;
 
 			int[][] vertices = calculateVertexCoordinates();
-			g2.setColor(color);
+			g2.setColor(getColor());
 			for (int i = 0; i < vertices.length; i++)
-				DisplayTools.drawPoint(g2, vertices[i][0], vertices[i][1], markRadius, color, true);
+				DisplayTools.drawPoint(g2, vertices[i][0], vertices[i][1], markRadius, getColor(), true);
 		}
 
 		if (label != null) {
 			g2.setColor(Color.BLACK);
-			g2.drawString(label, (int) chartRectangle.getMinX() + 5, (int) chartRectangle.getMinY() + 12);
+			g2.drawString(label, (int) getChartRectangle().getMinX() + 5, (int) getChartRectangle().getMinY() + 12);
 		}
 
 		g2.setColor(previousColor);
@@ -237,8 +238,8 @@ public class RadarChartPainter extends ChartPainter {
 	 */
 	protected void drawSeries(Graphics2D g2, double[] seriesData, Color seriesColor, Stroke seriesStroke,
 			boolean fillSeries) {
-		int xMean = (int) chartRectangle.getCenterX();
-		int yMean = (int) chartRectangle.getCenterY();
+		int xMean = (int) getChartRectangle().getCenterX();
+		int yMean = (int) getChartRectangle().getCenterY();
 
 		int[][] vertices = calculateVertexCoordinates(seriesData);
 		GeneralPath path = buildChartPath(vertices, xMean, yMean);

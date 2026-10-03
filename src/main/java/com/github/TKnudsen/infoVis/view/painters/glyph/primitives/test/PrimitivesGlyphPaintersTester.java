@@ -11,6 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.ArrowPainter;
+import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.CrossPainter;
+import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.DirectionalArrowPainter;
+import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.DirectionalArrowPainter.Direction;
 import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.EllipsisPainter;
 import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.RectangularPainter;
 import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.TrendBundlePainter;
@@ -18,14 +21,15 @@ import com.github.TKnudsen.infoVis.view.painters.glyph.primitives.TrendPainter;
 import com.github.TKnudsen.infoVis.view.panels.InfoVisChartPanel;
 
 /**
- * Standalone interactive demo of every painter in the
- * {@code com.github.TKnudsen.infoVis.view.painters.glyph.primitives}
- * package: {@link ArrowPainter}, {@link EllipsisPainter}, {@link TrendPainter},
- * {@link TrendBundlePainter}, and a minimal concrete subclass of
- * {@link RectangularPainter} (itself abstract, with no production subclass
- * yet) exercising its icon/bar/description drawing helpers.
+ * Stand-alone interactive demo of every painter in the
+ * {@code com.github.TKnudsen.infoVis.view.painters.glyph.primitives} package:
+ * {@link ArrowPainter}, {@link CrossPainter}, {@link DirectionalArrowPainter},
+ * {@link EllipsisPainter}, {@link TrendPainter}, {@link TrendBundlePainter},
+ * and a minimal concrete subclass of {@link RectangularPainter} (itself
+ * abstract, with no production subclass yet) exercising its
+ * icon/bar/description drawing helpers.
  *
- * @version 1.0
+ * @version 1.1
  * @since 2026
  */
 public class PrimitivesGlyphPaintersTester {
@@ -35,17 +39,26 @@ public class PrimitivesGlyphPaintersTester {
 		frame.setTitle("glyph.primitives Painters Test Frame");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JPanel grid = new JPanel(new GridLayout(2, 3, 10, 10));
+		JPanel grid = new JPanel(new GridLayout(2, 4, 10, 10));
 
 		grid.add(labeled("ArrowPainter", new InfoVisChartPanel(new ArrowPainter())));
 		grid.add(labeled("EllipsisPainter", new InfoVisChartPanel(new EllipsisPainter("Ellipsis"))));
 		grid.add(labeled("TrendPainter (trend=1)", new InfoVisChartPanel(new TrendPainter(1))));
 		grid.add(labeled("TrendPainter (trend=-0.5)", new InfoVisChartPanel(new TrendPainter(-0.5))));
-		grid.add(labeled("TrendBundlePainter", new InfoVisChartPanel(new TrendBundlePainter(Arrays.asList(1.0, 0.0, -1.0)))));
+		grid.add(labeled("TrendBundlePainter",
+				new InfoVisChartPanel(new TrendBundlePainter(Arrays.asList(1.0, 0.0, -1.0)))));
 		grid.add(labeled("RectangularPainter (demo subclass)", new InfoVisChartPanel(new DemoRectangularPainter())));
 
+		CrossPainter crossPainter = new CrossPainter();
+		crossPainter.setPaint(java.awt.Color.RED);
+		grid.add(labeled("CrossPainter", new InfoVisChartPanel(crossPainter)));
+
+		DirectionalArrowPainter arrowPainter = new DirectionalArrowPainter(Direction.UP);
+		arrowPainter.setPaint(java.awt.Color.BLUE);
+		grid.add(labeled("DirectionalArrowPainter (UP)", new InfoVisChartPanel(arrowPainter)));
+
 		frame.add(grid);
-		frame.setSize(700, 500);
+		frame.setSize(900, 500);
 		frame.setLocation(50, 50);
 
 		SwingUtilities.invokeLater(() -> frame.setVisible(true));
@@ -66,8 +79,8 @@ public class PrimitivesGlyphPaintersTester {
 	/**
 	 * Minimal concrete {@link RectangularPainter} for demo purposes: draws a
 	 * generated icon, a title bar, and a wrapped description paragraph stacked
-	 * vertically -- {@link RectangularPainter} itself has no production
-	 * subclass to demo instead.
+	 * vertically -- {@link RectangularPainter} itself has no production subclass to
+	 * demo instead.
 	 */
 	private static class DemoRectangularPainter extends RectangularPainter {
 
@@ -86,16 +99,17 @@ public class PrimitivesGlyphPaintersTester {
 		public void draw(Graphics2D g2) {
 			super.draw(g2);
 
-			if (rectangle == null)
+			if (getRectangle() == null)
 				return;
 
-			double x = rectangle.getX() + OFFSET;
-			double y = rectangle.getY() + OFFSET;
+			double x = getRectangle().getX() + OFFSET;
+			double y = getRectangle().getY() + OFFSET;
 
 			drawIcon(g2, x, y, ICON_SIZE, icon);
-			drawBar(g2, x + ICON_SIZE + OFFSET, y, rectangle.getWidth() - ICON_SIZE - 3 * OFFSET, "Title", g2.getFont());
-			drawDescription(g2, x, y + BAR_HEIGHT + OFFSET, rectangle.getWidth() - 2 * OFFSET,
-					rectangle.getHeight() - BAR_HEIGHT - 2 * OFFSET,
+			drawBar(g2, x + ICON_SIZE + OFFSET, y, getRectangle().getWidth() - ICON_SIZE - 3 * OFFSET, "Title",
+					g2.getFont());
+			drawDescription(g2, x, y + BAR_HEIGHT + OFFSET, getRectangle().getWidth() - 2 * OFFSET,
+					getRectangle().getHeight() - BAR_HEIGHT - 2 * OFFSET,
 					"A longer description that wraps across several lines to demonstrate drawDescription().");
 		}
 

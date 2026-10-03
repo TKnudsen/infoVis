@@ -58,7 +58,7 @@ public class SplinePainter extends ChartPainter {
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null) {
 			xValuesAbsolute = null;

@@ -64,7 +64,7 @@ public class ScatterPlotPainter<T> extends AbstractScatterPlotPainter<T> {
 			return null;
 		}
 
-		final Rectangle2D cr = chartRectangle;
+		final Rectangle2D cr = getChartRectangle();
 		if (cr == null) {
 			return null;
 		}

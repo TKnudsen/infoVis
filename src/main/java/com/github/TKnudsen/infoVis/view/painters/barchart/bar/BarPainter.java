@@ -47,7 +47,7 @@ public abstract class BarPainter extends ChartPainter implements ITooltip {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		Paint c = g2.getPaint();
@@ -84,7 +84,7 @@ public abstract class BarPainter extends ChartPainter implements ITooltip {
 			return null;
 
 		return ToolTipTools.getTooltipForPositionMapping1D(p, p.getY(),
-				positionEncodingFunction.inverseMapping(p.getY()), chartRectangle);
+				positionEncodingFunction.inverseMapping(p.getY()), getChartRectangle());
 	}
 
 	@Override

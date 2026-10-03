@@ -47,12 +47,12 @@ public class RegularPolygonPainter extends ChartPainter {
 	}
 
 	protected void calculatePolygon() {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
-		int x = (int) rectangle.getCenterX();
-		int y = (int) rectangle.getCenterY();
-		int r = (int) (Math.min(rectangle.getWidth(), rectangle.getHeight()) * 0.5);
+		int x = (int) getRectangle().getCenterX();
+		int y = (int) getRectangle().getCenterY();
+		int r = (int) (Math.min(getRectangle().getWidth(), getRectangle().getHeight()) * 0.5);
 		double startAngle = -Math.PI / 2;
 
 		regularPolygon = new RegularPolygon(x, y, r, edges, startAngle);

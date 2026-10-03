@@ -23,27 +23,27 @@ public class CloseButtonPainter extends ButtonPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Color c = g2.getColor();
 		Stroke stroke = g2.getStroke();
 
-		float strokeWidth = (float) (rectangle.getWidth() * 0.15);
+		float strokeWidth = (float) (getRectangle().getWidth() * 0.15);
 
 		g2.setColor(Color.WHITE);
 		g2.setStroke(BasicStrokeTools.get(strokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-		g2.drawLine((int) (rectangle.getX() + 1.5 * strokeWidth), (int) (rectangle.getY() + 1.5 * strokeWidth),
-				(int) (rectangle.getX() + rectangle.getWidth() - 1.5 * strokeWidth),
-				(int) (rectangle.getY() + rectangle.getHeight() - 1.5 * strokeWidth));
-		g2.drawLine((int) (rectangle.getX() + rectangle.getWidth() - 1.5 * strokeWidth),
-				(int) (rectangle.getY() + 1.5 * strokeWidth), (int) (rectangle.getX() + 1.5 * strokeWidth),
-				(int) (rectangle.getY() + rectangle.getHeight() - 1.5 * strokeWidth));
+		g2.drawLine((int) (getRectangle().getX() + 1.5 * strokeWidth), (int) (getRectangle().getY() + 1.5 * strokeWidth),
+				(int) (getRectangle().getX() + getRectangle().getWidth() - 1.5 * strokeWidth),
+				(int) (getRectangle().getY() + getRectangle().getHeight() - 1.5 * strokeWidth));
+		g2.drawLine((int) (getRectangle().getX() + getRectangle().getWidth() - 1.5 * strokeWidth),
+				(int) (getRectangle().getY() + 1.5 * strokeWidth), (int) (getRectangle().getX() + 1.5 * strokeWidth),
+				(int) (getRectangle().getY() + getRectangle().getHeight() - 1.5 * strokeWidth));
 
-		if (drawOutline) {
+		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
 			g2.setStroke(BasicStrokeTools.get(1));
-			g2.draw(rectangle);
+			g2.draw(getRectangle());
 		}
 
 		g2.setColor(c);

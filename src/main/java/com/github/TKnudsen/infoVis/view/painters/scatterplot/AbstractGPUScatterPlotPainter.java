@@ -347,22 +347,22 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 		double spanX = worldMaxX - worldMinX;
 		if (spanX == 0.0)
 			spanX = 1.0;
-		return chartRectangle.getMinX() + (worldX - worldMinX) / spanX * chartRectangle.getWidth();
+		return getChartRectangle().getMinX() + (worldX - worldMinX) / spanX * getChartRectangle().getWidth();
 	}
 
 	protected double worldToScreenY(double worldY) {
 		double spanY = worldMaxY - worldMinY;
 		if (spanY == 0.0)
 			spanY = 1.0;
-		return chartRectangle.getMaxY() - (worldY - worldMinY) / spanY * chartRectangle.getHeight();
+		return getChartRectangle().getMaxY() - (worldY - worldMinY) / spanY * getChartRectangle().getHeight();
 	}
 
 	protected double screenToWorldX(double screenX) {
-		return worldMinX + (screenX - chartRectangle.getMinX()) / chartRectangle.getWidth() * (worldMaxX - worldMinX);
+		return worldMinX + (screenX - getChartRectangle().getMinX()) / getChartRectangle().getWidth() * (worldMaxX - worldMinX);
 	}
 
 	protected double screenToWorldY(double screenY) {
-		return worldMinY + (chartRectangle.getMaxY() - screenY) / chartRectangle.getHeight() * (worldMaxY - worldMinY);
+		return worldMinY + (getChartRectangle().getMaxY() - screenY) / getChartRectangle().getHeight() * (worldMaxY - worldMinY);
 	}
 
 	// ==================== TOOLTIP ====================
@@ -372,7 +372,7 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 		if (!isToolTipping() || p == null)
 			return null;
 
-		final Rectangle2D cr = chartRectangle;
+		final Rectangle2D cr = getChartRectangle();
 		if (cr == null)
 			return null;
 
@@ -398,7 +398,7 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 			if (screenPoints.size() != n)
 				return null;
 
-			final double maxRadius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			final double maxRadius = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 			final double px = p.getX();
 			final double py = p.getY();
 
@@ -439,8 +439,8 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 		double worldX = screenToWorldX(p.getX());
 		double worldY = screenToWorldY(p.getY());
 
-		double maxRadius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
-		double worldRadius = maxRadius * (worldMaxX - worldMinX) / chartRectangle.getWidth();
+		double maxRadius = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
+		double worldRadius = maxRadius * (worldMaxX - worldMinX) / getChartRectangle().getWidth();
 
 		double bestDist = Double.POSITIVE_INFINITY;
 		T bestElement = null;
@@ -481,7 +481,7 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 			return null;
 
 		StringPainter stringPainter = new TooltipStringPainter(toolTipString);
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, getToolTipWidth(), getToolTipHeight());
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, getToolTipWidth(), getToolTipHeight());
 		stringPainter.setRectangle(rect);
 
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));
@@ -530,7 +530,7 @@ public abstract class AbstractGPUScatterPlotPainter<T> extends AbstractScatterPl
 
 		double radius = getPointSize();
 		if (Double.isNaN(radius))
-			radius = calculatePointSize(chartRectangle.getWidth(), chartRectangle.getHeight());
+			radius = calculatePointSize(getChartRectangle().getWidth(), getChartRectangle().getHeight());
 
 		Ellipse2D circle = new Ellipse2D.Double();
 		circle.setFrameFromCenter(p.getX(), p.getY(), p.getX() + radius, p.getY() + radius);

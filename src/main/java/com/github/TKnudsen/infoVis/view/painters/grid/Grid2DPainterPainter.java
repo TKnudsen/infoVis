@@ -111,7 +111,7 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 						painters[i][j].draw(g2);
 
 		// draw outlines of the grid elements
-		if (isDrawOutline() && rectangle != null && getBorderPaint() != null)
+		if (isDrawOutline() && getRectangle() != null && getBorderPaint() != null)
 			if (grid != null)
 				for (int i = 0; i < grid.length; i++)
 					for (int j = 0; j < grid[i].length; j++) {
@@ -119,8 +119,8 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 							continue;
 
 						// if grid is too small, the outline transparency is reduced
-						float cellSize = (float) Math.min(rectangle.getWidth() / grid.length,
-								rectangle.getHeight() / grid[0].length);
+						float cellSize = (float) Math.min(getRectangle().getWidth() / grid.length,
+								getRectangle().getHeight() / grid[0].length);
 						float alpha = 1.0f;
 						if (cellSize > 10)
 							alpha = 0.66f;
@@ -137,9 +137,9 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 					}
 
 		// draw outline of the entire grid
-		if (isDrawOutline() && rectangle != null) {
+		if (isDrawOutline() && getRectangle() != null) {
 			g2.setPaint(getBorderPaint());
-			g2.draw(rectangle);
+			g2.draw(getRectangle());
 		}
 
 		g2.setColor(c);
@@ -246,7 +246,7 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 	protected void recalculateGrid() {
 		grid = null;
 
-		if (rectangle == null || chartRectangle == null)
+		if (getRectangle() == null || getChartRectangle() == null)
 			return;
 
 		if (painters == null)
@@ -254,11 +254,11 @@ public class Grid2DPainterPainter<T extends ChartPainter>
 
 		double gridSpacing = this.gridSpacing;
 		if (Double.isNaN(gridSpacing) && painters.length > 0 && painters[0].length > 0)
-			gridSpacing = Rectangle2DTools.calculateSpacingValue(chartRectangle.getWidth(), chartRectangle.getHeight(),
+			gridSpacing = Rectangle2DTools.calculateSpacingValue(getChartRectangle().getWidth(), getChartRectangle().getHeight(),
 					painters.length, painters[0].length);
 
 		if (painters.length > 0 && painters[0].length > 0)
-			grid = Rectangle2DTools.createRectangleMatrix(chartRectangle, painters.length, painters[0].length,
+			grid = Rectangle2DTools.createRectangleMatrix(getChartRectangle(), painters.length, painters[0].length,
 					gridSpacing);
 
 		if (grid != null)

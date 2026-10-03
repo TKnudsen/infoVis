@@ -11,9 +11,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-import javax.swing.UIManager;
-
 import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
+import com.github.TKnudsen.infoVis.view.ui.LookAndFeelTools;
 
 /**
  * <p>
@@ -37,9 +36,7 @@ import com.github.TKnudsen.infoVis.view.tools.DisplayTools;
  * ensure proper background rendering and anti-aliasing setup.
  * </p>
  *
- * @version 2.04 -- default border/paint/fontColor now resolved from the active
- *          look-and-feel via UIManager instead of fixed light-theme literals,
- *          in September 2026
+ * @version 2.10, revised in September 2026
  * @since 2016
  */
 public abstract class ChartPainter {
@@ -48,31 +45,26 @@ public abstract class ChartPainter {
 	 * Background paint for the chart. Left as a plain literal, unlike the fields
 	 * below -- the constructor immediately overwrites it via
 	 * {@code setBackgroundPaint(null)} (transparent, so a hosting panel's own
-	 * background shows through), so this initial value is never actually
-	 * observed.
+	 * background shows through), so this initial value is never actually observed.
+	 * 
+	 * Overall, the applications' look and feel and its corresponding panels have
+	 * background colors, so that the painter by default does not need one.
 	 */
-	protected Paint backgroundPaint = Color.WHITE;
+	protected Paint backgroundPaint = null;
 
 	/**
 	 * Border paint for the chart. Resolved from the active look-and-feel (see
-	 * {@link #uiColor(String, Color)}) so a painter constructed under e.g. a dark
-	 * Nimbus theme doesn't come out with a fixed light-theme literal.
+	 * {@link LookAndFeelTools#uiColor(String, Color)}) so a painter constructed
+	 * under e.g. a dark Nimbus theme doesn't come out with a fixed light-theme
+	 * literal.
 	 */
-	private Paint borderPaint = uiColor("controlDkShadow", Color.DARK_GRAY);
-
-	/**
-	 * Legacy color field for backward compatibility
-	 *
-	 * @deprecated use {@link #paint} instead
-	 */
-	@Deprecated
-	protected Color color = uiColor("Label.foreground", Color.BLACK);
+	private Paint borderPaint = LookAndFeelTools.uiColor("controlDkShadow", Color.DARK_GRAY);
 
 	/**
 	 * Default paint, e.g., used for linking objects. Resolved from the active
-	 * look-and-feel, see {@link #uiColor(String, Color)}.
+	 * look-and-feel, see {@link LookAndFeelTools#uiColor(String, Color)}.
 	 */
-	private Paint paint = uiColor("Label.foreground", Color.BLACK);
+	private Paint paint = LookAndFeelTools.uiColor("Label.foreground", Color.BLACK);
 
 	/**
 	 * Stroke for drawing borders and outlines
@@ -80,27 +72,35 @@ public abstract class ChartPainter {
 	protected BasicStroke stroke = DisplayTools.standardStroke;
 
 	/**
-	 * Rectangle defining the bounds of the painter
+	 * Rectangle defining the bounds of the painter. Private -- subclasses must go
+	 * through {@link #getRectangle()}/{@link #setRectangle(Rectangle2D)}, never
+	 * touch it directly, so it can never be mutated in place behind the painter's
+	 * back.
 	 */
-	protected Rectangle2D rectangle = null;
+	private Rectangle2D rectangle = null;
 
 	/**
-	 * Rectangle defining the actual drawing area of the painter
+	 * Rectangle defining the actual drawing area of the painter. Private --
+	 * subclasses must go through {@link #getChartRectangle()}/
+	 * {@link #setChartRectangle(Rectangle2D)}, never touch it directly, so it can
+	 * never be mutated in place behind the painter's back.
 	 */
-	protected Rectangle2D chartRectangle = null;
+	private Rectangle2D chartRectangle = null;
 
 	/**
-	 * Interaction feature indicating if painter is in selected/highlighted state
+	 * Interaction feature indicating if painter is in selected/highlighted state.
+	 * Visibility changed to private in 2026, as getter and setter exists for years
+	 * now.
 	 */
-	protected boolean highlighted = false;
+	private boolean highlighted = false;
 
 	/**
-	 * Whether the painter should be drawn with an outline
+	 * Whether the painter should be drawn with an outline. Visibility changed to
+	 * private in 2026, as getter and setter exists for years now.
 	 * 
-	 * @deprecated Try to avoid direct access, use {@link #isDrawOutline()} instead
+	 * Try to avoid direct access, use {@link #isDrawOutline()} instead
 	 */
-	@Deprecated
-	protected boolean drawOutline = false;
+	private boolean drawOutline = false;
 
 	/**
 	 * Font for text rendering
@@ -109,35 +109,12 @@ public abstract class ChartPainter {
 
 	/**
 	 * Color for text rendering. Resolved from the active look-and-feel, see
-	 * {@link #uiColor(String, Color)}.
+	 * {@link LookAndFeelTools#uiColor(String, Color)}.
 	 */
-	protected Color fontColor = uiColor("Label.foreground", Color.BLACK);
+	protected Color fontColor = LookAndFeelTools.uiColor("Label.foreground", Color.BLACK);
 
 	public ChartPainter() {
 		setBackgroundPaint(null);
-	}
-
-	/**
-	 * Resolves a look-and-feel-defined color for {@code key}, so a painter's
-	 * default colors match whatever L&F is active when it is constructed (e.g. a
-	 * dark Nimbus theme) instead of being frozen at a fixed literal -- the same
-	 * way a {@link javax.swing.JLabel}'s foreground would. Falls back to
-	 * {@code fallback} when {@code key} isn't defined by the current L&F, or no
-	 * L&F has been installed yet (e.g. a headless context).
-	 *
-	 * <p>
-	 * This is a construction-time snapshot, not a live binding: a painter built
-	 * before a later {@code UIManager.setLookAndFeel(...)} call keeps the colors
-	 * it was given. Rebuild the painter (or call the color setters explicitly)
-	 * after switching L&F if you need it to pick up the new theme.
-	 *
-	 * @param key      a {@code UIManager} defaults key, e.g. {@code "Label.foreground"}
-	 * @param fallback used when the key resolves to {@code null}
-	 * @return the resolved color
-	 */
-	protected static Color uiColor(String key, Color fallback) {
-		Color c = UIManager.getColor(key);
-		return c != null ? c : fallback;
 	}
 
 	/**
@@ -155,7 +132,20 @@ public abstract class ChartPainter {
 	 * Subclasses should override this method to add their specific rendering,
 	 * calling {@code super.draw(g2)} first.
 	 * </p>
-	 * 
+	 *
+	 * <p>
+	 * <b>{@code rectangle} starts out {@code null} and is guaranteed to be
+	 * {@code null} at least once:</b> a hosting panel (e.g.
+	 * {@code InfoVisChartPanel}) calls {@link #setRectangle(Rectangle2D)} with
+	 * {@code null} once at construction, before it has a real size to lay out
+	 * against. This base implementation already handles that (it simply returns),
+	 * but {@code super.draw(g2)} returning early does not stop an overriding
+	 * subclass's own code from running afterwards -- every override must
+	 * independently guard against {@code rectangle}/{@code chartRectangle} (via
+	 * {@link #getRectangle()}/{@link #getChartRectangle()}) being {@code null},
+	 * typically by returning immediately if so.
+	 * </p>
+	 *
 	 * @param g2 the graphics context
 	 */
 	public void draw(Graphics2D g2) {
@@ -220,7 +210,13 @@ public abstract class ChartPainter {
 	/**
 	 * Sets the bounding rectangle for this painter. Also updates the chart
 	 * rectangle to match.
-	 * 
+	 *
+	 * <p>
+	 * Called with {@code null} at least once by most hosting panels, before a real
+	 * size is known -- see the note on {@link #draw(Graphics2D)}. An override must
+	 * handle {@code null} explicitly (it is not rejected or substituted here).
+	 * </p>
+	 *
 	 * @param rectangle the bounding rectangle; null to clear
 	 */
 	public void setRectangle(Rectangle2D rectangle) {
@@ -286,31 +282,35 @@ public abstract class ChartPainter {
 	}
 
 	/**
-	 * Returns the color.
-	 * 
-	 * @return the color
-	 * @deprecated use {@link #getPaint()} instead
+	 * A type-narrowing view onto {@link #getPaint()}: returns it as a {@code Color}
+	 * if it is one, or {@code Color.BLACK} if the current paint is something else
+	 * (e.g. a gradient or texture) that doesn't reduce to a single color.
+	 *
+	 * @return the current paint as a {@code Color}, or {@code Color.BLACK} if it
+	 *         isn't one
+	 * @deprecated use {@link #getPaint()} instead, which doesn't lose
+	 *             non-{@code Color} paints
 	 */
 	@Deprecated
 	public Color getColor() {
-		return color;
+		return paint instanceof Color ? (Color) paint : Color.BLACK;
 	}
 
 	/**
-	 * Sets the color. Also updates the paint field.
-	 * 
+	 * Equivalent to {@link #setPaint(Paint)}; kept only because {@code Color} is
+	 * such a common argument type in caller code.
+	 *
 	 * @param color the color
 	 * @deprecated use {@link #setPaint(Paint)} instead
 	 */
 	@Deprecated
 	public void setColor(Color color) {
-		this.color = color;
 		setPaint(color);
 	}
 
 	/**
 	 * Returns the current paint.
-	 * 
+	 *
 	 * @return the paint
 	 */
 	public Paint getPaint() {
@@ -318,17 +318,12 @@ public abstract class ChartPainter {
 	}
 
 	/**
-	 * Sets the paint. If the paint is a Color, also updates the deprecated color
-	 * field.
-	 * 
+	 * Sets the paint.
+	 *
 	 * @param paint the paint to set
 	 */
 	public void setPaint(Paint paint) {
 		this.paint = paint;
-
-		if (paint instanceof Color) {
-			this.color = (Color) paint;
-		}
 	}
 
 	/**
@@ -563,19 +558,32 @@ public abstract class ChartPainter {
 
 	/**
 	 * Resets all visual properties to their defaults -- the same
-	 * look-and-feel-aware colors the constructor would produce if called now
-	 * (see {@link #uiColor(String, Color)}), not the fixed literals a
+	 * look-and-feel-aware colors the constructor would produce if called now (see
+	 * {@link LookAndFeelTools#uiColor(String, Color)}), not the fixed literals a
 	 * newly-constructed painter might have gotten under a different, earlier L&F.
 	 */
 	public void resetToDefaults() {
-		this.backgroundPaint = uiColor("Panel.background", Color.WHITE);
-		this.borderPaint = uiColor("controlDkShadow", Color.DARK_GRAY);
-		this.paint = uiColor("Label.foreground", Color.BLACK);
-		this.color = uiColor("Label.foreground", Color.BLACK);
+		this.backgroundPaint = LookAndFeelTools.uiColor("Panel.background", Color.WHITE);
+		this.borderPaint = LookAndFeelTools.uiColor("controlDkShadow", Color.DARK_GRAY);
+		this.paint = LookAndFeelTools.uiColor("Label.foreground", Color.BLACK);
 		this.stroke = DisplayTools.standardStroke;
 		this.font = new Font("Tahoma", Font.PLAIN, 9);
-		this.fontColor = uiColor("Label.foreground", Color.BLACK);
+		this.fontColor = LookAndFeelTools.uiColor("Label.foreground", Color.BLACK);
 		this.drawOutline = false;
 		this.highlighted = false;
+	}
+
+	/**
+	 * Compact one-line summary of this painter's visual state -- useful for
+	 * debugging (e.g. a hosting panel's list of chart painters prints readably
+	 * instead of as opaque {@code Object@hashcode} entries). Subclasses that add
+	 * their own visually-relevant fields may override this and append to
+	 * {@code super.toString()}.
+	 */
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "[rectangle=" + rectangle + ", chartRectangle=" + chartRectangle
+				+ ", paint=" + paint + ", stroke=" + stroke + ", drawOutline=" + drawOutline + ", highlighted="
+				+ highlighted + "]";
 	}
 }

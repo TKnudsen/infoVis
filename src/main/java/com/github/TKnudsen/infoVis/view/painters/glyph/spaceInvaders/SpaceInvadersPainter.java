@@ -57,15 +57,15 @@ public class SpaceInvadersPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Paint oldPaint = g2.getPaint();
 
-		double x = rectangle.getX();
-		double y = rectangle.getY();
-		double width = rectangle.getWidth();
-		double height = rectangle.getHeight();
+		double x = getRectangle().getX();
+		double y = getRectangle().getY();
+		double width = getRectangle().getWidth();
+		double height = getRectangle().getHeight();
 		double halfStroke = strokeOffset / 2;
 
 		g2.setPaint(getPaint());
@@ -151,7 +151,7 @@ public class SpaceInvadersPainter extends ChartPainter {
 
 	@Override
 	public void setRectangle(Rectangle2D rectangle) {
-		this.rectangle = rectangle;
+		setRectangle(rectangle);
 
 		if (rectangle == null)
 			return;

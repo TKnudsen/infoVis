@@ -139,7 +139,7 @@ public abstract class BoxPlotPainter extends ChartPainter implements IRectangleS
 	}
 
 	private void intializeScreenCoordinates() {
-		if (chartRectangle == null)
+		if (getChartRectangle() == null)
 			return;
 
 		medScreen = positionEncodingFunction.apply(dataStatistics.getMedian());

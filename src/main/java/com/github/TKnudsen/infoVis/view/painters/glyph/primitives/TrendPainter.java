@@ -40,7 +40,7 @@ public class TrendPainter extends ChartPainter {
 	private void updateArrow() {
 		angle = Math.atan(trend);
 
-		if (rectangle == null) {
+		if (getRectangle() == null) {
 			startX = Double.NaN;
 			startY = Double.NaN;
 			endX = Double.NaN;
@@ -48,12 +48,12 @@ public class TrendPainter extends ChartPainter {
 			return;
 		}
 
-		double delta = Math.min(rectangle.getWidth() * 0.5, rectangle.getHeight() * 0.5);
+		double delta = Math.min(getRectangle().getWidth() * 0.5, getRectangle().getHeight() * 0.5);
 
-		startX = rectangle.getCenterX() - delta * ARROWHEAD_INSET_FACTOR;
+		startX = getRectangle().getCenterX() - delta * ARROWHEAD_INSET_FACTOR;
 		endX = startX + Math.cos(angle) * delta;
 
-		startY = rectangle.getCenterY();
+		startY = getRectangle().getCenterY();
 		endY = startY - Math.sin(angle) * delta;
 	}
 
@@ -65,7 +65,7 @@ public class TrendPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		Paint oldPaint = g2.getPaint();

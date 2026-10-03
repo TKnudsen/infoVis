@@ -44,9 +44,9 @@ public class ColorDistributionPainter extends ChartPainter {
 		ColoredPolygon poly = new ColoredPolygon();
 		for (int i = 0; i < values.length; i++) {
 			double dx = MathFunctions.linearScale(0, values.length, i, true);
-			double x = dx * chartRectangle.getWidth();
-			double y = chartRectangle.getMaxY()
-					- (MathFunctions.linearScale(0, valueMax, values[i], true) * (chartRectangle.getHeight() - 1) + 1);
+			double x = dx * getChartRectangle().getWidth();
+			double y = getChartRectangle().getMaxY()
+					- (MathFunctions.linearScale(0, valueMax, values[i], true) * (getChartRectangle().getHeight() - 1) + 1);
 			Point2D.Double p = new Point2D.Double(x, y);
 			poly.addPoint((int) p.getX(), (int) p.getY(), colorFunction.apply(dx));
 		}

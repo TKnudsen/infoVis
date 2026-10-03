@@ -127,7 +127,7 @@ public class HatchingPainter extends ChartPainter {
 
 		super.draw(g2);
 
-		if (rectangle == null || rectangle.getWidth() <= 0 || rectangle.getHeight() <= 0) {
+		if (getRectangle() == null || getRectangle().getWidth() <= 0 || getRectangle().getHeight() <= 0) {
 			return;
 		}
 
@@ -136,14 +136,14 @@ public class HatchingPainter extends ChartPainter {
 		ensureTexture();
 
 		if (bufferedImage != null && bufferedImage.getWidth() > 0 && bufferedImage.getHeight() > 0) {
-			for (int y = (int) rectangle.getMinY(); y < rectangle.getMaxY(); y += bufferedImage.getHeight()) {
-				for (int x = (int) rectangle.getMinX(); x < rectangle.getMaxX(); x += bufferedImage.getWidth()) {
+			for (int y = (int) getRectangle().getMinY(); y < getRectangle().getMaxY(); y += bufferedImage.getHeight()) {
+				for (int x = (int) getRectangle().getMinX(); x < getRectangle().getMaxX(); x += bufferedImage.getWidth()) {
 
 					BufferedImage dest = null;
 
 					// right edge cropping
-					if (x + bufferedImage.getWidth() > rectangle.getMaxX()) {
-						int remainingW = (int) Math.round(Math.abs(rectangle.getMaxX() - x));
+					if (x + bufferedImage.getWidth() > getRectangle().getMaxX()) {
+						int remainingW = (int) Math.round(Math.abs(getRectangle().getMaxX() - x));
 						if (remainingW < 1) {
 							continue;
 						}
@@ -151,8 +151,8 @@ public class HatchingPainter extends ChartPainter {
 					}
 
 					// bottom edge cropping
-					if (y + bufferedImage.getHeight() > rectangle.getMaxY()) {
-						int remainingH = (int) Math.round(Math.abs(rectangle.getMaxY() - y));
+					if (y + bufferedImage.getHeight() > getRectangle().getMaxY()) {
+						int remainingH = (int) Math.round(Math.abs(getRectangle().getMaxY() - y));
 						if (remainingH < 1) {
 							continue;
 						}
@@ -174,7 +174,7 @@ public class HatchingPainter extends ChartPainter {
 
 		if (isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			DisplayTools.drawRectangle(g2, rectangle);
+			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
 		g2.setColor(oldColor);

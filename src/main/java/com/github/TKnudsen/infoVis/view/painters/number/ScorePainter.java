@@ -2,6 +2,7 @@ package com.github.TKnudsen.infoVis.view.painters.number;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 
@@ -15,20 +16,27 @@ import com.github.TKnudsen.infoVis.view.ui.Orientation;
  * in tables or dashboards).
  * </p>
  *
+ * <p>
+ * Uses the inherited {@link #getPaint()}/{@link #setPaint(Paint)} for the
+ * bar's fill -- {@link #setPaint(Paint)} with {@code null} is the
+ * sentinel for "nothing to draw yet", matching the base class's own
+ * null-means-transparent/unset convention, so {@link #draw(Graphics2D)} skips
+ * the bar entirely until a paint is set.
+ * </p>
+ *
  * @author Christian Ritter
  */
 public class ScorePainter extends ChartPainter {
 
 	private static final long serialVersionUID = 1L;
 
-	private Color color;
 	private final Orientation orientation;
 
 	private double score;
 	private final Rectangle2D barRect = new Rectangle2D.Double();
 
 	/**
-	 * 
+	 *
 	 * @param score the score to be paint in a range of [0,1]
 	 * @param color the color of the bar
 	 */
@@ -37,13 +45,13 @@ public class ScorePainter extends ChartPainter {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param score       the score to be paint in a range of [0,1]
 	 * @param color       the color of the bar
 	 * @param orientation orientation
 	 */
 	public ScorePainter(double score, Color color, Orientation orientation) {
-		this.color = color;
+		setPaint(color);
 		this.orientation = orientation;
 
 		setScore(score); // automatically clamps and recalculates
@@ -72,15 +80,15 @@ public class ScorePainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (barRect == null || color == null)
+		if (barRect == null || getPaint() == null)
 			return;
 
 		// enable anti-aliasing for smoother edges
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setClip(getRectangle()); // enforce clipping
 
-		final Color oldColor = g2.getColor();
-		g2.setColor(color);
+		final Paint oldPaint = g2.getPaint();
+		g2.setPaint(getPaint());
 		g2.fill(barRect);
 
 		if (isDrawOutline()) {
@@ -88,11 +96,7 @@ public class ScorePainter extends ChartPainter {
 			DisplayTools.drawRectangle(g2, getRectangle());
 		}
 
-		g2.setColor(oldColor);
-	}
-
-	public Color getColor() {
-		return color;
+		g2.setPaint(oldPaint);
 	}
 
 	public Double getData() {
@@ -101,10 +105,6 @@ public class ScorePainter extends ChartPainter {
 
 	public double getScore() {
 		return score;
-	}
-
-	public void setColor(Color color) {
-		this.color = color;
 	}
 
 	@Override

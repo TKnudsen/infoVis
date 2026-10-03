@@ -61,11 +61,11 @@ public class BarChartHorizontalPainter extends BarChartPainter implements IXPosi
 
 		double gridSpacing = getGridSpacing();
 		if (Double.isNaN(gridSpacing)) {
-			gridSpacing = Rectangle2DTools.calculateSpacingValue(chartRectangle.getWidth(), chartRectangle.getHeight(),
+			gridSpacing = Rectangle2DTools.calculateSpacingValue(getChartRectangle().getWidth(), getChartRectangle().getHeight(),
 					barPainters.size(), barPainters.size(), BarChart.BARCHART_GRID_SPACING_RATIO);
 			gridSpacing = Math.max(1.0, gridSpacing);
 		}
-		Rectangle2D[][] rectangleMatrix = Rectangle2DTools.createRectangleMatrix(chartRectangle, 1, barPainters.size(),
+		Rectangle2D[][] rectangleMatrix = Rectangle2DTools.createRectangleMatrix(getChartRectangle(), 1, barPainters.size(),
 				(int)gridSpacing);
 
 		if (rectangleMatrix != null)

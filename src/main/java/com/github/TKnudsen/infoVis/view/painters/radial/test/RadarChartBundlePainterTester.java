@@ -32,7 +32,7 @@ public class RadarChartBundlePainterTester {
 		}
 
 		RadarChartBundlePainter painter = new RadarChartBundlePainter(values, bundle);
-		painter.setColor(Color.ORANGE);
+		painter.setPaint(Color.ORANGE);
 		painter.setFill(true);
 		painter.setDrawCoordinateMarks(true);
 

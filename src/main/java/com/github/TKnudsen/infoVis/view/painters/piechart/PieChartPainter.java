@@ -192,7 +192,7 @@ public class PieChartPainter extends ChartPainter
 
 		StringPainter stringPainter = new StringPainter(toolTipString);
 
-		Rectangle2D rect = ToolTipTools.createToolTipRectangle(chartRectangle, p, 36, 32);
+		Rectangle2D rect = ToolTipTools.createToolTipRectangle(getChartRectangle(), p, 36, 32);
 		stringPainter.setRectangle(rect);
 
 		stringPainter.setBackgroundPaint(ColorTools.setAlpha(Color.DARK_GRAY, 0.5f));

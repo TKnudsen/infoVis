@@ -51,12 +51,12 @@ public abstract class RectangularPainter extends ChartPainter {
 
 	@Override
 	public void draw(Graphics2D g2) {
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setPaint(getBackgroundPaint());
-		g2.fill(rectangle);
+		g2.fill(getRectangle());
 		g2.setPaint(getPaint());
 	}
 

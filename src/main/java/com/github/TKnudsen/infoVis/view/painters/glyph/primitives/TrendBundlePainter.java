@@ -27,7 +27,7 @@ public class TrendBundlePainter extends ChartPainter {
 
 		for (Double trend : trends) {
 			TrendPainter trendPainter = new TrendPainter(trend);
-			trendPainter.setRectangle(rectangle);
+			trendPainter.setRectangle(getRectangle());
 			trendPainter.setStroke(stroke);
 			trendPainter.setBackgroundPaint(null);
 			trendPainters.add(trendPainter);
@@ -38,9 +38,9 @@ public class TrendBundlePainter extends ChartPainter {
 	public void draw(Graphics2D g2) {
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		if (rectangle != null && getBackgroundPaint() != null) {
+		if (getRectangle() != null && getBackgroundPaint() != null) {
 			g2.setPaint(getBackgroundPaint());
-			g2.fill(rectangle);
+			g2.fill(getRectangle());
 		}
 
 		for (TrendPainter trendPainter : trendPainters)

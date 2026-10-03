@@ -34,14 +34,14 @@ public class MinusPainter extends ButtonPainter {
 	public void draw(Graphics2D g2) {
 		super.draw(g2);
 
-		if (rectangle == null)
+		if (getRectangle() == null)
 			return;
 
 		if (drawCircle)
 			circlePainter.draw(g2);
 
-		double width = rectangle.getWidth();
-		double space = Math.min(width, rectangle.getHeight());
+		double width = getRectangle().getWidth();
+		double space = Math.min(width, getRectangle().getHeight());
 		float strokeWidth = (float) (0.15 * space);
 		float lineWidth = (float) (width * 0.8);
 		if (drawCircle)
@@ -50,16 +50,16 @@ public class MinusPainter extends ButtonPainter {
 		Stroke s = g2.getStroke();
 		Color c = g2.getColor();
 
-		if (rectangle != null && isDrawOutline()) {
+		if (getRectangle() != null && isDrawOutline()) {
 			g2.setPaint(getBorderPaint());
-			g2.draw(rectangle);
+			g2.draw(getRectangle());
 		}
 
 		g2.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
 		g2.setColor(minusColor);
 
-		Line2D horz = new Line2D.Double(rectangle.getCenterX() - lineWidth * 0.5, rectangle.getCenterY(),
-				rectangle.getCenterX() + lineWidth * 0.5, rectangle.getCenterY());
+		Line2D horz = new Line2D.Double(getRectangle().getCenterX() - lineWidth * 0.5, getRectangle().getCenterY(),
+				getRectangle().getCenterX() + lineWidth * 0.5, getRectangle().getCenterY());
 
 		g2.draw(horz);
 

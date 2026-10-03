@@ -54,8 +54,8 @@ public class ColorHuePainter extends ChartPainter {
 		drawHue(g2);
 
 		Ellipse2D circle = new Ellipse2D.Double();
-		circle.setFrameFromCenter(rectangle.getCenterX(), rectangle.getCenterY(), rectangle.getCenterX() + radiusInnerX,
-				rectangle.getCenterY() + radiusInnerY);
+		circle.setFrameFromCenter(getRectangle().getCenterX(), getRectangle().getCenterY(), getRectangle().getCenterX() + radiusInnerX,
+				getRectangle().getCenterY() + radiusInnerY);
 		g2.setColor(Color.WHITE);
 		g2.fill(circle);
 		g2.setColor(Color.BLACK);
@@ -107,8 +107,8 @@ public class ColorHuePainter extends ChartPainter {
 	 * @return
 	 */
 	private Point2D.Double getInnerRadius(double degreeGrad) {
-		return new Point2D.Double(rectangle.getCenterX() + Math.sin(degreeGrad / 360 * 2 * Math.PI) * radiusInnerX,
-				rectangle.getCenterY() - Math.cos(degreeGrad / 360 * 2 * Math.PI) * radiusInnerY);
+		return new Point2D.Double(getRectangle().getCenterX() + Math.sin(degreeGrad / 360 * 2 * Math.PI) * radiusInnerX,
+				getRectangle().getCenterY() - Math.cos(degreeGrad / 360 * 2 * Math.PI) * radiusInnerY);
 	}
 
 	/**
@@ -121,8 +121,8 @@ public class ColorHuePainter extends ChartPainter {
 	 */
 	private Point2D.Double getOuterRadius(double degreeGrad, double ratio) {
 		Point2D.Double p = getInnerRadius(degreeGrad);
-		double deltaX = rectangle.getWidth() * 0.5 - radiusInnerX;
-		double deltaY = rectangle.getHeight() * 0.5 - radiusInnerY;
+		double deltaX = getRectangle().getWidth() * 0.5 - radiusInnerX;
+		double deltaY = getRectangle().getHeight() * 0.5 - radiusInnerY;
 		return new Point2D.Double(p.getX() + Math.sin(degreeGrad / 360 * 2 * Math.PI) * deltaX * ratio,
 				p.getY() - Math.cos(degreeGrad / 360 * 2 * Math.PI) * deltaY * ratio);
 	}

@@ -114,8 +114,8 @@ public class BarChartSelectablePainter<O> extends AggregationBarChartPainter<O> 
 		this.barRendererSelected = createSelectedBarRenderer(selectedMapping);
 
 		// Update layout if rectangle is set
-		if (rectangle != null)
-			setRectangle(rectangle);
+		if (getRectangle() != null)
+			setRectangle(getRectangle());
 	}
 
 	/**
