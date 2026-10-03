@@ -1,9 +1,16 @@
-package com.github.TKnudsen.infoVis.data;
+package com.github.TKnudsen.infoVis.view.panels.barchart.test;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Canned demo data (six labeled, colored values) shared by the bar chart
+ * painter/panel testers.
+ *
+ * @version 1.0
+ * @since 2026
+ */
 public class BarChartDataForTesting {
 
 	public static List<Double> values() {

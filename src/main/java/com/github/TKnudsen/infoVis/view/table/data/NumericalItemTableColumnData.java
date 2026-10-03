@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.data.table;
+package com.github.TKnudsen.infoVis.view.table.data;
 
 import java.awt.Color;
 import java.util.function.BiFunction;

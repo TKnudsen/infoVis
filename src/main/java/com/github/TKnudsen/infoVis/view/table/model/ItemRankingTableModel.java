@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import com.github.TKnudsen.ComplexDataObject.model.tools.DataConversion;
 import com.github.TKnudsen.ComplexDataObject.model.tools.MathFunctions;
-import com.github.TKnudsen.infoVis.data.table.ItemTableColumnData;
-import com.github.TKnudsen.infoVis.data.table.ItemTableColumnData.ColumnPosition;
+import com.github.TKnudsen.infoVis.view.table.data.ItemTableColumnData;
+import com.github.TKnudsen.infoVis.view.table.data.ItemTableColumnData.ColumnPosition;
 
 /**
  * <p>

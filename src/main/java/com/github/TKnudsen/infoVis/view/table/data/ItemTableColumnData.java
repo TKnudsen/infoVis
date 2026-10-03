@@ -1,4 +1,4 @@
-package com.github.TKnudsen.infoVis.data.table;
+package com.github.TKnudsen.infoVis.view.table.data;
 
 import java.util.Objects;
 import java.util.function.Function;

@@ -11,7 +11,7 @@ import com.github.TKnudsen.ComplexDataObject.data.complexDataObject.ComplexDataO
 import com.github.TKnudsen.ComplexDataObject.model.io.csv.CSVParser;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.DoubleParser;
 import com.github.TKnudsen.ComplexDataObject.model.io.parsers.objects.IntegerParser;
-import com.github.TKnudsen.infoVis.data.BarChartDataForTesting;
+import com.github.TKnudsen.infoVis.view.panels.barchart.test.BarChartDataForTesting;
 import com.github.TKnudsen.infoVis.view.frames.SVGFrameTools;
 import com.github.TKnudsen.infoVis.view.interaction.handlers.SelectionHandler;
 import com.github.TKnudsen.infoVis.view.painters.ChartPainter;
